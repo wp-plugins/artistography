@@ -20,8 +20,36 @@ Artistography allows a user to organize albums and videos onto an artist page.  
 3. To populate the artist's Related Posts tab just tag posts with the Artist's name.  Artistography will automatically find it.
 4. Use the following shortcodes on a page/post:
 
-[artistography_display_artist_page]
-     Displays artist photo/bio, discography, videos, related posts, etc.
+[artistography_display_artist_page id=1]
+     Displays photo/bio, discography, videos, and related posts of artist with database id=1
+
+[artistography_artist_name id=1]
+     Displays the name of the artist with database id=1.
+
+[artistography_display_enabled_artists]
+     Displays "enabled" artists in a table with pictures that break away on mouse-over
+          Optional paramaters:
+               cols=(default 4)
+
+[artistography_display_artist]
+     
+
+[artistography_album_download_link id=1]
+     Displays a download picture with link to download album of album with database id=1
+
+[artistography_album_art id=1]
+     Displays album photo for album with database id=1
+
+[artistography_display_enabled_albums]
+     Displays "enabled" albums in a table with associated download hyperlink (if linked to a download)
+          Optional paramters:
+               cols=(default 4)
+[artistography_display_album]
+     
+[artistography_display_album_tracklist id=1]
+     Displays tracklist/description of album with album database id=1
+[artistography_display_album_artist id=1]
+     Displays artist name of album with album database id=1
 
 == Changelog ==
 
