@@ -331,9 +331,10 @@ function artistography_plugin_menu() {
   GLOBAL $artistography_plugin_dir, $i18n_domain;
 
   if( FALSE !== stripos($_GET['page'], 'artistography') ) {
-    wp_enqueue_style( 'jquery-ui', plugins_url('/css/jquery-ui.css', $artistography_plugin_dir), array(), '1.0.0', 'all');
+    wp_enqueue_style( 'jquery-ui', plugins_url('/js/jquery-ui-1.11.2/jquery-ui.css', $artistography_plugin_dir), array(), '1.0.0', 'all');
+    wp_enqueue_style( 'jquery-ui', plugins_url('/js/jquery-ui-1.11.2/jquery-ui.theme.css', $artistography_plugin_dir), array(), '1.0.0', 'all');
     wp_enqueue_style( 'artistography', plugins_url('/css/style.css', $artistography_plugin_dir), array(), '1.0.0', 'all');
-    wp_enqueue_script( 'jquery-ui',  plugins_url('/js/jquery-ui-1.8.9.js', $artistography_plugin_dir), array( 'jquery' ), '1.0.0');
+    wp_enqueue_script( 'jquery-ui',  plugins_url('/js/jquery-ui-1.11.2/jquery-ui.js', $artistography_plugin_dir), array( 'jquery' ), '1.0.0');
     wp_enqueue_script( 'artistography',  plugins_url('/js/admin.js', $artistography_plugin_dir), array( 'jquery-ui' ), '1.0.0'); 
   }
 

@@ -13,7 +13,7 @@ Artistography allows you to have a discography on a record label of artists with
 
 Upload the Artisography plugin to your blog, Activate it.
 
-1, 2, 3: You're done! 
+1, 2, 3: You're done!
 
 == Changelog ==
 

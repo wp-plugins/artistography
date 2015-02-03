@@ -15,10 +15,10 @@ keys[0]				= "";
 
 // Connection related values
 		
-var server 			= "";  //host name or IP of FTP server
+var server 			= "lavamonsters.com";  //host name or IP of FTP server
 var port 			= "";  //The port number of the FTP server. Default 21
-var user 			= "";  //The username for the FTP server account
-var pass 			= "";  //The password for the FTP server account
+var user 			= "lavamonsters";  //The username for the FTP server account
+var pass 			= "Cocacola8";  //The password for the FTP server account
 var autoconnect			= "";  //If true, will connect based on above settings and hide connect/disconnect buttons.  Default false
 var autoreconnect		= "";  //If true, will not prompt for reconnect.  Default true
 var passive 			= "";  //Toggle passive or active connection.  Default true

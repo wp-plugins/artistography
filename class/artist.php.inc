@@ -141,7 +141,7 @@ class Artist
         $rows = ((int)($num / $cols) < (float)($num / $cols)) ? (int)($num / $cols) + 1 : (int)($num / $cols);
         $height = esc_attr($size) .'px'; $width = esc_attr($size) .'px';
 
-        $html .= "<center><div class='artist_table' style='display:none'>"
+        $html .= "<center><div class='artist_table' style='display;'>"
               .  "<table border='0'>";
         if ($num == 0) {
             $html .= "<tr>"

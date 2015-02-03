@@ -227,10 +227,7 @@ class Discography
             if(empty($content)) {
                 $html .= stripslashes($artist->description). "\n";
             } else {
-                $html .= $content. "</p>\n";
-            }
-            if ($artist->myspace_url !== NULL) {
-                $html .= "</td></tr><tr><td><p>MySpace URL: <a href='" .stripslashes($artist->myspace_url). "' target='_blank'>" .stripslashes($artist->myspace_url). "</a></p>\n";
+                $html .= do_shortcode($content). "</p>\n";
             }
             $html .= "  </td></tr></table></div>\n";
 
@@ -260,13 +257,13 @@ class Discography
                               .  "        <img src='$album->picture_url' style='border:1px solid black;height:$height;width:$width;' /></a><br/>";
                         if ($album->download_id > 0) {
                             $html .= "       <a href='/download/$album->download_id'>"
-                                  .  "        <img width='112' height='75' src='http://www.sprucegooserecords.com/images/download.icon.png' /></a>";
+                                  .  "        <img width='112' height='75' src='/images/download.icon.png' /></a>";
                         }
                         $html .= "    </font></center>"
                               .  "  </td>"
                               .  "  <td style='border:0;'>"
                               .  "    <div class='tracklist'><font style='font-size:8pt;text-align:left;'>"
-                              .  $album->description
+                              .  do_shortcode($album->description)
                               .  "    </font></div>"
                               .  "  </td>";
                     }
@@ -322,7 +319,10 @@ class Discography
                 $html .= "  </div>\n";
             }
             $html .= "</div>\n";
-        } else {
+        } else if ($id == '0') {
+	    $html .= __('Error: Artist ID specified in Artistography shortcode not found in database.  First artist is always id=1 not id=0.', $i18n_domain);
+
+	} else {
             $html .= __('Error: Artist ID specified in Artistography shortcode not found in database.', $i18n_domain);
         }
 
