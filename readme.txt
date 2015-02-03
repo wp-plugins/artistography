@@ -11,9 +11,12 @@ Artistography allows you to have a discography on a record label of artists with
 
 == Installation ==
 
-Install the Artisography plugin to your blog, and Activate it.  Next, Enter an Artist into the Admin/Dashboard > Artistography > Artists, and use the following shortcodes:
+1. Install the Artisography plugin to your blog, and Activate it.  
+2. Next, Enter an Artist into the Admin/Dashboard > Artistography > Artists
+3. Use the following shortcodes on a page/post:
 
 [artistography_display_artist_page]
+     Displays artist photo/bio, discography, videos, related posts, etc.
 
 == Changelog ==
 
