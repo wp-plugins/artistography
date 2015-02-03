@@ -1,0 +1,1723 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/2002/REC-xhtml1-20020801/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+
+<title>UnlimitedFTP Documentation</title>
+
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<link rel="icon" href="images/favicon.png" type="image/png"/>
+<link rel=StyleSheet href="doc_style.css" type="text/css" media=screen>
+</head>
+
+<body>
+<div id="content_wrapper">
+		  <b class="xtop"><b class="xb1"></b><b class="xb2"></b><b class="xb3"></b><b class="xb4"></b></b>
+		  <div class="xboxcontent">
+<div id="header">
+  <div id="logo">
+    <a href="http://www.utechsoft.com">
+      <img src="images/header.png" alt="Logo" class="logo"/><br/>
+    </a>
+  </div>
+</div>
+
+<div class="indent">
+  <h1>UnlimitedFTP Documentation</h1> 
+  <h2>1 Overview</h2> 
+  <div class="indent"> 
+    <p><a href="#s11">1.1 Introduction</a><br/> 
+      <a href="#s12">1.2 Features</a><br/> 
+      <a href="#s13">1.3 Known issues</a><br/>
+      <a href="#s14">1.4 Differences between Pro, Secure, Lite versions</a>
+	</p>
+  </div>
+  
+  <h2>2 Installation</h2> 
+  <div class="indent"> 
+    <p><a href="#s21"> 2.1 Deploying to a web server</a><br/>
+	   <a href="#s22"> 2.2 Embedding the applet into your page</a><br/>
+	   <a href="#s23"> 2.3 Using dynamic languages</a>
+	</p> 
+  </div> 
+  
+  <h2>3 Using UnlimitedFTP</h2> 
+  <div class="indent"> 
+    <p><a href="#s31">3.1 Minimum system requirements</a><br/> 
+      <a href="#s32">3.2 User Interface</a><br/> 
+      <a href="#s33">3.3 Connecting to an FTP server</a><br/> 
+      <a href="#s34">3.4 Directory browsing</a><br/> 
+      <a href="#s35">3.5 Selecting files and directories</a><br/> 
+      <a href="#s36">3.6 Deleting files and directories</a><br/> 
+      <a href="#s37">3.7 Renaming files and directories</a><br/> 
+      <a href="#s38">3.8 Transferring files and directories</a><br/> 
+      <a href="#s39">3.9 Creating a directory</a><br/> 
+      <a href="#s310">3.10 Setting transfer mode</a><br/>
+      <a href="#s311">3.11 Popup menu</a>
+	</p>
+  </div> 
+  
+  <h2>4 Configuring UnlimitedFTP</h2>
+  <div class="indent"> 
+    <p><a href="#s41">4.1 Connection parameters</a><br/>
+	  <a href="#s42">4.2 Secure FTP settings</a><br/>
+      <a href="#s43">4.3 Proxy parameters</a><br/> 
+      <a href="#s44">4.4 Functionality related parameters</a><br/> 
+      <a href="#s45">4.5 Color settings</a><br/> 
+      <a href="#s46">4.6 Interface and layout Settings</a><br/> 
+	  <a href="#s47">4.7 Connect dialog parameters</a><br/> 
+	  <a href="#s48">4.8 Error URL parameters</a><br/>
+      <a href="#s49">4.9 Language settings and localization</a></p> 
+  </div> 
+  
+  <h2>5 Advanced Features</h2>
+  <div class="indent"> 
+    <p><a href="#s51">5.1 Disabling the "unlicensed" banner</a><br/> 
+      <a href="#s52">5.2 Hiding Connect, Disconnect, Help and About buttons</a><br/> 
+      <a href="#s53">5.3 Disabling individual buttons</a><br/> 
+      <a href="#s54">5.4 Customizing the help location</a><br/>
+      <a href="#s55">5.5 Customizable right click options</a><br/>
+      <a href="#s56">5.6 Advanced file filtering</a><br/>      
+      <a href="#s57">5.7 Resuming broken or interrupted transfers</a><br/>
+	  <a href="#s58">5.8 Secure FTP using FTPS</a><br/>
+	  <a href="#s59">5.9 Secure FTP using SFTP</a><br/>	
+	  <a href="#s510">5.10 Secure FTP using UnlimitedFTP Servlet</a>
+	</p>
+    </div>
+	
+  <h2>6 Support</h2>
+  <div class="indent"> 
+    <p><a href="#s61">6.1 Support Portal</a><br/> 
+      <a href="#s62">6.2 Phone, email, and chat support</a><br/> 
+	</p> 
+  </div>
+  
+  <h2>7 Version History</h2>
+  <div class="indent">
+    <p><a href="#s71">7.1 Version History</a></p>
+  </div>
+</div>
+
+<br/>
+<hr/>
+<br/>
+
+<div class="indent">
+
+  <h2>1 Overview</h2> 
+  <div class="indent">
+    <h3>1.1 Introduction<a name="s11" id="s11"></a></h3>
+	<div class="indent">
+      <p>UnlimitedFTP was the world's first commercial Java FTP client applet. First released in 2000, UnlimitedFTP is the culmination of years of working with our customers to implement the features they need. This has resulted in more than 100 customizable parameters, making our FTP applet the most robust, configurable, and user friendly FTP applet on the market. Years of testing and development also ensure support on the widest range of platforms of any competing products.</p>
+	  
+	  <p>The range of UnlimitedFTP products are easily embedded into your HTML with 1 simple line, and are configured using javascript that can be easily understood and modified by non-programmers using the text editor of your choice.  See <a href="#22">Section 2.2</a> for details.</p>
+	  
+      <p>If you require further assistance with setup, or are interested in related products and customization services, please visit our <a href="http://www.utechsoft.com">website</a>.  Please also review the <a href="readme.txt" target="_blank">Readme</a> and <a href="license.txt" target="_blank">License</a> files.</p>
+    </div>
+	
+    <h3>1.2 Features<a name="s12" id="s12"></a></h3>
+    <div class="indent">
+      <p>The following is a list of the main features of UnlimitedFTP.</p>
+      <ul>
+        <li>Runs from any web page using Netscape, Internet Explorer, Opera, Mozilla, or Safari browsers with Java 1.1 or higher enabled.</li>
+        <li>Operating System-independent:  runs on any platform with a Java 1.4 or higher VM</li>
+        <li>Connection to any FTP site.</li>
+        <li>Local and Remote Directory browsing through a graphical interface.</li>
+        <li>The ability to transfer multiple files and/or directories and directory tree structures. </li>
+        <li>Cross platform data transfers (ex. UNIX, Windows, Mac, MVS, HPUX) with automatic conversion. </li>
+        <li>Smart file viewing in Windows. Files with certain file extensions automatically open in the default application. </li>
+        <li>File transfers through firewalls using UnlimitedFTP Servlet. </li>
+        <li>UnlimitedFTP will work with any  FTP proxy using the 'username@hostname.com' syntax.</li>
+        <li>CHMOD when connected to Unix servers </li>
+        <li>The ability to delete non-empty folders on FTP sites </li>
+        <li>Automatic file type detection for ASCII or BIN transfer mode. </li>
+        <li>File filtering allows you to configure UnlimitedFTP to view and transfer only files with specific extensions or file name. </li>
+        <li>Ability to limit browsing to initial directory and its sub-directories. </li>
+        <li>Incremental transfers </li>
+        <li>Directory synchronization (with customizable file priority) </li>
+        <li>Resume broken transfers automatically </li>
+        <li>Recover from several types of transfer errors, with ability to specify number of retries. </li>
+        <li>Auto-upload/Auto-download capabilities. </li>
+        <li>Progress dialog with transfer speed and cancel button. </li>
+        <li>Configurable display options. </li>
+        <li>Customizable right click file options </li>
+        <li>Optional  file transfer via a secure HTTPS tunnel, using <a href="http://www.utechsoft.com/products/unlimitedftp/servlet/">UnlimitedFTP Servlet</a> (Pro and Secure)</li>
+		<li>Ability to log in with a private key file (UnlimitedFTP Secure only)</li>
+      </ul>
+    </div>
+ 
+    <h3>1.3 Known issues <a name="s13" id="s13"></a></h3>
+      <ol>
+        <li>Scrolling file list in Mac OS 9 doesn't repaint the list until scrolling is stopped. </li>
+        <li>Drag and drop on Mac OSX Jaguar and Panther not functional.</li>
+      </ol>
+      
+    <h3>1.4 Differences between Pro, Secure, Lite versions<a name="s14" id="s13"></a></h3>
+      <p>UnlimitedFTP Pro is our most popular web-based FTP product. It contains over a hundred customizable parameters to help you deliver a customized and 
+      automated FTP experience to your end users, right from the web. However, there are two other versions available:</p>
+      <ol>
+      <li>UnlimitedFTP Secure - Contains all the functionality of UnlimitedFTP Pro, while adding support for FTPS (implicit or explicity) and SFTP</li>
+      <li>UnlimitedFTP Lite - The feature set is dramatically reduced in order to provide an applet that fits every budget. Automation, security, and proxy settings are not present, but your
+      users will still have the experience of a standard two-way FTP applet, without the need to install or configure any software on their machines.</li>
+      </ol>
+      <p>In the parameter charts (Section 4 of this document), each variable will indicate its availability in the different versions.</p>
+  </div>
+  
+  
+  
+  <h2><strong>2 Installation</strong></h2>
+  <div class="indent">
+    <h3>2.1 Deploying to a web server<a name="s21" id="s21"></a></h3>
+      <ol>
+        <li>Extract the contents of unlimitedftp.zip to your local hard disk using a zip utility</li>
+        <li>Create a directory on your web server. For example /uftp.</li>
+        <li>Upload all files extracted in Step 1 to the directory you created on the web server in Step 2. <span class="style1"><b>Important</b>:</span> When uploading files make sure that you upload files in binary mode.</li>
+        <li>Go to test page located at the URL http://yourserver.com/uftp/index.html, where yourserver.com is replaced by your domain name. Example: http://www.utechsoft.com.com/unlimitedftp/index.html</li>
+        <li>To customize the functionality of UnlimitedFTP, edit the file uftpscript.js with a text editor such as Notepad. Each of the customizable parameters is defined below in <a href="#41">Section 4</a> The filename may differ depending on the applet, but it always ends in ".js".</li>
+        <li>Upload the new uftpscript.js to your web server.</li>
+      </ol>
+		
+    <h3>2.2 Embedding the applet into your page<a name="s22" id="s22"></a></h3>
+	  <div class="indent">
+		<p>Embedding the applet into your webpage is simple.  In an appropriate spot of your HTML, add the following line:</p>
+		<p class="code indent">&lt;script language=&quot;javascript&quot; src=&quot;uftpscript.js&quot;&gt;&lt;/script&gt;</p>
+		<p>In the above example, uftpscript.js must be in the same directory as your page.  You may instead set the &quot;src&quot; parameter to indicate a path to the script.</p>
+		<p>To customize UnlimitedFTP, you will typically edit "uftpscript.js" with an HTML/text editor and set your variables appropriately.  Most variables are fairly self-explanatory in plain English, but this document provides full descriptions of each.  The tables beginning in <a href="#41">Section 4.1</a> serve as a guide to customizing UnlimitedFTP's parameters.</p>
+	  </div>
+
+	<h3>2.3 Using dynamic languages<a name="s23" id="s23"></a></h3>
+	  <div class="indent">
+		<p>Editing the standalone JavaScript (.js) file is the most common way to configure the applet.  However, Advanced web developers may also choose to set variables using dynamic languages such as PHP or additional JavaScript.  For example, your web application may perform some work that ultimately results in a variable being set which contains the username. Let's use PHP for our example:</p>
+    <p>1. My web application ultimately results in a variable, stored as a PHP variable called &ldquo;username&rdquo;. The applet doesn't understand this until we declare it as a JavaScript variable that our applet understands (var user):</p>
+    <p><span class="code">&lt;script type=&quot;text/javascript&quot;&gt;<br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;var user = &quot;&lt;?php echo $username ?&gt;&quot;;<br/>
+    &lt;/script&gt;</p>
+    <p>2. Since we are declaring &quot;var user&quot; in the page that loads the applet,
+    we need to delete that variable declaration from the .js file. Otherwise it will
+    be re-declared as a blank string! Instead of deleting altogether, you can just
+    comment it out with two slashes at the beginning of the line. Inside the .js
+    file (uftpscript.js, uftplite.js, or uftpsecure.js) the line should look like:</p>
+    <p><span class="code">// var user = &quot;&quot;;</span></p>
+    <p>3. Now we can go back to the page loading the applet and use our standard embedding script tags:</p>
+    <p><span class="code">&lt;script type=&quot;text/javascript&quot; src=&quot;scriptname.js&quot&gt;&lt;/script&gt;</span></p>
+    <p>(where &ldquo;scriptname.js&rdquo; is actually uftpscript.js, uftplite.js, or uftpsecure.js depending on which version you are using)</p>
+		<p>--</p>
+		<p>Optionally, you can actually copy the entire JavaScript file directly into your PHP (or ASP, JSP, HTML, etc) page in-between script tags. We have included PHP and Javascript examples of a login scenario in the zip file that uses this approach.  Variables are not set with the ".js" file; the pages themselves contain the script variables.  Server, port, username, password, and (for Pro and Secure) encryption are set by the &quot;login example&quot; pages, which also ask the user to submit username/password.  Other static variables such as appearance customization are set in the destination page.</p>
+    <p>View the source code for the PHP and JavaScript example pages included in the zip archive to learn more.</p>
+
+     </div>
+  </div>
+  
+  <h2>3 Using UnlimitedFTP</h2>
+  <div class="indent">
+    <h3>3.1 Minimum System Requirements<a name="s31" id="s31"></a></h3>
+      <div class="indent">
+        <p>The minimum system requirements for using UnlimitedFTP are as follows:</p>
+        <ul>
+		  <li>Operating Systems: Windows 98/2000/XP/ME, Mac OS 8.x, 9.x, 10.x, Linux, Unix</li>
+	      <li>Browser: Internet Explorer, Netscape Navigator, Opera. Mozilla, Safari, Firefox</li>
+          <li>Browser Java VM: Java 1.1 or above enabled for Lite and Pro, Java 1.4 or above for Secure</li>
+          <li>FTP server (must be accessible from your machine)</li>
+		</ul>
+      </div>
+		
+    <h3>3.2 User Interface<a name="s32" id="s32"></a></h3>
+      <div class="indent">
+        <p>Below is a screen shot of the UnlimitedFTP user interface. Depending on your Operating System and browser, as well as the parameters you have configured, appearance may differ slightly.</p>
+		<table class="image">
+		<caption align="bottom"><strong>Fig 3.1 </strong>The UnlimitedFTP interface</caption>
+		<tr><td><img src="images/user_interface.png" alt="UnlimitedFTP UI"/></td></tr></table>
+		  
+		<br/>
+		  
+		<ol>
+          <li>Current local directory - Displays the drive letter and full path of your current local directory. </li>
+		  <li>Local toolbar - Buttons for performing actions on your local directory. </li>
+		  <li>Current remote directory - Displays the path of your current remote directory. </li>
+		  <li>Remote toolbar - Buttons for performing actions on your remote directory. </li>
+          <li>Local file listing - Displays files and child folders in your current local directory. </li>
+		  <li>Transfer buttons - With files selected, click to transfer to or from the remote directory. </li>
+          <li>Remote file listing - Displays files and child folders in your current remote directory. </li>
+          <li>FTP message display  - Displays messages sent to and received from the FTP server. </li>
+          <li>Connect/Disconnect - These buttons allow you to connect or disconnect (if autoconnect is not used)</li>
+        </ol>
+        
+  
+    <p>Below is the UnlimitedFTP Lite user interface. Depending on your Operating System and browser, as well as the parameters you have configured, appearance may differ slightly. Note: UnlimitedFTP Pro and Secure will have a similar appearance if the variables &ldquo;useToolbar&rdquo; and &ldquo;useBottomToolbar&rdquo; are set to false.</p>
+		<table class="image">
+		<caption align="bottom"><strong>Fig 3.1 </strong>The UnlimitedFTP Lite interface</caption>
+		<tr><td><img src="images/lite_interface.png" alt="UFTP Lite UI"/></td></tr></table>
+		  
+		<br/>
+		  
+		<ol>
+          <li>Current local directory - Displays the full path of your current local directory. </li>
+		  <li>Current remote directory - Displays the path of your current remote directory. </li>
+          <li>Local toolbar - Buttons for performing actions on your local directory. </li>
+          <li>Local file listing - Displays files and child folders in your current local directory. </li>
+          <li>Remote file listing - Displays files and child folders in your current remote directory. </li>
+          <li>Remote toolbar - Buttons for performing actions on your remote directory. </li>
+          <li>Transfer mode - Switch between ASCII and Binary transfer modes </li>
+          <li>FTP message display  - Displays messages sent to and received from the FTP server. </li>
+          <li>Transfer and connection - These buttons allow you to connect, disconnect, as well as upload and download files.</li>
+        </ol>
+        
+	</div>
+
+    <h3>3.3 Connecting to an FTP server<a name="s33" id="s33"></a></h3>
+      <div class="indent">
+        <p>To load UnlimitedFTP, use your web browser to open the test page you uploaded during installation. See <a href="#21">Deploying to a web server</a>. Upon loading UnlimitedFTP a dialog will be presented similar to the one shown below asking you to confirm that you trust the certificate used to sign the applet. The dialog may vary depending on the browser you use. You must accept this dialog for the applet to continue loading. To avoid this dialog from being displayed each time you connect click on the "Always trust content from Unlimi-Tech Software Inc." checkbox in IE, or on the &quot;Always&quot; button if you use Sun's Java Plugin. This dialog ensures that UnlimitedFTP is a trusted application, and you wish to allow it to run with full permissions. </p>
+        
+		<h4>WINDOWS 2000</h4>
+		  <table class="image">
+		    <tr><td><img src="images/cert.gif" alt="Win2K Certificate"/></td></tr>
+			<tr><td><strong>Fig 3.2.1</strong> Internet Explorer with Microsoft VM security warning</td></tr>
+          </table>
+		  
+		  <br/>
+				
+          <table class="image">
+		    <tr><td><img src="images/certplugin.gif" alt="Plugin Security Warning"/></td></tr>
+			<tr><td><strong>Fig 3.2.2</strong> Sun Java Plugin security warning</td></tr>
+		  </table>
+		  
+		<h4>WINDOWS XP</h4>
+		  <table class="image">
+            <tr><td><img src="images/securitytoolbar.JPG" alt="IE Security Toolbar"/></td></tr>
+            <tr><td><strong>Fig 3.2.3</strong> Internet Explorer with security warning</td></tr>
+          </table>
+		  
+		  <table class="image">
+            <tr><td><img src="images/cert_xp_sun15.JPG" alt="IE Security Toolbar"/></td></tr>
+            <tr><td><strong>Fig 3.2.4</strong> Sun Java Plugin security warning</td></tr>
+          </table>
+		  
+		  <table class="image">
+            <tr><td><img src="images/cert_xp_mvm.JPG" alt="IE Security Toolbar"/></td></tr>
+            <tr><td><strong>Fig 3.2.5</strong> Microsoft Java Plugin security warning</td></tr>
+          </table>
+		  
+		<h4>MAC OS X</h4>
+		  <table class="image">
+            <tr><td><img src="images/security_mac.jpg" alt="Security warning on Mac OSX Safari"/></td></tr>
+            <tr><td><strong>Fig 3.3</strong> Safari Browser with security warning</td></tr>
+          </table>
+		
+		  <p>Once you have accepted the certificate dialog, UnlimitedFTP will continue loading. Depending on how UnlimitedFTP was configured (See <a href="#41">Configuring UnlimitedFTP</a>) it may connect you to your FTP site automatically.</p>
+		  
+          <p>To connect manually, click on the "Connect" button. The following dialog (Fig 3.4) will be displayed prompting you for hostname, port, username and password. If you wish to use an anonymous connection click on the &quot;Anonymous&quot; checkbox to generate an anonymous username and password. If you are behind a firewall or proxy server click the &quot;Passive&quot; checkbox. Click on the &quot;Connect&quot; button to connect to the FTP server.</p>
+		
+		  <table class="image">
+            <tr><td><img src="images/connect.gif" alt="Connect Dialog"/></td></tr>
+            <tr><td><strong>Fig 3.4</strong> Connect dialog (lite and pro versions)</td></tr>
+          </table>
+		  
+		  <p>UnlimitedFTP Secure has an advanced connection dialog. It allows you to manage your connections and control security options.</p>
+		  
+		  <table class="image">
+            <tr>
+			  <td><img src="images/connectsecure.gif" alt="Secure Connect Dialog"/></td>
+			  <td><img src="images/connectsecure2.gif" alt="Secure with Advanced Options"/></td>
+			</tr>
+			<tr>
+			  <td width="250"><strong>Fig 3.5</strong> UnlimitedFTP Secure Connect dialog</td>
+			  <td width="250"><strong>Fig 3.6</strong> UnlimitedFTP Secure Connect dialog (Advanced options)</td>
+			</tr>
+		  </table>
+		  
+          <p>Once a connection has been established, the remote directory listing will be loaded with the files and directories from your FTP server.</p>
+      </div>
+	
+      <h3>3.4 Directory browsing <a name="s34" id="s34"></a></h3> 
+      <div class="indent">
+	  
+        <p>The remote and local file lists display the files and folders in your current working directories. Folders are identified by the folder icon <img src="images/folder.gif" alt="folder icon"/> and files are identified by the file icon <img src="images/file.gif" alt="file icon"/>. To see the contents of a sub folder, double click on its icon. You may return to a parent folder by clicking on the parent folder icon <img src="images/cdup.gif" alt="up directory icon"/>. The parent folder icon is shown at the top of the remote and local lists at all times for easy access.</p>
+		
+        <p>You may browse using the up/down arrow keys on your keyboard. Quickly move to a file beginning with a certain letter by pressing the first letter on your keyboard. Pressing ENTER on a folder will automatically open that folder for browsing. Pressing ENTER with a file selected will initiate an upload or download depending on whether you are browsing the local or remote directory.</p>
+		
+        <p>UnlimitedFTP provides quick access to the Desktop and My Documents folders for Windows users, or the Home and Finder folders for Mac users.</p>
+      </div>
+	  
+      <h3>3.5 Selecting files and directories<a name="s35" id="s35"></a></h3>
+      <div class="indent">
+	  
+        <p>To select a file or folder, use your mouse to click on the item in the directory listing. You may select multiple consecutive files by holding down the SHIFT key and selecting the first and last files of the range.  Alternatively, you may select multiple separate items by holding the CTRL key and clicking on each item. You may select all files in the current working directory by right-clicking and choosing the &quot;Select All&quot; Option.</p>
+      </div>
+	  
+      <h3>3.6 Deleting files and directories<a name="s36" id="s36"></a></h3>
+      <div class="indent">
+	  
+        <p>To delete one or more items in a directory, select the items you wish to delete and click on the Delete button or press the DELETE key on your keyboard. You will be asked to confirm this action. Internet Explorer users will see the familiar Recycle Bin dialog when they attempt to delete files from the local file system. These files will be recoverable after they are deleted. If you do not see the Recycle Bin dialog, file deletion will be permanent and unrecoverable. Please take care when deleting files or folders.</p>
+        
+	    <table class="image">
+		  <tr><td><img src="images/delete.gif" alt="Delete dialog"/></td></tr>
+		  <tr><td><strong>Fig 3.5</strong> Delete dialog</td></tr>
+		</table>
+	  </div>
+	  
+      <h3>3.7 Renaming files and directories<a name="s37" id="s37"></a></h3>
+      <div class="indent">
+        <p>To rename a file or directory, select the file you wish to rename and click the Rename button. The rename dialog will appear (Fig 3.6), pre-populated with the current file name. Type the new name and click &quot;Ok&quot; to confirm.</p>
+       
+		<table class="image">
+		  <tr><td><img src="images/rename.gif" alt="Rename Dialog"/></td></tr>
+		  <tr><td><strong>Fig 3.6</strong> Rename dialog</td></tr>
+		</table>
+	  </div>
+	  
+      <h3>3.8 Transferring files and directories<a name="s38" id="s38"></a></h3>
+      <div class="indent">
+	  
+        <p>To upload or download files and  directories, select the items you wish to transfer and check that the proper transfer mode is selected. (See <a href="#310">3.10 Setting transfer mode</a>). To upload selected items from your local directory listing, click on the Upload button. To download selected items from your remote directory listing, click on the Download button.</p>
+		
+        <p>Once you initiate a file transfer, a progress dialog will appear (Fig 3.7) and display the percentage complete,  the current rate of transfer, and the estimated time to completion. To cancel the  transfer click  the "Cancel" button. Canceling the transfer will not delete any files already transferred, unless you have enabled the &quot;deleteOnCancel&quot; parameter. If you restart the transfer, you will be prompted to resume any files that were not completed in the previous transfer. </p>
+		
+		<table class="image">
+		  <tr><td><img src="images/status.gif" alt="Transfer Progress"/></td></tr>
+		  <tr><td><strong>Fig 3.7</strong> Transfer progress dialog</td></tr>
+		</table>
+	  </div>
+	  
+      <h3>3.9 Creating a directory<a name="s39" id="s39"></a></h3>
+      <div class="indent">
+	  
+        <p>To create a directory, click on the Mkdir button. A dialog will be displayed prompting you for the name of the new directory. Click the &quot;Ok&quot; button to create the directory.</p>
+		
+        <table class="image">
+		  <tr><td><img src="images/create.gif" alt="Creating New Directory"/></td></tr>
+		  <tr><td><strong>Fig 3.8</strong> Make directory dialog</td></tr>
+		</table>
+	  </div>
+	  
+      <h3>3.10 Setting transfer mode<a name="s310" id="s310"></a></h3>
+      <div class="indent">
+	  
+        <p>The transfer mode may be controlled using the ASCII and BINARY transfer mode options. See <a href="#32">3.2 User interface</a>. The default transfer mode setting is BINARY. There is no real need to transfer files in ASCII mode unless you are transferring text files from one OS to another and they must remain human-readable. For example, if you wish to upload/download a .txt file that you will view with Notepad, you should transfer in ASCII mode. However, for most purposes, BINARY mode works fine.</p>
+		
+        <p>Alternatively the file transfer mode may be set by setting the mode parameter  . There are three possible transfer mode settings (ASCII,  BINARY, and AUTO). (See <a href="#43">Functionality related settings </a>)</p>
+    </div>
+      <h3>3.11 Popup menu <a name="s311" id="s311"></a> (pro and secure version only)</h3>
+      <div class="indent">
+	  
+        <p>UnlimitedFTP provides a convenient way to access various functions that are applicable to the files or folders you have selected. Simply select the files and/or folders you wish to work with, and right-click on them. You will be presented with a popup similar to the one below (Fig 3.9) . The popup will change depending on number and location of files.</p>
+       
+	    <table class="image">
+	     <tr><td><img src="images/popup.gif" alt="Right-click Popup Menu"/></td></tr>
+		 <tr><td width="125"><strong>Fig 3.9</strong> Popup menu options</td></tr>
+	    </table>
+		
+		<p>Some of the options correspond to their Button counterparts. Here is a description of the functions that are only in the right-click popup menu:</p>
+		
+		<ul>
+		  <li><strong>Download/Upload As... </strong>options will upload or download the selected file but will save it under the name you specify rather than using the current name of the file. This is useful if you know the filename already exists, and you do not wish to overwrite.</li>
+		  <li><strong>Open With... </strong>is a Windows specific option that will allow you to choose the application with which you would like to Open the selected file.</li>
+          <li><strong>Chmod (UNIX)</strong>is a Unix specific command, and allows you to set the file permissions on files on your FTP server. This is sometimes required when you upload HTML pages for a website.</li>
+          <li><strong>Command Prompt Here</strong> will open a Windows Command prompt and automatically place you in the selected directory.</li>
+          <li><strong>Windows Explorer Here</strong> will open a Windows Explorer window and automatically place you in the selected directory.</li>
+          <li><strong>Properties</strong> will display the Filename, Size, and Last modified date of the selected file.</li>
+          <li><strong>Select All</strong> will select all files in the current working directory.</li>
+          <li><strong>NOTE: </strong>To access the popup on Mac systems with a single button mouse, hold down the CTRL key when the mouse is clicked.</li>
+		</ul>
+      </div>
+	</div>
+	
+  <h2>4 Configuring UnlimitedFTP</h2>
+  <div class="indent">
+    <h3>4.1 Connection parameters<a name="s41" id="s41"></a></h3>
+      <div class="indent">
+        <p>These parameters control how UnlimitedFTP will establish the connection to the FTP server.
+Please note that some parameters are only available in certain versions. The UnlimitedFTP version that supports the particular parameter is noted under the description of each parameter.</p>
+
+		<table class="variables">
+		  <tr><th colspan="2">Connection-related Settings</th></tr>
+		  <tr>
+		    <td width="30%">server</td>
+		    <td><p>The host name or IP address of the FTP server.</p>
+				<p>Default value: &quot;&quot;<br/>
+				   Valid values: &quot;&lt;valid hostname or IP address&gt;&quot;</p>
+				<p class="green">Availability (all versions)</p>
+		    </td>
+		  </tr>
+	
+		  <tr>
+		    <td>port</td> 
+            <td><p>The port number of the FTP server. Typically, FTP uses port 21.</p> 
+                <p>Default value: &quot;21&quot;<br/>
+				   Valid values: &quot;&lt;valid port number&gt;&quot;</p>
+                <p class="green">Availability (all versions)</p>
+			</td> 
+          </tr>
+
+		  <tr> 
+            <td>user</td> 
+            <td><p>The username for the FTP server account.</p> 
+                <p>Default value: &quot;&quot;</p>
+                <p class="green">Availability (all versions)</p>
+			</td> 
+          </tr>
+		  
+		  <tr> 
+            <td>pass</td> 
+            <td><p>The password for the FTP server account.</p> 
+                <p>Default value: &quot;&quot;</p>
+                <p class="green">Availability (all versions)</p>
+			</td> 
+          </tr>
+		
+		  <tr>
+		    <td>autoconnect</td> 
+            <td><p>If this value is set to &quot;true&quot;, UnlimitedFTP will automatically connect based on the connection credentials supplied in the above parameters. The default value is &quot;false&quot;.</p> 
+                <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+                <p class="green">Availability (all versions)</p>
+			</td> 
+          </tr>
+		  
+		  <tr> 
+            <td>autoreconnect</td> 
+            <td><p>If this value is set to &quot;true&quot;, UnlimitedFTP will automatically ask the user if they would like to reconnect after a time-out has occurred, or they have been disconnected for some other reason. If &quot;autoconnect&quot; is set to true, it will log them directly in to the server. If not, the user will be presented with the Connect dialog, pre-populated with the connection info.</p> 
+                <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+                <p class="red">Availability (pro, secure)</p>
+			</td> 
+          </tr>
+		  
+		  <tr> 
+            <td>passive</td> 
+            <td><p>If set to &quot;true&quot;, all data connections will be outgoing. UnlimitedFTP works through firewalls when this value is set to &quot;true&quot;. If you are using an FTP proxy, set this value to &quot;false&quot;.</p> 
+                <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+                <p class="green">Availability (all versions)</p>
+		    </td> 
+          </tr>
+		
+		<tr> 
+          <td>encrypt</td> 
+            <td><p>If set to &quot;true&quot; you must pass encrypted user/pass/server parameters to UnlimitedFTP, which will decrypt them and perform the login. The encryption is based on a key value that is specified by the &quot;ek&quot; parameter below. To encrypt parameters you can use encrypt.html that was downloaded with UnlimitedFTP. This provides at least some measure of protection from prying eyes, and people who love to snoop through your HTML.</p> 
+              <p>Although this seems very un-secure to include the encryption algorithm along with the applet, keep in mind this is only a way to hide login credentials from users who try to view the HTML source of your page. Determined hackers will easily be able to sniff the network to retrieve user and password info regardless of the encryption done in the HTML.</p> 
+              <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+              <p class="red">Availability (pro, secure)</p>
+			</td> 
+          </tr>
+		
+		<tr> 
+          <td>ek</td> 
+          <td> <p>This parameter works in conjunction with the &quot;encrypt&quot; parameter. This is the key that is used to encode/decode the string value you pass to the user, pass, and server parameters. Here is an example configuration. In this example, the server/user/pass strings are 192.168.1.100/anonymous/uftp@unlimitedftp.com respectively. This illustrates how the parameters will look to anyone who inspects the connection values in your HTML:</p> 
+            <p>var server = &quot;8I7BLHN;8I8@5&quot;;<br/>
+               var port = &quot;21&quot;;<br/>
+               var pass = &quot;|vy&amp;[)&amp;yp*p&amp;jx#((;j,t&quot;;<br/>
+               var user = &quot;h~t$6!=$z&quot;;<br/>
+               var autoconnect = &quot;true&quot;;<br/>
+               var autoreconnect = &quot;true&quot;;<br/>
+               var passive = &quot;true&quot;; <br/>
+               var encrypt = &quot;true&quot;; <br/>
+               var ek = &quot;encryptkey&quot;;
+			</p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;string value&gt;&quot;</p>
+            <p class="red">Availability (pro, secure)</p>
+		  </td> 
+        </tr> 
+		
+		<tr> 
+        <td>connecttimeout</td> 
+          <td> <p>This value (in milliseconds) specifies how long UnlimitedFTP will try to connect to an FTP server before giving up and timing out. </p> 
+            <p>Default value: &quot;20000&quot;<br/>
+  Valid values: &quot;&lt;integer value&gt;&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+		
+		<tr> 
+        <td>sotimeout</td> 
+          <td> <p>This value (in milliseconds) specifies how long a data connection will wait to read data before giving up and timing out. </p> 
+            <p>Default value: &quot;-1&quot; means no timeout<br/>
+  Valid values: &quot;&lt;integer value&gt;&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+		
+        <tr>
+          <td>waitRetry</td>
+          <td><p>This value (in milliseconds) specifies how long UnlimitedFTP will wait, if a transfer error occurs, before it tries to reconnect and resume the transfer.</p>
+            <p>Default value: &quot;3000&quot; (3 seconds) <br/>
+  Valid values: &quot;&lt;integer value&gt;&quot; </p>
+            <p class="red">Availability (pro, secure)</p></td>
+        </tr>
+		
+        <tr>
+          <td>maxRetries</td>
+          <td><p>This value specifies how many times UnlimitedFTP will try, if a transfer error occurs, to reconnect and resume the transfer.</p>
+            <p>Default value: &quot;1&quot; <br/>
+  Valid values: &quot;&lt;integer value&gt;&quot; </p>
+            <p class="red">Availability (pro, secure) </p></td>
+        </tr>
+		
+        <tr>
+          <td>bufSizeGet</td>
+          <td><p>This value specifies the size of the transfer buffer UnlimitedFTP will use when downloading files.</p>
+            <p>Default value: &quot;256&quot; <br/>
+  Valid values: &quot;&lt;integer value&gt;&quot; </p>
+            <p class="red">Availability (pro, secure)</p></td>
+        </tr>
+		
+        <tr>
+          <td>bufSizePut</td>
+          <td><p>This value specifies the size of the transfer buffer UnlimitedFTP will use when uploading files.</p>
+            <p>Default value: &quot;512&quot; <br/>
+  Valid values: &quot;&lt;integer value&gt;&quot; </p>
+            <p class="red">Availability (pro, secure)</p></td>
+        </tr> 
+		
+        <tr> 
+        <td>useSerfo</td> 
+          <td> <p>If set to true, UnlimitedFTP will attempt to open an FTP connection through the Service Forwarding Agent at the URL specified by the &quot;SerfoLocation&quot; parameter below.</p> 
+            <p>If set to auto, UnlimitedFTP will first attempt to open a regular FTP connection, and if it fails, it will retry through the Service Forwarding Agent at the URL specified by the &quot;SerfoLocation&quot; parameter below.</p> 
+            <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;, &quot;auto&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+		
+		<tr> 
+        <td>SerfoLocation</td> 
+          <td> <p>The location of the UnlimitedFTP Servlet. Please consult <a href="SecureFTPInstall.txt">SecureFTPInstall.txt</a> for more information.</p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;valid URL&gt;&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+		
+        <tr>
+          <td>enableHTTPResume</td>
+          <td><p>When &quot;userSerfo&quot; is set to &quot;true&quot;, this value allows you to force uploads to first be saved on the web server before being transferred to the FTP server. This is useful if your FTP server executes scripts or commands that rely on the STOR command. The default functionality, &quot;enableHTTPResume&quot; set to &quot;true&quot;, is to stream files directly to your FTP server using a series of APPE commands rather than one STOR command. This may cause your FTP server to execute a script before the file is fully transferred.</p>
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td>
+        </tr> 
+      </table>
+    </div>
+
+    <h3>4.2 Secure FTP settings (UnlimitedFTP Secure only)<a name="s42" id="s42"></a></h3>
+	<div class="indent">
+    <table class="variables">
+      <tr><th colspan="2">Secure FTP Settings</th></tr>
+      <tr><td width="30%">protocol<br/></td>
+        <td>
+          <p>UnlimitedFTP Secure allows you to choose between four protocols. You can connect via regular FTP, SFTP (SSH2) (explained in <a href="#59">Section 5.9</a>), FTPS Implicit, or FTPS Explicit  (explained in <a href="#58">Section 5.8 </a>). </p>
+          <p>Default value: &quot;FTP&quot;<br/>
+              Valid values: &quot;FTP&quot;, &quot;SFTP&quot;, &quot;FTPS&quot;</p>
+          <p class="red">Availability (secure)</p></td>
+      </tr>
+      <tr>
+		<td>ftpstype</td>
+	    <td>
+	      <p>This parameter applies only if the &quot;protocol&quot; parameter is set to &quot;FTPS&quot;. The FTPS protocol has a couple of variations. the first is called Implicit and generally runs on port 990, and the second is Explicit which generally runs on port 21. This is explained in more detail in <a href="#58">Section 5.8 </a></p>
+		  <p>Default value: &quot;&quot;<br/>
+		  Valid values: &quot;EXPLICIT&quot; or &quot;IMPLICIT&quot; </p>
+		  <p class="red">Availability (secure)</p></td>
+	  </tr>
+	  <tr>
+		<td>securedata</td>
+		<td>
+		  <p>This parameter applies only if the &quot;protocol&quot; parameter is set to &quot;FTPS&quot;. When using an Explicit FTP connection, there are a couple of  ways to establish the data connection. Implicit will assume all data connections are to be secured, while Explicit will issue a PROT P command to explicitly tell the FTP server it should secure the Data connection. You can also turn off data connection security by setting this value to &quot;NONE&quot;. This is explained in more detail in <a href="#58">Section 5.8 </a></p>
+		  <p>Default value: &quot;EXPLICIT&quot;<br/>
+Valid values: &quot;NONE&quot;, &quot;EXPLICIT&quot; or &quot;IMPLICIT&quot; </p>
+		  <p class="red">Availability (secure)</p></td>
+	  </tr>
+	  <tr>
+		<td>authCommand</td>
+		<td>
+		  <p>This parameter applies only if the &quot;protocol&quot; parameter is set to &quot;FTPS&quot;. When using an Explicit FTP connection, there are a couple of ways to establish the control connection. You can connect using SSL or TLS. This is explained in more detail in <a href="#58">Section 5.8 </a></p>
+		  <p>Default value: &quot;AUTH_TLS&quot;<br/>
+		  Valid values: &quot;AUTH_SSL&quot; or &quot;AUTH_TLS&quot;</p>
+		  <p class="red">Availability (secure)</p></td>
+	  </tr>
+	  <tr>
+	    <td>pkLoc</td>
+	    <td><p>When the applet is in SFTP mode, this parameter allows you to specify the location of a Private Key file for connecting to SFTP servers that allow Private Key Authentication. Note that the server must already have the public key present in it's authorized_keys file. The parameter may optionally be set via the connection dialog. </p>
+	  	  <p>Since this parameter will use a static value for all users, it is only useful if the private key is located in the same path on each of the end user computers.  </p>
+		  <p>Default value: &quot;&quot;<br/>
+Valid values: &quot;&lt;Fully qualified path to a private key on the local file system&gt;&quot;</p>
+		  <p class="red">Availability (secure)</p></td>
+	  </tr>
+	  <tr>
+	    <td>pkPass</td>
+	    <td><p>If you specify a private key using the pkLoc parameter, and it is password protected, this parameter allows you to hard code a password. </p>
+	    <p>Default value: &quot;&quot;<br/>
+Valid values: &quot;&lt;password for private key set in pkLoc parameter&gt;&quot;</p>
+	    <p class="red">Availability (secure)</p></td>
+	  </tr>
+	</table>
+	</div>
+
+    <h3>4.3 Proxy settings <a name="s43" id="s43"></a> (pro and secure version only)</h3>
+    <div class="indent">
+      <p>These parameters allow you to configure UnlimitedFTP to connect through a SOCKS4 or FTP proxy server. Please contact your network administrator or ISP to determine if you use a proxy server for FTP. </p>
+    
+	  <table class="variables"> 
+        <tr><th colspan="2">Proxy server related settings. (Internet Explorer Only)</th></tr> 
+        <tr> 
+          <td width="30%">autodetectproxy</td> 
+          <td> <p>If this value is set to &quot;true&quot;, UnlimitedFTP will automatically attempt to detect Internet Explorer's Proxy setup and use it when connecting to FTP servers. This will detect both SOCKS 4 proxy settings, and FTP proxy settings.</p> 
+            <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr> 
+		<tr> 
+          <td>socksproxy</td> 
+          <td> <p>If this value is set to &quot;true&quot;, UnlimitedFTP will use the SOCKS proxy server and port specified by the &quot;socksProxyHost&quot; and &quot;socksProxyPort&quot; parameters.</p> 
+            <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+		<tr> 
+          <td>socksProxyHost</td> 
+          <td> <p>SOCKS proxy server location.</p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;valid hostname or IP address&gt;&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+		<tr> 
+          <td>socksProxyPort</td> 
+          <td> <p>SOCKS proxy server port.</p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;valid port number&gt;&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+		<tr> 
+          <td>ftpproxy</td> 
+          <td> <p>If this value is set to &quot;true&quot; and socksproxy is set to &quot;false&quot;, UnlimitedFTP will use the FTP proxy server and port specified by the &quot;ftpProxyHost&quot; and &quot;ftpProxyPort&quot; parameters.</p> 
+            <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+		<tr> 
+          <td>ftpProxyHost</td> 
+          <td> <p>FTP proxy server location.</p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;valid hostname or IP address&gt;&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+		<tr> 
+          <td>ftpProxyPort</td> 
+          <td> <p>FTP proxy server port.</p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;valid port number&gt;&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr> 
+      </table>
+    </div>
+
+    <h3 >4.4 Functionality related settings <a name="s44" id="s44"></a></h3>
+    <div class="indent">
+	
+      <p>These parameters determine how UnlimitedFTP will behave under certain circumstances after a connection is established. Please read the descriptions carefully before attempting to use these settings.</p>
+    
+	  <table class="variables"> 
+      <tr><th colspan="2">Functionality related settings</th></tr>
+	  <tr><td width="30%">ascbin</td> 
+          <td> <p>Can be either &quot;asc&quot;,&quot;bin&quot; or &quot;auto&quot;, you can set the default file transfer mode. When this parameter is set to auto, UnlimitedFTP will set the transfer mode automatically by comparing the file extension to the list of file extensions specified in the &quot;asciiextensions&quot; parameter below. </p> 
+            <p>Default value: &quot;bin&quot;<br/>
+  Valid values: &quot;bin&quot;, &quot;asc&quot;, &quot;auto&quot;, and &quot;macbin&quot;(MacOS only)</p>
+            <p class="green">Availability (all versions)</p></td> 
+      </tr>
+	  <tr> 
+        <td>asciiextensions</td> 
+        <td> <p>Transfer all the files with these extensions in Ascii Mode. Used in conjunction with &quot;ascbin&quot; parameter when it is set to &quot;auto&quot;.</p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;comma delimited list of extensions&gt;&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+	  <tr> 
+        <td>extensions</td> 
+        <td> <p>Only files with these extensions will be displayed/affected by UnlimitedFTP. </p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;comma delimited list of extensions&gt;&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+	  <tr> 
+        <td>exclude</td> 
+        <td> <p>Allows you to exclude  files or directories whose names contain strings specified in this parameter. For example, if you wanted to exclude all files starting with the letters &quot;re&quot;, exclude the Program Files directory, and also hide the D:\\ drive this parameter would be set like this: &quot;*re*,Program Files,D:\\&quot;. This parameter also allows you to use wildcards to exclude files of a certain pattern. For example, to exclude files that are numbered file1_of_10.txt you could set this parameter to &quot;file*_of_*.txt&quot;. See <a href="#56">Section 5.6</a> for more details.</p> 
+             <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;comma delimited list of strings&gt;&quot;</p>
+             <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+      <tr>
+        <td>invertExclude</td>
+        <td><p>If set to &quot;true&quot;, UnlimitedFTP will treat the &quot;exclude&quot; parameter as an &quot;include&quot; parameter. See <a href="#56">Section 5.6</a> for more details. </p>
+            <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td>
+      </tr> 
+      <tr> 
+        <td>lockinitialdir</td> 
+        <td> <p>If set to &quot;true&quot;, UnlimitedFTP locks the user to the initial directory, and its sub-directories, preventing the user from navigating up the hierarchy. This only applies to the remote directory.</p> 
+            <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+	  <tr> 
+        <td>localdir</td> 
+        <td> <p>UnlimitedFTP will automatically switch to this local directory when UnlimitedFTP initializes. Example would be &quot;c:\\windows&quot; or &quot;/etc&quot;. There are also 3 special starting directories that are platform independent. They are&quot;HOME&quot;, &quot;DESKTOP&quot; and &quot;ROOT&quot;. Note that for Windows paths, you must use a double back slash to seperate paths. i.e. use \\ instead of \. </p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;valid local directory&gt;&quot;, &quot;HOME&quot;, &quot;DESKTOP&quot;, &quot;ROOT&quot; </p>
+            <p class="green">Availability (all versions)</p></td> 
+      </tr>
+	  <tr> 
+        <td>remotedir</td> 
+        <td> <p>UnlimitedFTP will automatically switch to this directory on the FTP server after a successful login. Example would be &quot;/initialdir&quot;.</p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;valid remote directory&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+      </tr>
+	  <tr> 
+        <td>createdirectoryonconnect</td> 
+        <td> <p>This parameter specifies a remote directory that should be created when an FTP connection is established.  Hint:  If you are developing a web application
+		  with dynamic languages, sometimes it is helpful to populate this with the same value as the remotedir variable.</p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;valid remote directory&gt;&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+	  <tr> 
+        <td>enableCookies</td> 
+        <td> <p>UnlimitedFTP will store cookies to remember the last site and username if this value is set to &quot;true&quot;.</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+	  <tr> 
+        <td>doubleClickTransfer</td> 
+        <td> <p>If this value is set to &quot;true&quot;, double clicking on a file will initiate a transfer of the selected file(s). </p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+	  <tr> 
+        <td>enablerightclick</td> 
+        <td> <p>If this value is set to false, users will not be able to right click on files and execute the available options for that file.</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+	  <tr>
+        <td>enablekeyboardshortcuts</td>
+        <td><p>If set to &quot;false&quot;, All keyboard shortcuts will be disabled. </p>
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td>
+      </tr>
+      <tr>
+	    <td>confirmoverwrite</td> 
+        <td> <p>If this value is set to &quot;true&quot;, UnlimitedFTP will prompt you if the file(s) already exist when a transfer is attempted. You will have the choice to overwrite if you want to. If it is set to false, UnlimitedFTP will always overwrite.</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+      <tr>
+        <td>confirmTransfer</td>
+        <td><p>If set to &quot;true&quot;, UnlimitedFTP will prompt with a confirmation dialog before every upload or download to confirm the target directory. </p>
+            <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot; </p>
+            <p class="red">Availability (pro, secure)</p></td>
+      </tr>
+	  <tr> 
+        <td>syncpriority</td> 
+        <td> <p>While using the &quot;Sync&quot; button, if a file exists on both the local and remote file system, this parameter determines which file is considered to be the master file. The other file will be overwritten. If the value is set to &quot;local&quot;, any remote file that exists on the local side as well, will be overwritten by the local version.</p> 
+            <p>Default value: &quot;local&quot;<br/>
+  Valid values: &quot;local&quot;, &quot;remote&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+	  <tr> 
+        <td>incremental</td> 
+          <td> <p>If files have not been modified they will not be transferred. This is determined by comparing the size of the files, and optionally the date/time of modification of the files. If you want to use date/time you must set the &quot;incdatetime&quot; to &quot;true&quot;.</p> 
+            <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+	  <tr> 
+        <td>incdatetime</td> 
+          <td> <p>When doing incremental transfers, this parameter determines whether to use a date/time stamp to compare files. This is optional because the date/time stamp can vary greatly between the local time on your PC and the time on the FTP server. For this reason, when using this feature, you should also use the &quot;timezonecomp&quot; parameter to compensate for differences in time between the local and remote file systems.</p> 
+            <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+	  <tr> 
+        <td>timezonecomp</td> 
+        <td> <p>When using incremental and incdatetime, timezonecomp is a value in minutes that specifies a time difference between the local file system, and the remote file system. For example, if you are in  New York, and you are connecting to  an FTP server in Los Angeles, you would set this value to -180 to compensate for the time difference because LA is 3 hours (180 minutes) behind NY time. Conversely, if the FTP server is located in NY and you are in LA, the value should be set to 180 because NY is three hours ahead.</p> 
+            <p>Default value: &quot;0&quot;<br/>
+  Valid values: &lt;integer value in minutes&gt;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+	  <tr> 
+        <td>selectalllocal </td> 
+        <td> <p>All files in the initial local directory will be selected when UnlimitedFTP initializes. </p> 
+            <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;
+            <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+	  <tr> 
+        <td>selectallremote</td> 
+        <td> <p>All files in the initial remote directory will be selected when UnlimitedFTP connects successfully to an FTP server.</p> 
+            <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;
+            <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+      <tr>
+        <td>selectfileremote</td>
+        <td><p>The specified file  will be selected when UnlimitedFTP connects successfully to an FTP server.</p>
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;valid filename&gt;&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td>
+      </tr> 
+      <tr> 
+        <td>autoupload</td> 
+        <td> <p>Used in conjunction with &quot;selectalllocal&quot;, this parameter allows you to automatically upload files. This parameter is only functional when UnlimitedFTP is licensed.</p> 
+            <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+	  <tr> 
+        <td>autodownload</td> 
+        <td> <p>Used in conjunction with &quot;selectallremote&quot;, this parameter allows you to automatically download files. This parameter is only functional when UnlimitedFTP is licensed.</p> 
+            <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+	  <tr> 
+        <td>autoallo</td> 
+        <td><p>If set to &quot;true&quot;, UnlimitedFTP will send an ALLO commands before each upload. If the FTp server implements the ALLO command, this allows you to ensure there is enough disk space to accommodate the file being uploaded. If the ALLO command is not implemented, this value is ignored. </p>
+            <p>Default value: &quot;false&quot;<br/>
+                Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+	  <tr> 
+        <td>hostsAllowed</td>
+        <td><p>This parameter allows you to limit the hosts and IPs UnlimitedFTP is allowed to connect to. You can list individual IPs/domains, or you can use wildcards to cover subdomains, subnets, etc... For example, &quot;192.168.1.*,*.utechsoft.com&quot; would limit connections to any IP that starts with 192.168.1 and any subdomain of utechsoft.com</p>
+            <p>Default value: &quot;&quot;<br/>
+                Valid values: &quot;&lt;comma delimited list of URLs, wildcards are allowed&gt;&quot; </p>
+            <p class="red">Availability (pro, secure)</p></td>
+      </tr>
+      <tr>
+        <td>totalProgress</td>
+        <td><p>UnlimitedFTP can show the progress of an entire upload, or progress of individual files. By default, the progress of the entire upload is shown. </p>
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot; </p>
+            <p class="red">Availability (pro, secure)</p></td>
+      </tr>
+      <tr>
+        <td>enableResume</td>
+        <td><p>This parameter allows you to control whether UnlimitedFTP allows transfers to be resumed. If set to &quot;true&quot;, the user will be prompted to resume if possible, &quot;false&quot;, the user can not resume, and &quot;auto&quot;, UnlimitedFTP will resume whenever possible without asking. </p>
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;, &quot;auto&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td>
+      </tr>
+	  <tr> 
+        <td>deleteoncancel</td> 
+          <td>If set to true, partially transferred files will automatically be deleted when user cancels transfer.  
+            <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot; </p>
+            <p class="red">Availability (pro, secure)</p></td> 
+      </tr>
+      <tr>
+        <td>customFileOptions</td>
+        <td><p>This parameter allows you to customize the right click options for files in the remote list. See <a href="#55">Section 5.5</a> for more details. </p>
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;label1&gt;|&lt;valid URL1&gt;,&lt;label2&gt;|&lt;valid URL2&gt;, etc... &quot;</p>
+            <p class="red">Availability (pro, secure)</p></td>
+      </tr>
+      <tr>
+        <td>customDirOptions</td>
+        <td><p>This parameter allows you to customize the right click options for directories in the remote list. See <a href="#55">Section 5.5</a> for more details. </p>
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;label1&gt;|&lt;valid URL1&gt;,&lt;label2&gt;|&lt;valid URL2&gt;, etc... &quot;</p>
+            <p class="red">Availability (pro, secure)</p></td>
+      </tr>
+      <tr>
+        <td>sendLogsToURL</td>
+        <td><p>If set to a valid URL,  UnlimitedFTP will do an HTTP POST to the specified URL with a log of the FTP session when the applet is exited (browser closed, or page unloaded). The POST will contain a parameter called &quot;logs&quot;, and the value will be the FTP session log. </p>
+            <p>Default value: &quot;&quot;<br/>
+                Valid values: &quot;&lt;valid URL&gt;&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td>
+      </tr>
+      <tr>
+        <td>preserveModificationTime</td>
+        <td><p>If set to &quot;true&quot;, after each successful file upload, UnlimitedFTP will issue an MDTM command to synchronize the file's timestamp on the FTP server with the file's timestamp on the local file system.</p>
+            <p>NOTE: This feature is not supported on all FTP server software. Check your servers documentation for more information. </p>
+            <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;&lt;valid URL&gt;&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td>
+      </tr>
+      <tr>
+        <td>removeAccentsAndQuotes</td>
+        <td><p>If set to &quot;true&quot;, filenames at the destination are automatically created without accented characters or quotation marks.</p>
+            <p>Default value: &quot;&quot;<br/>
+                Valid values: &quot;&lt;valid URL&gt;&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td>
+      </tr>
+      <tr>
+        <td>removeSpaces</td>
+        <td><p>If set to &quot;true&quot;, filenames at the destination are automatically created without any spaces.</p>
+            <p>Default value: &quot;&quot;<br/>
+                Valid values: &quot;&lt;valid URL&gt;&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td>
+      </tr>
+	  <tr> 
+        <td>helpLocation</td> 
+        <td> <p>When the &quot;Help&quot; button is pressed, it will open a new browser window and is sent to the URL specified.</p> 
+            <p>Default value: &quot;documentation.html&quot;<br/>
+  Valid values: &quot;&lt;valid URL&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+      </tr>
+    </table>
+	</div>
+		
+    <h3 >4.5 Color settings <a name="s45" id="s45"></a></h3>
+    <div class="indent">	
+      <p>These parameters control the various colors of the UnlimitedFTP interface. They allow you to blend the color scheme of UnlimitedFTP with that of your existing web page. </p>
+	  <table class="variables">
+	    <tr><th colspan="2">Color related settings</th></tr>
+        <tr><td width="30%">background</td> 
+          <td> <p>Allows you to change the background of the applet using comma seperated, standard RGB (Red, Green, Blue) values. For example <br/>
+            white = 255,255,255</p> 
+            <p>Default value: &quot;255,255,255&quot;<br/>
+  Valid values: &quot;&lt;valid RGB values between 0 and 255&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr>
+        <tr> 
+          <td>buttonTextColorOnMouseOver</td> 
+          <td> <p>The color of the text on the buttons when the mouse moves over them.</p> 
+            <p>Default value: &quot;255,255,255&quot;<br/>
+  Valid values: &quot;&lt;valid RGB values between 0 and 255&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr>
+	    <tr> 
+          <td>buttonTextColor</td> 
+          <td> <p>The color of the text on the buttons.</p> 
+            <p>Default value: &quot;0,0,0&quot;<br/>
+  Valid values: &quot;&lt;valid RGB values between 0 and 255&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr>
+	    <tr> 
+          <td>buttonColorOnMouseOver</td> 
+          <td> <p>The background color of the buttons when the mouse moves over them.</p> 
+            <p>Default value: &quot;10,50,10&quot;<br/>
+  Valid values: &quot;&lt;valid RGB values between 0 and 255&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr>
+	    <tr> 
+          <td>buttonbackground</td> 
+          <td> <p>The background color of the buttons.</p> 
+            <p>Default value: &quot;81,132,81&quot;<br/>
+  Valid values: &quot;&lt;valid RGB values between 0 and 255&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr>
+	    <tr> 
+          <td>headerTextColor</td> 
+          <td> <p>The color of the local and remote list headers.</p> 
+            <p>Default value: &quot;0,0,255&quot;<br/>
+  Valid values: &quot;&lt;valid RGB values between 0 and 255&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr>
+	    <tr> 
+          <td>headerBackgroundColor</td> 
+          <td> <p>The background color of the local and remote list headers.</p> 
+            <p>Default value: &lt;defaults to color specified in &quot;background&quot; parameter&gt;<br/>
+  Valid values: &quot;&lt;valid RGB values between 0 and 255&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr>
+	    <tr> 
+          <td>drivesForegroundColor</td> 
+          <td> <p>The color of the drive selection combo box text in the Windows version of UnlimitedFTP.</p> 
+            <p>Default value: &quot;0,0,0&quot;<br/>
+  Valid values: &quot;&lt;valid RGB values between 0 and 255&gt;&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+	    <tr> 
+          <td>drivesBackgroundColor</td> 
+          <td> <p>The color of the drive selection combo box background in the Windows version of UnlimitedFTP.</p> 
+            <p></p> 
+            <p>Default value: &quot;255,255,255&quot;<br/>
+  Valid values: &quot;&lt;valid RGB values between 0 and 255&gt;&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+	    <tr> 
+          <td>ascBinTextColor</td> 
+          <td> <p>The ASCII/BINARY (Windows/Unix) and TEXT/DATA/MACBINARY (Mac) radio buttons text.</p> 
+            <p>Default value: &quot;0,0,0&quot;<br/>
+  Valid values: &quot;&lt;valid RGB values between 0 and 255&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr>
+      </table>
+    </div>
+
+    <h3 >4.6 Interface and layout settings <a name="s46" id="s46"></a></h3>
+    <div class="indent">
+      <p>These parameters allow you to adjust, add, and remove various elements of UnlimitedFTPs user interface. This allows you to add/remove various functions that you do not want  the users of UnlimitedFTP to have access to.</p>
+      <table class="variables">
+	    <tr><th colspan="2">Interface and Layout related settings</th></tr>
+		<tr> 
+          <td width="30%">width</td> 
+          <td><p>Default value: &quot;600&quot;<br/>
+                Valid values: &quot;&lt;integer value (in pixels)&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr>
+	    <tr> 
+          <td>height</td> 
+          <td><p>Default value: &quot;480&quot;<br/>
+                Valid values: &quot;&lt;integer value (in pixels)&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr>
+	    <tr><td>language</td> 
+          <td> <p>UnlimitedFTP allows you to customize the language of the text on the interface. To do this, edit the contents of &quot;lang_en.txt&quot; which is included in the download archive. Save the file with an appropriate language code. Example for French might be &quot;lang_fr.txt&quot;. This parameter should then be set to &quot;fr&quot;.</p> 
+            <p>Default value: &quot;en&quot;<br/>
+  Valid values: &quot;&lt;language code&gt;&quot; - There must also be a file defined lang_&lt;language code&gt;.txt in the same directory as unlimitedftp.jar, and utechsoft.comb.</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr>
+	    <tr> 
+          <td>classicfilelist</td> 
+          <td> <p>UnlimitedFTP uses a custom file list that is sometimes slow on some platforms. If this becomes a problem, this value should be set to &quot;true&quot; and UnlimitedFTP will use a simplified file list with no icons or graphics. This option will only function on Mac OS 9, and in Netscape 4.x's default VM. Enabling this feature will override the &quot;showsizeanddate&quot; parameter on these platforms. </p> 
+            <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+	    <tr> 
+          <td>useToolbar</td> 
+          <td> <p>Toggle between the toolbar-based GUI (new as of v2.9) and the legacy side button GUI.  By default, the newer UI is enabled.</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+	    <tr> 
+          <td>useBottomToolbar</td> 
+          <td> <p>Toggle between the streamlined toolbar at the bottom of the applet (new as of v2.9) and the legacy buttons which include an &ldquo;upload&rdquo; and &ldquo;download&rdquo; buttons.  By default, the new UI is used.</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+	    <tr> 
+          <td>LocalOptions</td> 
+          <td> <p>If this value is set to &quot;false&quot; all of the local buttons will become invisible. </p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;, list of 7 1's and 0'1<p/>
+Each comma-separated value "1,1,1,1,1,1,1" represents a button and right-click menu item. These are (in order); Delete, Open, DirInfo, Refresh, Rename, ChangeDir, MakeDir. When set to a 0 this item will not appear. All 7 values must be present.</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+	    <tr> 
+          <td>RemoteOptions</td> 
+          <td> <p>If this value is set to &quot;false&quot; all of the remote buttons will become invisible.</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;, list of 8 1's and 0'1<p/>
+Each comma-separated value "1,1,1,1,1,1,1,1" represents a button and right-click menu item. These are (in order); Delete, Open, DirInfo, Refresh, Rename, ChangeDir, MakeDir, Site (or CHMOD in the right-click menu). When set to a 0 this item will not appear. All 8 values must be present.</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+        <tr> 
+          <td>remoteheader</td> 
+          <td> <p>Specifies the text to display above the remote file list when connected to an FTP server.</p> 
+            <p>Default value: The hostname or IP of the remote server<br/>
+  Valid values: &quot;Any text you want&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+	    <tr> 
+          <td>stretchButtons</td> 
+          <td> <p>If set to true, buttons will be stretched to fit the size of the lists. Creates a more uniform looking interface. If set to false, the buttons will take their default size.</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+	    <tr> 
+          <td>display</td> 
+          <td> <p>If this value is set to &quot;false&quot; the FTP message display will become invisible.</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+	    <tr> 
+          <td>showsizeanddate</td> 
+          <td>If set to true, the browse dialog will display file size and date attributes as well as the file name.  
+            <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot; </p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+        <tr> 
+          <td>showascbin</td> 
+          <td> <p>If this value is set to &quot;false&quot;, UnlimitedFTP will hide the ASCII/BINARY or TEXT/DATA/MACBINARY radio buttons.</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+	    <tr> 
+          <td>showhelpbutton</td> 
+          <td> <p>Setting this value to &quot;false&quot; will hide the &quot;Help&quot; button.</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+	    <tr> 
+          <td>showputbutton</td> 
+          <td> <p>Setting this value to &quot;false&quot; will hide the &quot;Upload&quot; button.</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+	    <tr> 
+          <td>showgetbutton</td> 
+          <td> <p>Setting this value to &quot;false&quot; will hide the &quot;Download&quot; button.</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+	    <tr> 
+          <td>showsyncbutton</td> 
+          <td> <p>Setting this value to &quot;false&quot; will hide the &quot;Sync&quot; button.</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+	    <tr> 
+          <td>showaboutbutton</td> 
+          <td> <p>Setting this value to &quot;false&quot; will hide the &quot;About&quot; button.</p> 
+            <p>NOTE: This parameter will only work if you have a licensed version of Unlimited FTP</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+        <tr>
+          <td>showconnectbutton</td>
+          <td><p>Setting this value to &quot;false&quot; will hide the &quot;Connect&quot; button.</p>
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td>
+        </tr>
+        <tr>
+          <td>showdisconnectbutton </td>
+          <td><p>Setting this value to &quot;false&quot; will hide the &quot;Disconnect&quot; button.</p>
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td>
+        </tr> 
+        <tr> 
+          <td>showlocallist</td> 
+          <td> <p>Setting this value to &quot;false&quot; will hide the local file list and all of the local buttons.</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+	    <tr> 
+          <td>showremotelist</td> 
+          <td><p>Setting this value to &quot;false&quot; will hide the remote file list and all of the remote buttons.</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr>
+	    <tr> 
+          <td>showSizeInKB</td>
+          <td><p>If set to true, and &quot;showsizeanddate&quot; is also set to true, sizes of files will be displayed in KB rather than in bytes.</p>
+              <p>Default value: &quot;false&quot;<br/>
+                Valid values: &quot;true&quot;, &quot;false&quot; </p>
+              <p class="red">Availability (pro, secure)</p></td>
+        </tr>
+	    <tr> 
+          <td>showlocaladdressbar</td> 
+          <td> <p>Setting this value to &quot;false&quot; will hide area above the local file list that displays the current path info.</p> 
+             <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+             <p class="red">Availability (pro, secure)</p></td> 
+        </tr> 
+        <tr> 
+          <td>showremoteaddressbar</td> 
+          <td> <p>Setting this value to &quot;false&quot; will hide area above the remote file list that displays the current path info.</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td> 
+        </tr> 
+        <tr>
+          <td>showFileInfoBar</td>
+          <td><p>If set to &quot;true&quot;, UnlimitedFTP will display the Filename, Date, and Size of the currently selected file below the appropriate file list. </p>
+            <p>Default value: &quot;false&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td>
+        </tr>
+        <tr>
+          <td>showStatusBar</td>
+          <td><p>If set to &quot;true&quot;, UnlimitedFTP will display a status bar that indicated whether the client is currently connected/disconnected and whether the current connection is secure.</p>
+            <p>Default value: &quot;false&quot;<br/>
+                Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td>
+        </tr>
+		<tr>
+          <td>showTree</td>
+          <td><p>If set to &quot;false&quot;, only the content of the current directory is shown in the file list, instead of an expanded directory tree.</p>
+            <p>Default value: &quot;true&quot;<br/>
+                Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (pro, secure)</p></td>
+        </tr>
+	  </table>
+    </div>
+	
+  	<h3>4.7 Connect dialog parameters<a name="s47" id="s47"></a> (secure version only)</h3>
+    <div class="indent">
+      <p>These parameters allow you to configure the options that are presented to the user via the connect dialog of UnlimitedFTP Secure.  Note: the connect dialog will not appear
+	    if autoconnect is set to true and all the relevent credentials (server, port, user, pass) are sent correctly to the applet.</p>
+ 	  <table class="variables"> 
+        <tr><th colspan="2">Connect Dialog options</th></tr> 
+        <tr> 
+          <td width="30%">showAdvancedTab</td> 
+          <td> <p>Show or hide the Advanced Tab and its options (Protocol, Port, Passive, Encryption, Auth Command)</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (secure only)</p></td> 
+        </tr> 
+		<tr> 
+          <td>showSitename</td> 
+          <td> <p>Show an arbitrary user-defined name, used in conjunction with the variable &ldquo;showSaveConnection&rdquo; to allow end-users to store connections for future use.</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (secure only)</p></td> 
+        </tr>
+		<tr> 
+          <td>showHostname</td> 
+          <td> <p>Show a text field for specifying the hostname (domain name or IP of FTP server).  If a value is set in the variable &ldquo;server&rdquo;, it will appear here.</p> 
+           <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (secure only)</p></td> 
+        </tr>
+		<tr> 
+          <td>showUsername</td> 
+          <td> <p>Show a text field for specifying username portion of FTP credentials. If a value is set in the variable &ldquo;user&rdquo;, it will appear here.</p> 
+           <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (secure only)</p></td> 
+        </tr>
+		<tr> 
+          <td>showPassword</td> 
+          <td> <p>Show a text field for specifying the password portion of FTP credentials. Password characters are obscured by a bullet character. If a value is set in the variable &ldquo;pass&rdquo;, a series of bullet characters will appear here.</p> 
+            <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (secure only)</p></td> 
+        </tr>
+		<tr> 
+          <td>showAnonymous</td> 
+          <td> <p>Show a checkbox to enable an attempt to authenticate as an anonymous user. By default, the box is not checked. Checking the box automatically changes the login credentials to use standard anonymous settings.</p> 
+           <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (secure only)</p></td> 
+        </tr>
+		<tr> 
+          <td>showSaveConnection</td> 
+          <td> <p>Show a checkbox to allow saving the connection settings.  By default, the box is not checked.  Checking the box and then making a successful connection will save the details for the future, using the name they have set in the &ldquo;Site Name&rdquo; field.</p> 
+           <p>Default value: &quot;true&quot;<br/>
+  Valid values: &quot;true&quot;, &quot;false&quot;</p>
+            <p class="red">Availability (secure only)</p></td> 
+        </tr> 
+      </table>
+    </div>
+    <h3>4.8 Error URL parameters<a name="s48" id="s48"></a></h3>
+    <div class="indent">
+      <p>These parameters allow you to define your own error pages for different types of errors that can occur when a user attempts to load UnlimitedFTP. </p>
+	  
+      <table class="variables"> 
+        <tr><th colspan="2">Customizable Error Pages</th></tr>
+        <tr> 
+        <td width="30%">rejectPermissionURL</td> 
+          <td><p>This error page will be called when the user rejects the security certificate or does not grant the permissions required for UnlimitedFTP to run. </p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;valid URL&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr>
+		<tr><td> errNavWin <br/> 
+            </td> 
+          <td> <p>This error page will be called when the user is running Windows, and their Netscape version is not sufficient to run UnlimitedFTP.</p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;valid URL&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr> <tr> 
+        <td>errIEWin</td> 
+          <td> <p>This error page will be called when the user is running Windows, and their Internet Explorer version is not sufficient to run UnlimitedFTP.</p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;valid URL&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr> 
+		 <tr> 
+        <td>errOperaWin</td> 
+          <td> <p>This error page will be called when the user is running Opera browser, and the version is not sufficient to run UnlimitedFTP.</p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;valid URL&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr> 
+		<tr> 
+        <td>errIEWinVM</td> 
+          <td> <p>This error page will be called when the user is running Windows with Internet Explorer and the Microsoft VM for Java is not sufficient to run UnlimitedFTP.</p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;valid URL&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr> <tr> 
+        <td>errNavUnix</td> 
+          <td> <p>This error page will be called when the user is running Unix, and their Netscape version is not sufficient to run UnlimitedFTP.</p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;valid URL&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr> <tr> 
+        <td>errIEMac</td> 
+          <td> <p>This error page will be called when the user is running Mac OS, and their Internet Explorer version is not sufficient to run UnlimitedFTP.</p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;valid URL&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr> <tr> 
+        <td>errNavMac</td> 
+          <td> <p>This error page will be called when the user is running Mac OS, and their Netscape version is not sufficient to run UnlimitedFTP.</p> 
+            <p>Default value: &quot;&quot;<br/>
+  Valid values: &quot;&lt;valid URL&gt;&quot;</p>
+            <p class="green">Availability (all versions)</p></td> 
+        </tr></table>
+	</div>
+	
+    <h3 >4.9 Language settings and localization<a name="s49" id="s49"></a></h3>
+    <div class="indent">
+      <p>UnlimitedFTP's language settings allow you to customize  the text on the applet. This can be accomplished by modifying the text elements provided in the lang_en.txt file. Alternatively if you wish to provide support for multiple languages you may create a separate language file for each language you wish to support. Using this method you can dynamically load the language file based on the "language" parameter provided to UnlimitedFTP. </p>
+      <p>For example, if you wish to create a language file that contains the text elements for the German language then follow these steps: </p>
+      <ol>
+        <li>Copy the default lang_en.txt file to a new file named lang_de.txt</li>
+        <li>Update the text element values in lang_de.txt providing the German equivalents. </li>
+        <li>Adjust the  language parameter of UnlimitedFTP with the value of "de". </li>
+        <li>Upload  lang_de.txt and the modified uftpscript.js files to the web server directory that contains UnlimitedFTP. </li>
+      </ol>
+      <p>Note: If no language parameter is provided then the default lang_en.txt file is used. If a custom language file is used, and it is missing any entries, the corresponding entries from the default file will be used. </p>
+    </div>
+  </div>
+  <h2 >5 Advanced Features
+  </h2>
+  <div class="indent">
+    <h3>5.1 Disabling the unlicensed banner and hiding the About button <a name="s51" id="s51"></a></h3>
+      <div class="indent">
+        <p>To remove the unlicensed  banner, or hide the About button, we ask that you purchase a license of UnlimitedFTP. </p>
+        <p>For pricing on UnlimitedFTP go to <a href="http://www.utechsoft.com/products/unlimitedftp/professional/pricing.html">http://www.utechsoft.com/products/unlimitedftp/professional/pricing.html</a></p>
+      </div>
+      <h3>5.2 Performing automatic login<a name="s52" id="s52"></a></h3>
+      <div class="indent">
+        <p>You may login to an FTP server automatically by setting the autoconnect  parameter to the applet to &quot;true&quot;. You must also provide the  server, port, user and pass  parameters. </p>
+        <p>Example:</p>
+		<div class="indent">
+        <p class="code indent">
+		  var server = &quot;ftp.myserver.com&quot;;<br/>
+		  var port = &quot;21&quot;;<br/>
+		  var user = &quot;myusername&quot;;<br/>
+		  var pass = &quot;mypassword&quot;;<br/>
+		  var autoconnect = &quot;true&quot;;<br/>
+		</p>
+      </div>
+	  </div>
+	  
+      <h3>5.3 Disabling individual buttons<a name="s53" id="s53"></a></h3>
+      <div class="indent">
+        <p>UnlimitedFTP allows you to enable/disable each of the buttons on the local and remote toolbar. The Local toolbar has 7 buttons and the Remote toolbar has 8. All buttons default to &quot;on&quot;, and thus the default value for LocalOptions is &quot;1,1,1,1,1,1,1&quot; and the default value for RemoteOptions is &quot;1,1,1,1,1,1,1,1&quot; where each 1 means the corresponding button is on. In order to turn off an individual button, you must set its value to 0. For example, if you want to disable the Open, and MakeDir buttons on both the local and remote toolbars, you would set the values like this: </p>
+		<div class="indent">
+		  <p class="code indent">
+            var LocalOptions = &quot;1,0,1,1,1,1,0&quot;;<br/>
+			var RemoteOptions = &quot;1,0,1,1,1,1,0,1&quot;;<br/>
+		  </p>
+		</div>
+		
+        <p>When you remove buttons, the remaining buttons may appear stretched. To overcome this issue, try setting the &quot;stretchButtons&quot; parameter to &quot;false&quot;. </p>
+      </div>
+	  
+      <h3>5.4 Setting custom help file location<a name="s54" id="s54"></a></h3>
+      <div class="indent">
+        <p>You may define a custom help file to be used when clicking on the "Help" button by passing the helplocation applet parameter with a value of the URL to the help file contents.</p>
+        <p>Example:</p>
+		<div class="indent">
+		  <p class="code indent">
+            var helplocation = &quot;help.html&quot;;<br/>
+		  </p>
+		</div>
+      </div>
+	  
+      <h3>5.5 Customizable right click options <a name="s55" id="s55"></a></h3>
+      <div class="indent">
+	  
+        <p>UnlimitedFTP gives you  the ability to define your own right click options on the Remote file list. You can specify separate options for both files and directories. You define both a label for the action in the right click popup, and a URL that will be called when the action is executed. UnlimitedFTP will call the specified URL, and append the parameter &quot;uftpdiritem=/directory/file.txt&quot; to the URL giving you the full path of the file in question on the FTP server. This will allow you to execute  processes on specific files and directories. </p>
+		
+        <p>Example:</p>
+		
+		<div class="indent">
+		  <p class="code indent">
+            var customFileOptions = &quot;File Option | http://localhost/processfile.jsp&quot;;<br/>
+		    var customDirOptions = &quot;Directory Option | http://localhost/processdir.jsp&quot;; <br/>
+		  </p>
+		</div>
+		
+		<p>In this case, when the user right clicks a file on the remote list, they will see &quot;File Option&quot; as an option on the popup. When clicked, UnlimitedFTP will call the specified URL with the selected path. </p>
+		
+        <p>The format for these parameters is &lt;label&gt;|&lt;url&gt;, and you can define multiple options, by separating them with a comma. Here is an example:</p>
+		
+		<div class="indent">
+		  <p class="code indent">
+            var customFileOptions = &quot;&lt;label1&gt;|&lt;url1&gt;,&lt;label2&gt;|&lt;url3&gt;,&lt;label3&gt;|&lt;url3&gt;&quot;; <br/>
+		  </p>
+		</div>
+      </div>
+	  
+      <h3>5.6 Advanced file filtering<a name="s56" id="s56"></a></h3>
+      <div class="indent">
+        <p>If you need to filter files by more than just extension, UnlimitedFTP allows you to filter using wildcard expressions as well. UnlimitedFTP has a parameter called &quot;exclude&quot; which allows you to list expressions like file*.* or *.doc or even *file*.doc. This allows you to exclude all files that match any of the expressions you list. There is also an &quot;invertexclude&quot; parameter which allows you to only include the files that match the given expressions.</p>
+        <p>Example:</p>
+		
+		<div class="indent">
+		  <p class="code indent">
+            var exclude = &quot;file*.txt&quot;;<br/>
+			var invertexclude = &quot;true&quot;; <br/>
+		  </p>
+		</div>
+		
+        <p>In this example, only files that match file*.txt will be displayed in the file list.</p>
+		
+        <p>Example 2:</p>
+		
+		<div class="indent">
+		  <p class="code indent">
+            var exclude = &quot;*.mp3, *.exe, Program Files &quot;;<br/>
+			var invertexclude = &quot;false&quot;; <br/>
+		  </p>
+		</div>
+		
+        <p>In this example, all files will be shown except MP3's, EXE's, and the Program Files directory.</p>
+		
+      </div>
+	  
+      <h3>5.7 Resuming broken or interrupted transfers<a name="s57" id="s57"></a></h3>
+      <div class="indent">
+        <p>UnlimitedFTP has the ability to resume broken or cancelled transfers. If a transfer is interrupted due to network problems, UnlimitedFTP will automatically try to resume the transfer. If you cancel a transfer and wish to resume the transfer at a later time, simply select the file you wish to resume, and click Upload or Download. You will be prompted to resume the transfer if possible. </p>
+  </div>
+<h3>5.8 Secure FTP using FTPS <a name="s58" id="s58"></a></h3>
+      <div class="indent"> 
+        <p>FTPS (File Transfer Protocol over SSL)<strong>, </strong>  is  an extension of FTP. FTPS uses SSL (Secure Socket Layer) to secure the command connection and optionally the data connection of an FTP session. There are a few variations in the evolution of FTPS. Early implementations implicitly encrypt the command and data sockets, while later versions allows you to explicitly tell the server if you want to encrypt the command socket, the data socket or both. Which configuration you use depends on which your server supports. Most newer servers support Explicit FTPS and if that is available, it should be used. Another option UnlimitedFTP provides is the ability to choose the encryption version whether it is SSL or TLS. Some older servers may not support TLS, so the authCommand should be set to AUTH_SSL in this case. Here is a sample configuration if you plan to auto-connect to your FTPS server:</p>
+		
+		<div class="indent">
+		  <p class="code indent">
+            // Connection related values<br/>
+            <br/>
+			var server = &quot;yourserver.com&quot;; <br/>
+			var port = &quot;21&quot;;<br/>
+			var user = &quot;username&quot;;<br/>
+			var pass = &quot;password&quot;;<br/>
+			var autoconnect = &quot;true&quot;;<br/>
+            <br/>
+			// Secure FTP related settings<br/>
+			<br/>
+			var protocol = &quot;FTPS&quot;;<br/>
+			var ftpstype = &quot;EXPLICIT&quot;; <br/>
+			var securedata = &quot;EXPLICIT&quot;; <br/>
+			var authCommand = &quot;AUTH_TLS&quot;;
+		  </p>
+		</div>
+		
+        <p>More information on FTPS can be found <a href="http://www.ford-hutchinson.com/%7Efh-1-pfh/ftps-ext.html" target="_blank">here</a></p>
+		
+      </div>
+	  
+<h3>5.9 Secure FTP using SFTP <a name="s59" id="s59"></a></h3>
+      <div class="indent"> 
+        <p>SFTP (SSH file transfer protocol) is a file transfer implementation similar to FTP (File Transfer Protocol) but that is secured with the SSH (Secure Shell). SFTP actually has nothing to do with FTP as far as how it works and is not an extension of FTP. Instead it uses a combination of SCP (Secure Copy), and various other commands to simulate an FTP like client. Most Linux servers come equipped with SFTP capabilities, and add-ons are available for Windows as well.</p>
+        <p>Connecting to an SFTP server with UnlimitedFTP is fairly simple. If you plan to auto-connect, you must configure the following parameters:</p>
+		
+		<div class="indent">
+		  <p class="code indent">
+		    // Connection related values<br/>
+            <br/>
+            var server = &quot;yourserver.com&quot;; <br/>
+            var port = &quot;22&quot;;<br/>
+            var user = &quot;username&quot;;<br/>
+            var pass = &quot;password&quot;;<br/>
+            var autoconnect = &quot;true&quot;;<br/>
+			<br/>
+			// Secure FTP related settings<br/>
+			var protocol = &quot;SFTP&quot;; <br/>
+			var ftpstype = &quot;&quot;; <br/>
+			var securedata = &quot;&quot;; <br/>
+			var authCommand = &quot;&quot;;
+		  </p>
+		</div>
+		
+        <p>Note that the default port for SFTP is port 22, not the regular port 21 you may be familiar with for FTP.</p>
+		
+        <p>If you plan to connect manually, you must click the &quot;Connect button&quot; and enter the connection information in the appropriate fields. You must  select the &quot;Advanced&quot; tab, and switch the Protocol to &quot;SFTP&quot;. Once the values are set, simply click on the &quot;Connect&quot; button.</p>
+		
+        <p> <strong>Acknowledgement </strong> - UnlimitedFTP Secure uses the open source <a href="http://www.jcraft.com/jsch/index.html" target="_blank">JSCH library</a> to provide SFTP, and is being used in accordance with the following <a href="http://www.jcraft.com/jsch/LICENSE.txt" target="_blank">license</a>. </p>
+      </div>			
+	  
+      <h3>5.10 Secure FTP using UnlimitedFTP Servlet <a name="s510" id="s510"></a></h3>
+      <div class="indent">
+	    <p>UnlimitedFTP can provide Secure FTP via HTTPS using Unlimi-Tech's proprietary UnlimitedFTP Servlet. This software works in conjunction with UnlimitedFTP Pro to provide an HTTP(S) tunnel through which all FTP traffic is routed. Communication from the FTP servlet is not secure, although depending on your network setup, this traffic will be behind an firewall. More information can be obtained on UnlimitedFTP Servlet <a href="http://www.utechsoft.com/products/unlimitedftp/servlet/">here</a>.</p>					      
+      </div>
+	  
+  <h2>6 Support </h2>
+ <div class="indent">
+
+    <h3>6.1 Support Portal<a name="s61" id="s61"></a></h3>
+    <div class="indent">
+      
+    <p>Our support web site is available 24/7 is a great place to get answers:
+      <a href="http://support.filecatalyst.com">http://support.filecatalyst.com</a>  Be sure to search the knowledge base as well as visit
+	  the forums (one of the buttons in the header).</p>
+    </div>
+
+    <h3><a name="s62" id="s62"></a>6.2 Phone, email and chat support</h3>
+	<div class="indent">
+	Phone and live chat are available 9am - 5pm EST.</div>
+    
+      <ul>
+	    <li>Trouble Ticket : From the support portal, register then "Submit a Ticket."  This is your best option for a highly visible support request.</li>
+        <li>Email : <a href="mailto:info@utechsoft.com">info@utechsoft.com</a></li>
+        <li>Live chat : <a href="http://support.filecatalyst.com">http://support.filecatalyst.com</a> (click Live Support button)</li>
+        <li>Phone: (613)667-2439</li>
+	    <li>Toll-Free: (877)327-9387</li>
+        <li>Knowledge Base: <a href="http://support.filecatalyst.com/index.php?_m=knowledgebase&_a=view&parentcategoryid=6&pcid=11&nav=0,3,11">Click Here</a></li>
+      </ul>
+  </div>
+	
+	<h2>7 Version History</h2>
+	<div class="indent">
+	<h3>7.1 Version History (most recent first)<a name="s71" id="s71"></a></h3>
+	  <h4>New features in version 2.9</h4>
+	  <ul>
+	    <li>New GUI to bring look and feel up to date</li>
+	    <li>Unified applets to use single JAR per per applet, improving support and simplifying upgrade</li>
+	    <li>Improved and expanded supporting documents and sample pages</li>
+	    <li>Private Key functionality for connection to SFTP servers (UnlimitedFTP Secure only)</li>
+		<li>Customize which fields appear in the connect dialog (UnlimitedFTP Secure only)</li>
+		<li>Improved the &ldquo;removeAccentsAndQuotes&rdquo; and &ldquo;removeSpaces&rdquo; variables, also adding them to UnlimitedFTP Secure</li>
+	    <li>Various bugfixes and improvements</li>
+	  </ul>
+      <h4>New features in version 2.8.5</h4>
+      <ul>
+        <li>Fixed bug: My Documents/Desktop/Network links now work on more languages</li>
+		<li>Fixed bug: "useSerfo" parameter now works when set to "auto" in UnlimitedFTP Secure</li>
+      </ul>
+	  <h4>New features in version 2.8.4</h4>
+      <ul>
+        <li>Added &quot;selectFileRemote&quot; parameter will select a specific remote file after you connect</li>
+        <li>Fixed problem with ipv6 addresses on Mac </li>
+        <li>Fixed split pane problem</li>
+        <li>Fixed bug with SFTP attempting login 3 times when incorrect password</li>      
+      </ul>
+        <h4>New features in version 2.8.3</h4>
+        <ul>
+              <li>maintenance release (several minor bug fixes, increased stability) </li>
+        </ul>
+        <h4>New features in version 2.8.2</h4>
+        <ul>
+              <li>Added ability to sort by file extension </li>
+              <li>Most functions now accessable via right click menu </li>
+              <li>All colors now able to accept hex values like #FFFFFF</li>
+              <li>Added new parameter &quot;PreserveModificationTime&quot; (MDTM support required on server)</li>
+              <li>Added ability to show hidden files on remote server using -a flag </li>
+              <li>Added Network access to local list on Windows platforms</li>
+              <li>Added multiple new language files (French, Spanish, German, Portuguese, Italian) </li>
+        </ul>
+        <h4><br/>
+            New features in version 2.8.1</h4>
+        <ul>
+              <li>Introduced UnlimitedFTP Secure   for secure FTP via SFTP and FTPS </li>
+              <li>Introduced UnlimitedFTP Lite, a feature reduced version of UnlimitedFTP </li>
+              <li>Added My Documents and Desktop icon for Windows, and Home and Finder icons for Macs</li>
+              <li>Fixed bug with upload/download still working through drag and drop even when put/get buttons disabled</li>
+              <li>Fixed right clicking on remote directories locking up</li>
+              <li>Added sorting for remote list</li>
+              <li>Automatically loads default values for entries missing from language file</li>
+              <li>Various minor bug fixes</li>
+          </ul>
+        <h4>New features in version 2.8.0</h4>
+        <ul>
+              <li> Made active/passive switching more reliable</li>
+              <li> Support for TANDEM server</li>
+              <li> New customFileOptions and customDirOptions parameters to add custom right-click options for files and directories</li>
+              <li> new parameter &quot;invertexclude&quot; that turns exclude into an include feature</li>
+              <li> click on a file, shows size and date... must be enabled with &quot;showFileInfoBar&quot;</li>
+              <li> improved keyboard navigation</li>
+              <li> ability to hide/show connect/disconnect buttons </li>
+              <li> Upload As... and Download As.... Allows you to rename on the fly</li>
+              <li> Command Prompt here... and Windows Explorer here... (Windows only)</li>
+              <li> Status bar now available to show connection status, secure/un-secure with&quot;showStatusBar&quot; parameter.</li>
+              <li> Buttons are disabled if not connected or function not applicable to currently selected file(s)</li>
+              <li> New prompt to allow users to confirm the destination folder. Must be enabled with &quot;confirmTransfer&quot; parameter</li>
+              <li> Transfer progress is now shown for the overall transfer, not per file. &quot;totalProgress&quot; parameter allows you to switch to a per file mode </li>
+              <li> bufsizeget, bufsizeput parameters allow you to control transfer buffer sizes </li>
+              <li> enableResume parameter lets you control how resuming is handled</li>
+              <li>&quot;waitRetry&quot; and &quot;maxRetries&quot; parameters greatly improved ability to recover from broken transfers resulting from network problems.</li>
+            </ul>
+        <h4><strong>New features in version 2.7.2 </strong></h4>
+        <ul>
+              <li>Ability to cancel out of "Preparing to upload", "Preparing to download" </li>
+              <li>Added new parameter to show sizes in KB </li>
+              <li>New parameter <em>hostsAllowed </em> to limit FTP hosts users can connect to </li>
+              <li>Ability to run on non-English client workstations </li>
+            </ul>
+        <h4><strong>New features in version 2.7.1 </strong></h4>
+        <ul>
+              <li>Ability to change backgrounds of list headers </li>
+              <li>Fixed performance problems with large remote listings </li>
+              <li>Ability to exclude directories or files from the lists </li>
+              <li>Fixed bug in 2.7 uploading UnlimitedFTP.Secure </li>
+            </ul>
+        <h4><strong>New features in version 2.7 </strong></h4>
+        <ul>
+              <li>New volumes drop-down in Mac </li>
+              <li>Drag and drop between lists </li>
+              <li>DESKTOP/HOME now works in Mac Jaguar </li>
+              <li>Auto refresh on local side to pick up changes to local file system (volumes/drives) </li>
+              <li>Now re-prompted for login credentials if "autoconnect" is on and login is incorrect. </li>
+              <li>New keyboard shortcuts. Pressing a letter will scroll to files starting with that letter </li>
+              <li>Fixed bug where temp folders were created in Trash on Macs </li>
+              <li>Fixed issue with keys saying they will expire when they are over a year from expiring </li>
+              <li>Fixed bug with slow upload speeds with servlet </li>
+              <li>Added tree like structure for file lists </li>
+              <li>Fixed bug where files get deleted on Jaguar if macbin is set to true </li>
+              <li>Java Plugin now uses JList and has much better performance </li>
+              <li>Java Plugin can now drag and drop from explorer to remote list </li>
+              <li>Ability to hide local/remote address bars </li>
+            </ul>
+        <h4><strong>New features in version 2.6.2</strong></h4>
+        <ul>
+              <li>Can now apply any chmod, not just 755, to all files </li>
+              <li>Ability to parse ftp:// servers </li>
+              <li>All platforms can now start in HOME, ROOT, or DESKTOP directories </li>
+              <li>Macbinary now works for Mac OS X (up to 10.1) </li>
+              <li>Ability to show date/size in file lists (with true/false param showsizeanddate) </li>
+              <li>Deleting files moves them to Trash or Recycle Bin (Wiindows/IE and Mac OS only) </li>
+              <li>Ability to automatically delete cancelled uploads via "deleteoncancel" true/false </li>
+            </ul>
+        <h4><strong>New features in version 2.6.1 </strong></h4>
+        <ul>
+              <li>automatically detect whether to connect using FTP or HTTP </li>
+              <li>new "enableKeyboardShortcuts" parameter </li>
+              <li>added confirmoverwrite parameter </li>
+              <li>added new options to the "localOptions" and "remoteOptions" parameter to allow show/hide for all action buttons </li>
+              <li>added parameter stretchButtons to allow resizing buttons to fit properly </li>
+            </ul>
+        <h4><strong>New features in version 2.6.0 </strong></h4>
+        <ul>
+              <li>Support for Service Forwarding Agent for Secure transfers </li>
+              <li>Improved list performance </li>
+              <li>added right click to File List for certain operations (Open, Open With..., Delete, Chmod, Rename) </li>
+              <li>added right click to FTP message area to clear console </li>
+              <li>added parameter to enable/disable right click </li>
+              <li>some keyboard shortcuts (Delete, Refresh(F5)) </li>
+              <li>after re-connect you are placed back in same directory </li>
+              <li>added "autoallo" parameter to send ALLO command before each STOR or APPE command </li>
+              <li>support for MVS FTP servers </li>
+              <li>added read timeout parameter </li>
+              <li>added a connect timeout parameter (doesn't work in Netscape 4) </li>
+              <li>added new parameter "remoteheader" that appears above remote list when connected </li>
+            </ul>
+    </div>
+	
+    <p>&nbsp;</p>
+  </div>
+</div>
+<div id="footer">
+	Copyright &copy; 2000&ndash;2009 Unlimi-Tech Software, Inc.  All right reserved.
+</div>
+		</div>
+		<b class="xbottom"><b class="xb4"></b><b class="xb3"></b><b class="xb2"></b><b class="xb1"></b></b>
+</div>
+ 
+</div>
+</body>
+</html>
