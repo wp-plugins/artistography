@@ -1,11 +1,11 @@
 <?php
 /*
 Plugin Name: Artistography
-Plugin URI: http://www.artistography.com/
+Plugin URI: http://www.artistography.org/
 Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
-Version: 0.0.1
+Version: 0.0.2
 Author: MistahWrite
-Author URI: http://www.MistahWrite.com
+Author URI: http://www.LavaMonsters.com
 */
 
 define('ARTISTOGRAPHY_VERSION', '0.0.1');

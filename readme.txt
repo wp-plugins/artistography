@@ -2,7 +2,7 @@
 Contributors: MistahWrite
 Tags: artistography, artist, discography
 Requires at least: 3.0
-Tested up to: 3.0
+Tested up to: 4.1
 
 Artistography allows you to have a discography on a record label of artists with inter-linked featurings and collaborations among them, or outside artists.
 
@@ -21,6 +21,7 @@ Upload the Artisography plugin to your blog, Activate it.
 
 = 0.0.2 =
 * Internationalization support
+* Updated jQuery and jQuery-UI
 * Checkout http://svn.automattic.com/wordperss-i18n/tools/trunk
 
 = 0.0.1 =
