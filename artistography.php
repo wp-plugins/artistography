@@ -3,7 +3,7 @@
 Plugin Name: Artistography
 Plugin URI: http://www.artistography.org/
 Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
-Version: 0.0.2
+Version: 0.0.3
 Author: MistahWrite
 Author URI: http://www.LavaMonsters.com
 */
@@ -157,6 +157,21 @@ get_footer();
 
 }
 
+function folder_is_empty($folder) {
+  $counter = 0;
+  if ($handle = opendir($dir)) {
+     // This is the correct way to loop over the directory.
+    while (false !== ($file = readdir($handle))) {
+      if(!strcmp($file, ".") || !strcmp($file, "..")) continue;
+      $counter++;
+      closedir($handle);
+      return false;
+    }
+    closedir($handle);
+  }
+  return true;
+}
+
  // ACTIVATION FOR PLUGIN
 function artistography_pluginInstall() {
   GLOBAL $wpdb, $TABLE_NAME, $download_path, $download_folder, $i18n_domain;
@@ -270,21 +285,6 @@ function artistography_pluginInstall() {
 }
 register_activation_hook( __FILE__, 'artistography_pluginInstall' );
 
-function folder_is_empty($folder) {
-  $counter = 0;
-  if ($handle = opendir($dir)) {
-     // This is the correct way to loop over the directory.
-    while (false !== ($file = readdir($handle))) {
-      if(!strcmp($file, ".") || !strcmp($file, "..")) continue;
-      $counter++;
-      closedir($handle);
-      return false;
-    }
-    closedir($handle);
-  }
-  return true;
-}
-
  // DEACTIVATION FOR PLUGIN
 function artistography_pluginUninstall() {
   GLOBAL $wpdb, $TABLE_NAME, $download_path, $i18n_domain;
@@ -313,6 +313,8 @@ function artistography_is_current_version() {
   $version = get_option('wp_artistography_version');
   return version_compare($version, ARTISTOGRAPHY_VERSION, '=') ? true : false;
 }
+
+
 
 function artistography_init() {
   GLOBAL $artistography_plugin_dir;
