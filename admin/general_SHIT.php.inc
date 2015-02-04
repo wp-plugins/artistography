@@ -95,7 +95,7 @@ function display_manage_music_form ($music_id = 0, $init_artist = '', $init_albu
         </form>\n";
 }
 
-function display_manage_artist_form ($artist_id = 0, $init_artist = '', $init_day = 0, $init_month = 0, $init_year = 0, $init_picture_url = 'http://www.sprucegooserecords.com/', $init_artist_url = 'http://www.sprucegooserecords.com/', $init_myspace_url = '', $init_artist_descr = '', $new = 1) {
+function display_manage_artist_form ($artist_id = 0, $init_artist = '', $init_day = 0, $init_month = 0, $init_year = 0, $init_picture_url = '/', $init_artist_url = '/', $init_artist_descr = '', $new = 1) {
 
   if ($init_day == 0) $init_day = (int)date("d");
   if ($init_month == 0) $init_month = (int)date("m");
@@ -134,7 +134,6 @@ function display_manage_artist_form ($artist_id = 0, $init_artist = '', $init_da
 
   echo "<tr><td style='text-align:right;'>Picture (URL):</td><td><input style='width:$text_width;' type='textbox' name='picture_url' value=\"$init_picture_url\" /></td></tr>\n
         <tr><td style='text-align:right;'>Artist (URL):</td><td><input style='width:$text_width;' type='textbox' name='artist_url' value=\"$init_artist_url\" /></td></tr>\n
-        <tr><td style='text-align:right;'>MySpace (URL):</td><td><input style='width:$text_width;' type='textbox' name='myspace_url' value=\"$init_myspace_url\" /></td></tr>\n
         <tr><td style='text-align:right;'>Description:</td><td><textarea name='artist_descr'>$init_artist_descr</textarea></td></tr>\n
         <tr><td colspan='2'></td></tr>\n";
   if ($new) {

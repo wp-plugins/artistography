@@ -86,8 +86,6 @@ echo "<div class='aform'><div id='dialog-form' title='" .__('Create New Album', 
    . "		<input type='text' name='picture_url' id='picture_url' class='text ui-widget-content ui-corner-all' />\n"
    . "		<label for='name'>Artist URL</label>\n"
    . "		<input type='text' name='artist_url' id='artist_url' class='text ui-widget-content ui-corner-all' />\n"
-   . "		<label for='name'>MySpace URL</label>\n"
-   . "		<input type='text' name='myspace_url' id='myspace_url' class='text ui-widget-content ui-corner-all' />\n"
    . "		<label for='name'>Enabled</label>\n"
    . "		<input type='checkbox' name='enabled' id='enabled' class='text ui-widget-content ui-corner-all' />\n"
    . "		<label for='name'>Description</label>\n"
