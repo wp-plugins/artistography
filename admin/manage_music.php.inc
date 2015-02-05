@@ -75,27 +75,27 @@ echo "<div style='visibility:" .((!$album_show) ? "hidden" : "show"). ";" .((!$a
 echo "</div>";
 
 echo "<div class='aform'><div id='dialog-form' title='" .__('Create New Album', $i18n_domain). "' style='display:none;'>\n"
-   . "	<p class='validateTips'>All form fields are required.</p>\n"
+   . "	<p class='validateTips'>" .__("All form fields are required.", $i18ndomain). "</p>\n"
    . "	<form>\n"
    . "	<fieldset>\n"
    . "		<label for='name'>Name</label>\n"
    . "		<input type='text' name='name' id='name' class='text ui-widget-content ui-corner-all' />\n"
-   . "		<label for='name'>Birthday</label>\n"
+   . "		<label for='name'>" .__("Birthday", $i18ndomain). "</label>\n"
    . "		<input type='text' name='birthday' id='birthday' class='text ui-widget-content ui-corner-all' />\n"
-   . "		<label for='name'>Picture URL</label>\n"
+   . "		<label for='name'>" .__("Picture URL", $i18ndomain). "</label>\n"
    . "		<input type='text' name='picture_url' id='picture_url' class='text ui-widget-content ui-corner-all' />\n"
-   . "		<label for='name'>Artist URL</label>\n"
+   . "		<label for='name'>" .__("Artist URL", $i18ndomain). "</label>\n"
    . "		<input type='text' name='artist_url' id='artist_url' class='text ui-widget-content ui-corner-all' />\n"
-   . "		<label for='name'>Enabled</label>\n"
+   . "		<label for='name'>" .__("Enabled", $i18ndomain). "</label>\n"
    . "		<input type='checkbox' name='enabled' id='enabled' class='text ui-widget-content ui-corner-all' />\n"
-   . "		<label for='name'>Description</label>\n"
+   . "		<label for='name'>" .__("Description", $i18ndomain). "</label>\n"
    . "		<input type='text' name='description' id='description' class='text ui-widget-content ui-corner-all' />\n"
    . "	</fieldset>\n"
    . "	</form>\n"
    . "</div>\n"
    . "<div id='music-contain' class='ui-widget'>\n"
    . "<button id='create-music'>" .__('Create New Album', $i18n_domain). "</button></div>\n"
-   . "	<div style='float:left;'><h1>" .__('Existing Albums:', $i18n_domain). "</h1></div>\n"
+   . "	<div style='float:left;'><h1>" .__('Existing Albums', $i18n_domain). ":</h1></div>\n"
    . "  <div style='float:right;border:1px dotted black; padding:10px;'>"
    . "    <label for='filter'>" .__('Filter:', $i18n_domain). "</label>"
    . "    <input type='text' name='filter' value='' id='filter' />"
@@ -103,13 +103,13 @@ echo "<div class='aform'><div id='dialog-form' title='" .__('Create New Album', 
    . "	<table id='musicTable' class='ui-widget ui-widget-content'>\n"
    . "	    <thead>\n"
    . "	        <tr class='ui-widget-header '>\n"
-   . "	            <th>ID</th>\n"
-   . "	            <th>Art</th>\n"
-   . "	            <th>Album</th>\n"
-   . "	            <th>Free</th>\n"
-   . "	            <th>Featured</th>\n"
-   . "	            <th>Enabled</th>\n"
-   . "	            <th>Actions</th>\n"
+   . "	            <th>" .__("ID", $i18n_domain). "</th>\n"
+   . "	            <th>" .__("Art", $i18n_domain). "</th>\n"
+   . "	            <th>" .__("Album", $i18n_domain). "</th>\n"
+   . "	            <th>" .__("Free", $i18n_domain). "</th>\n"
+   . "	            <th>" .__("Featured", $i18n_domain). "</th>\n"
+   . "	            <th>" .__("Enabled", $i18n_domain). "</th>\n"
+   . "	            <th>" .__("Actions", $i18n_domain). "</th>\n"
    . "	        </tr>\n"
    . "	    </thead>\n"
    . "      <tbody>\n";
@@ -125,8 +125,7 @@ if ($music->loadAll('id DESC')->getTotalRows() === 0) {
          <td>" .stripslashes($music->id). "</td>
          <td>
             <center>\n";
-/* TODO: FIX HARD-CODED ADDRESS */
-        echo "<a href='http://www.sprucegooserecords.com/download/$music->download_id' target='_blank'><img src='"
+        echo "<a href='/download/$music->download_id' target='_blank'><img src='"
            . $music->picture_url. "' width='75' height='75' /></a>
          </td>
          <td>
@@ -139,17 +138,17 @@ if ($music->loadAll('id DESC')->getTotalRows() === 0) {
 
          /* Free Download Enabled */
         echo "<td>"
-         .(($music->free_download_enabled) ? "<font color='green'>YES</font>" : "<font color='red'>NO</font>").
+         .(($music->free_download_enabled) ? "<font color='green'>" .__("YES", $i18n_domain). "</font>" : "<font color='red'>" .__("NO", $i18n_domain). "</font>").
          "</td>\n";
 
          /* Featured */
         echo "<td>"
-         .(($music->featured) ? "<font color='green'>YES</font>" : "<font color='red'>NO</font>").
+         .(($music->featured) ? "<font color='green'>" .__("YES", $i18n_domain). "</font>" : "<font color='red'>" .__("NO", $i18n_domain). "</font>").
          "</td>\n";
 
          /* Enabled */
         echo "<td>"
-         .(($music->enabled) ? "<font color='green'>YES</font>" : "<font color='red'>NO</font>").
+         .(($music->enabled) ? "<font color='green'>" .__("YES", $i18n_domain). "</font>" : "<font color='red'>" .__("NO", $i18n_domain). "</font>").
          "</td>
           <td>";
 
