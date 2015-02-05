@@ -16,18 +16,18 @@ echo '<table>'
    . '  <td></td>'
    . '  <td>'
    . "    <div style='float:right;border:1px dotted black; padding:10px;'>"
-   . "      <label for='filter'>Filter:</label>"
+   . "      <label for='filter'>" .__("Filter", $i18n_domain). ":</label>"
    . "      <input type='text' name='filter' value='' id='filter' />"
    . "    </div>"
    . '  </td>'
    . '</tr>'
    . '<tr><td>'
-   . '<div style="height:500px;width:385px;overflow:auto;overflow-x:hidden;overflow-y:auto;-ms-overflow-y: auto;">'
+   . '<div style="height:400px;width:385px;overflow:auto;overflow-x:hidden;overflow-y:auto;-ms-overflow-y: auto;">'
    . '<table style="border:2px solid black;">';
 
     if ($num == 0) {
         echo "<tr><td colspan='$cols' style='border:2px solid black;text-align:center;'>";
-        _e('No Artists Available in the Database!');
+        _e('No Artists Available in the Database!', $i18n_domain);
         echo '</td></tr>';
     } else {
         $j = 0;
