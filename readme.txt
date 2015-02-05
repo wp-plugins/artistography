@@ -53,9 +53,11 @@ Artistography allows a user to organize albums and videos onto an artist page.  
 
 == Changelog ==
 
-= 0.0.4 =
+= 0.0.4-beta =
+* Fixed broken css/javascript include path: artistography_enqueue_style_and_scripts
+
+= 0.0.4-alpha =
 * More internationalization support.
-* Checkout http://svn.automattic.com/wordperss-i18n/tools/trunk
 
 = 0.0.3 =
 * Removed myspace_url support from artist database table
