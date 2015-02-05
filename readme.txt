@@ -3,7 +3,7 @@ Contributors: MistahWrite
 Tags: artistography, artist, discography
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stabe tag: 0.0.4-alpha
+Stabe tag: 0.0.4-dev
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,10 +53,8 @@ Artistography allows a user to organize albums and videos onto an artist page.  
 
 == Changelog ==
 
-= 0.0.4-beta =
+= 0.0.4-dev =
 * Fixed broken css/javascript include path: artistography_enqueue_style_and_scripts
-
-= 0.0.4-alpha =
 * More internationalization support.
 
 = 0.0.3 =
