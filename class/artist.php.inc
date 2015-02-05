@@ -20,7 +20,6 @@ class Artist
     public $name = NULL;
     public $url = NULL;
     public $picture_url = NULL;
-    public $myspace_url = NULL;
     public $description = NULL;
     public $birthday = NULL;
 
@@ -52,7 +51,6 @@ class Artist
 /*        $artist->insert($_POST['artist_name'],
                         $_POST['url'],
                         $_POST['picture_url'],
-                        $_POST['myspace_url'],
                         $artist->formatDateTime($_POST['artist_day'], $_POST['artist_month'], $_POST['artist_year']),
                         $_POST['artist_descr'],
                         (strcmp($_POST['enabled'], NULL)) ? TRUE : FALSE);
@@ -101,12 +99,8 @@ class Artist
         }
 
         if ($shortcode_found) {
-             // enqueue here
-            wp_enqueue_style( 'jquery-ui', plugins_url('/css/jquery-ui.css', $artistography_plugin_dir), array(), '1.0.0', 'all');
-            wp_enqueue_style( 'artistography', plugins_url('/css/style.css', $artistography_plugin_dir), array(), '1.0.0', 'all');
-            wp_enqueue_script( 'jquery-ui',  plugins_url('/js/jquery-ui-1.8.9.js', $artistography_plugin_dir), array( 'jquery' ), '1.0.0'); 
-            wp_enqueue_script( 'jquery-easing',  plugins_url('/js/jquery-easing.js', $artistography_plugin_dir), array( 'jquery' ), array( 'jquery' ), '1.0.0');
-            wp_enqueue_script( 'artistography',  plugins_url('/js/script.js', $artistography_plugin_dir), array( 'jquery' ), array( 'jquery-u' ), '1.0.0');
+           // enqueue here
+          artistography_enqueue_style_and_scripts();
         }
  
         return $posts;
@@ -232,7 +226,6 @@ class Artist
 //            $this->url = $this->query_result->url;
             $this->url = "http://" .$_SERVER['SERVER_NAME'] . "/wp/artists/" . strtolower(str_replace(' ', '-', str_replace('& ', '', str_replace('.', '', $this->name))));
             $this->picture_url = $this->query_result->picture_url;
-            $this->myspace_url = $this->query_result->myspace_url;
             $this->description = $this->query_result->description;
             $this->birthday = $this->query_result->birthday;
         } else {
@@ -248,7 +241,6 @@ class Artist
             $this->name = 
             $this->url = 
             $this->picture_url = 
-            $this->myspace_url = 
             $this->description = 
             $this->birthday = 0;
         }
@@ -421,7 +413,7 @@ class Artist
     }
 
      // update artist entry
-    public function updateById ($artist_id, $artist_name, $url, $picture_url, $myspace_url, $birthday, $artist_descr, $enabled) {
+    public function updateById ($artist_id, $artist_name, $url, $picture_url, $birthday, $artist_descr, $enabled) {
         GLOBAL $wpdb, $i18n_domain;
         GLOBAL $current_user;
 
@@ -433,13 +425,12 @@ class Artist
                       name = %s,
                       url = %s,
                       picture_url = %s,
-                      myspace_url = %s,
                       description = %s,
                       birthday = %s,
                       enabled = %s,
                       last_updated_by_id = %u
                   WHERE id = %s",
-                  $artist_name, $url, $picture_url, $myspace_url, $artist_descr, $birthday, $enabled, $current_user->ID, $artist_id);
+                  $artist_name, $url, $picture_url, $artist_descr, $birthday, $enabled, $current_user->ID, $artist_id);
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === FALSE) {
@@ -450,7 +441,7 @@ class Artist
         }
     }
 
-    public function insert ($artist_name, $url, $picture_url, $myspace_url, $birthday, $artist_descr, $enabled) {
+    public function insert ($artist_name, $url, $picture_url, $birthday, $artist_descr, $enabled) {
         GLOBAL $wpdb, $i18n_domain;
         GLOBAL $current_user;
 
@@ -458,9 +449,9 @@ class Artist
 
         $this->query = $wpdb->prepare(
                        "INSERT INTO " .self::$artistTable. "
-                        (create_date, update_date, poster_id, last_updated_by_id, name, url, picture_url, myspace_url, birthday, description, enabled)
-                        VALUES (now(), now(), %u, %u, %s, %s, %s, %s, %s, %s, %b)",
-                        $current_user->ID, $current_user->ID, $artist_name, $url, $picture_url, $myspace_url, $birthday, $artist_descr, $enabled);
+                        (create_date, update_date, poster_id, last_updated_by_id, name, url, picture_url, birthday, description, enabled)
+                        VALUES (now(), now(), %u, %u, %s, %s, %s, %s, %s, %b)",
+                        $current_user->ID, $current_user->ID, $artist_name, $url, $picture_url, $birthday, $artist_descr, $enabled);
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === 0 OR $this->getTotalRows() === FALSE) {
@@ -471,7 +462,7 @@ class Artist
         }
     }
 
-    public function display_manage_artist_form ($artist_id = 0, $init_artist = '', $init_day = 0, $init_month = 0, $init_year = 0, $init_picture_url = 'http://www.sprucegooserecords.com/', $init_url = 'http://www.sprucegooserecords.com/', $init_myspace_url = '', $init_artist_descr = '', $init_enabled = false, $new = 1) {
+    public function display_manage_artist_form ($artist_id = 0, $init_artist = '', $init_day = 0, $init_month = 0, $init_year = 0, $init_picture_url = '/', $init_url = '/', $init_artist_descr = '', $init_enabled = false, $new = 1) {
 
         if ($init_day == 0) $init_day = (int)date("d");
         if ($init_month == 0) $init_month = (int)date("m");
@@ -510,7 +501,6 @@ class Artist
 
         echo "<tr><td style='text-align:right;'>Picture (URL):</td><td><input style='width:$text_width;' type='textbox' name='picture_url' value=\"$init_picture_url\" /></td></tr>\n
               <tr><td style='text-align:right;'>Artist (URL):</td><td><input style='width:$text_width;' type='textbox' name='url' value=\"$init_url\" /></td></tr>\n
-              <tr><td style='text-align:right;'>MySpace (URL):</td><td><input style='width:$text_width;' type='textbox' name='myspace_url' value=\"$init_myspace_url\" /></td></tr>\n
               <tr><td style='text-align:right;'>Enabled:</td><td><input style='width:$text_width;' type='checkbox' name='enabled' " .(($init_enabled) ? "checked" : ""). " /></td></tr>\n
               <tr><td style='text-align:right;'>Description:</td><td><textarea name='artist_descr'>$init_artist_descr</textarea></td></tr>\n
               <tr><td colspan='2'></td></tr>\n";

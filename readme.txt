@@ -3,7 +3,7 @@ Contributors: MistahWrite
 Tags: artistography, artist, discography
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stabe tag: 0.0.2
+Stabe tag: 0.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -53,15 +53,20 @@ Artistography allows a user to organize albums and videos onto an artist page.  
 
 == Changelog ==
 
-= Upcoming 0.0.3 =
-* Checkout http://svn.automattic.com/wordperss-i18n/tools/trunk
+= 0.0.5 =
+* Fixed broken css/javascript include path: artistography_enqueue_style_and_scripts
+
+= 0.0.4 =
+* More internationalization support.
+
+= 0.0.3 =
+* Removed myspace_url support from artist database table
+* Added function: artistography_enqueue_style_and_scripts()
 
 = 0.0.2 =
 * Internationalization support begun
 * Updated jQuery and jQuery-UI to version 1.11.2
 
 = 0.0.1 =
-
 * Created Project "Artistography"
 * Setup Top-Level Menu in the Admin panel, with submenus
-* 
