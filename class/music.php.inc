@@ -119,7 +119,7 @@ class Music
               . "    <table border='0'>\n";
             $num = $music->loadAllEnabled('album_date DESC')->getTotalRows();
         if ($num <= 0) {
-            $html .= "    <tr><td colspan='" .esc_attr($cols). "' style='border:none;'>No Music Available in the Database!</td></tr>\n";
+            $html .= "    <tr><td colspan='" .esc_attr($cols). "' style='border:none;'>" .__("No Music Available in the Database!", $i18n_domain). "</td></tr>\n";
         } else {
             $rows = ((int)($num / esc_attr($cols)) < (float)($num / esc_attr($cols))) ? (int)($num / esc_attr($cols)) + 1 : (int)($num / esc_attr($cols));
             $width = esc_attr($size). "px";
@@ -137,7 +137,7 @@ class Music
                           .  "            Released: <a href='" .$music->store_url. "'>" .$music->album_month.".".$music->album_day.".".$music->album_year. "</a><br/>\n"
                           .  "            <a href='" .$music->store_url. "' target='_blank'><img src='" .$music->picture_url. "' style='border:1px solid black;height:" .$height. ";width:" .$width. ";' /></a><br/>\n";
                     if ($music->download_id > 0) {
-                        $html .= "            <a href='http://www.sprucegooserecords.com/download/$music->download_id' target='_blank'><img width='112' height='75' src='http://sprucegooserecords.com/images/download.icon.png' /></a>\n";
+                        $html .= "            <a href='/download/$music->download_id' target='_blank'><img width='112' height='75' src='/images/download.icon.png' /></a>\n";
                     } else {
                         $html .= "            <div style='position:absolute;' width='112' height='75'>&nbsp;</div>\n";
                     }
@@ -460,7 +460,7 @@ class Music
         }
     }
 
-    public function display_manage_music_form ($music_id = 0, $init_artist = '', $init_album = '', $init_day = 0, $init_month = 0, $init_year = 0, $init_picture_url = 'http://www.sprucegooserecords.com/', $init_artist_url = 'http://www.sprucegooserecords.com/store/', $init_store_url = 'http://www.sprucegooserecords.com/store/', $init_download_id = 0, $init_free_download = 1, $init_featured = 1, $init_description = '', $init_enabled = 1, $new = 1) {
+    public function display_manage_music_form ($music_id = 0, $init_artist = '', $init_album = '', $init_day = 0, $init_month = 0, $init_year = 0, $init_picture_url = '/', $init_artist_url = '/artists/', $init_store_url = '/products/', $init_download_id = 0, $init_free_download = 1, $init_featured = 1, $init_description = '', $init_enabled = 1, $new = 1) {
         GLOBAL $wpdb, $TABLE_NAME, $i18n_domain;
 
         if ($init_day == 0) $init_day = (int)date("d");
@@ -500,11 +500,11 @@ class Music
         echo "</select>
               </td></tr>\n";
 
-        echo "<tr><td style='text-align:right;'>Album Art (Front) Hot Link (URL):</td><td><input style='width:$text_width;' type='textbox' name='picture_url' value=\"$init_picture_url\" /></td></tr>
-              <tr><td style='text-align:right;'>Store URL:</td><td><input style='width:$text_width;' type='textbox' name='store_url' value=\"$init_store_url\" /></td></tr>
-              <tr><td style='text-align:right;'>Artist URL:</td><td><input style='width:$text_width;' type='textbox' name='artist_url' value=\"$init_artist_url\" /></td></tr>\n";
+        echo "<tr><td style='text-align:right;'>" .__("Album Art (Front) Hot Link (URL)", $i18n_domain). ":</td><td><input style='width:$text_width;' type='textbox' name='picture_url' value=\"$init_picture_url\" /></td></tr>
+              <tr><td style='text-align:right;'>" .__("Store URL", $i18n_domain). ":</td><td><input style='width:$text_width;' type='textbox' name='store_url' value=\"$init_store_url\" /></td></tr>
+              <tr><td style='text-align:right;'>" .__("Artist URL", $i18n_domain). ":</td><td><input style='width:$text_width;' type='textbox' name='artist_url' value=\"$init_artist_url\" /></td></tr>\n";
 
-        echo "<tr><td style='text-align:right;'>Download ID:</td>
+        echo "<tr><td style='text-align:right;'>" .__("Download ID", $i18n_domain). ":</td>
                 <td>
                   <select name='download_id'>\n";
 
@@ -531,28 +531,28 @@ class Music
                 echo "<option value='$i'";
                 if ($i == $init_download_id) echo " selected";
                 echo ">";
-                echo ($i == 0) ? "Don't Link It Right Now" : "$id - $file_name";
+                echo ($i == 0) ? __("Don't Link It Right Now", $i18n_domain) : "$id - $file_name";
                 echo "</option>\n";
             }
         }
         echo "    </select>
                 </td>
               </tr>
-            <tr><td style='text-align:right;'>Free Download:</td><td><input style='width:$text_width' type='checkbox' name='free_download_enabled' ";
+            <tr><td style='text-align:right;'>" .__("Free Download", $i18n_domain). ":</td><td><input style='width:$text_width' type='checkbox' name='free_download_enabled' ";
         if ($init_free_download) { echo 'checked'; }
         echo " /></td></tr>
-              <tr><td style='text-align:right;'>Featured:</td><td><input style='width:$text_width' type='checkbox' name='featured' ";
+              <tr><td style='text-align:right;'>" .__("Featured", $i18n_domain). ":</td><td><input style='width:$text_width' type='checkbox' name='featured' ";
         if ($init_featured) { echo 'checked'; }
         echo " /></td></tr>
-              <tr><td style='text-align:right;'>Enabled:</td><td><input style='width:$text_width' type='checkbox' name='enabled' ";
+              <tr><td style='text-align:right;'>" .__("Enabled", $i18n_domain). ":</td><td><input style='width:$text_width' type='checkbox' name='enabled' ";
         if ($init_enabled) { echo 'checked'; }
         echo " /></td></tr>
-              <tr><td style='text-align:right;'>Description:</td><td><textarea name='description' style='width:100%;height:40em;'>" .stripslashes($init_description). "</textarea></td></tr>
+              <tr><td style='text-align:right;'>" .__("Description", $i18n_domain). ":</td><td><textarea name='description' style='width:100%;height:40em;'>" .stripslashes($init_description). "</textarea></td></tr>
               <tr><td colspan='2'></td></tr>\n";
         if ($new) {
-            echo "<tr><td colspan='2' style='text-align:center;'><input type='submit' name='new' value='Add New Album' /></td></tr>\n";
+            echo "<tr><td colspan='2' style='text-align:center;'><input type='submit' name='new' value='" .__("Add New Album", $i18n_domain). "' /></td></tr>\n";
         } else {
-            echo "<tr><td colspan='2' style='text-align:center;'><input type='submit' name='update' value='Update Album' /></td></tr>\n";
+            echo "<tr><td colspan='2' style='text-align:center;'><input type='submit' name='update' value='" .__("Update Album", $i18n_domain). "' /></td></tr>\n";
         }
         echo "</table></form>\n";
     }

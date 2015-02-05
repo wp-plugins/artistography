@@ -6,7 +6,6 @@ if (strcmp($_POST['update'], NULL)) {
                             $_POST['artist_name'],
                             $_POST['url'],
                             $_POST['picture_url'],
-                            $_POST['myspace_url'],
                             $artist->formatDateTime($_POST['artist_day'], $_POST['artist_month'], $_POST['artist_year']),
                             $_POST['artist_descr'],
                             (strcmp($_POST['enabled'], NULL)) ? TRUE : FALSE)) {
@@ -25,7 +24,6 @@ else if (strcmp($_POST['edit'], NULL) && strcmp($_POST['edit'], '0')) {
                                                   $day, $month, $year,
                                                   stripslashes($artist->picture_url),
                                                   stripslashes($artist->url),
-                                                  stripslashes($artist->myspace_url),
                                                   stripslashes($artist->description),
                                                   $artist->enabled,
                                                   FALSE);
@@ -36,7 +34,6 @@ else if (strcmp($_POST['edit'], NULL) && strcmp($_POST['edit'], '0')) {
     if ($artist->insert($_POST['artist_name'],
                         $_POST['url'],
                         $_POST['picture_url'],
-                        $_POST['myspace_url'],
                         $artist->formatDateTime($_POST['artist_day'], $_POST['artist_month'], $_POST['artist_year']),
                         $_POST['artist_descr'],
                         (strcmp($_POST['enabled'], NULL)) ? TRUE : FALSE)) {
@@ -70,8 +67,6 @@ echo "<div class='aform'><div id='dialog-form' title='Create new Artist' style='
    . "		<input type='text' name='picture_url' id='picture_url' class='text ui-widget-content ui-corner-all' />\n"
    . "		<label for='name'>Artist URL</label>\n"
    . "		<input type='text' name='artist_url' id='artist_url' class='text ui-widget-content ui-corner-all' />\n"
-   . "		<label for='name'>MySpace URL</label>\n"
-   . "		<input type='text' name='myspace_url' id='myspace_url' class='text ui-widget-content ui-corner-all' />\n"
    . "		<label for='name'>Enabled</label>\n"
    . "		<input type='checkbox' name='enabled' id='enabled' class='text ui-widget-content ui-corner-all' />\n"
    . "		<label for='name'>Description</label>\n"
