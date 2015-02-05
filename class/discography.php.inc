@@ -119,11 +119,7 @@ class Discography
 
         if ($shortcode_found) {
              // enqueue here
-            wp_enqueue_style( 'jquery-ui', plugins_url('/css/jquery-ui.css', $artistography_plugin_dir), array(), '1.0.0', 'all'); 
-            wp_enqueue_style( 'artistography', plugins_url('/css/style.css', $artistography_plugin_dir), array(), '1.0.0', 'all'); 
-//            wp_enqueue_style( 'jquery-ui', "http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css");
-            wp_enqueue_script( 'jquery-ui',  plugins_url('/js/jquery-ui-1.8.9.js', $artistography_plugin_dir), array( 'jquery' ), '1.0.0'); 
-            wp_enqueue_script( 'artistography',  plugins_url('/js/script.js', $artistography_plugin_dir), array( 'jquery-ui' ), array( 'jquery-ui' ), '1.0.0');
+             artistography_enqueue_style_and_scripts();
         }
  
         return $posts;

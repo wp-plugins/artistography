@@ -1,6 +1,6 @@
 <?php
 
-function display_manage_discography_form ($artist_id = 0, $init_artist = '', $init_picture_url = 'http://www.sprucegooserecords.com/', $init_artist_url = 'http://www.sprucegooserecords.com/store/') {
+function display_manage_discography_form ($artist_id = 0, $init_artist = '', $init_picture_url = '/', $init_artist_url = '/') {
   $text_width = "400px";
   $faalinker = 'fupdatelinker';
 
@@ -69,7 +69,7 @@ function display_manage_discography_form ($artist_id = 0, $init_artist = '', $in
                                 <a href='$artist_url'>$artist_name</a><br/>\n
                                 <a href='$store_url'>$album_name</a><br/>\n
                                 <a href='$store_url' target='_blank'><img src='$picture_url' style='border:1px solid black;height:$height;width:$width;' /></a><br/>\n
-                                <input type='checkbox' name='album_$album_id' $album_checked/>Link this Album<br/>\n
+                                <input type='checkbox' name='album_$album_id' $album_checked/>" .__("Link this Album", $i18n_domain). "<br/>\n
                                 </font></center>\n
                               </div>\n
                             </td>\n";
@@ -85,7 +85,7 @@ function display_manage_discography_form ($artist_id = 0, $init_artist = '', $in
   }
 
   echo "<tr><td colspan='2'></td></tr>
-        <tr><td colspan='2' style='text-align:center;'><input type='submit' name='update' value='Update Artist Album Features' /></td></tr>\n
+        <tr><td colspan='2' style='text-align:center;'><input type='submit' name='update' value='" .__("Update Artist Album Features", $i18n_domain). "' /></td></tr>\n
         </table>
         </form>
         </center>";
@@ -143,7 +143,7 @@ function display_artist_discography ($artist_id = 0) {
                                      <a href='$store_url' alt='$released - $artist_name - $album_name' title='$released - $artist_name - $album_name'>$album_name</a><br/>\n
                                      <a href='$store_url' target='_blank'><img src='$picture_url' style='border:1px solid black;height:$height;width:$width;' alt='" .$released. " - $artist_name - $album_name' title='" .$released. " - $artist_name - $album_name' /></a><br/>\n
                                      Released: " .date("M",mktime(0,0,0,(int)substr($album_date, 5, 2), (int)substr($album_date, 8, 2), (int)substr($album_date, 0, 4))). "." .substr($album_date, 8, 2). ".<a href='#' target='_blank'>" .substr($album_date, 0, 4). "</a><br/>\n
-                                     <a href='http://www.sprucegooserecords.com/download.php?id=$download_id' target='_blank'><img width='112' height='75' src='http://sprucegooserecords.com/images/download.grey.icon.jpg' /></a>\n
+                                     <a href='/download.php?id=$download_id' target='_blank'><img width='112' height='75' src='/images/download.grey.icon.jpg' /></a>\n
                                      </font></center>\n
                                  </td>\n
                                  <td style='border:0;'>\n
