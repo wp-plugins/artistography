@@ -1,3 +1,39 @@
+table {
+  background-color: white;   
+  width: 100%;   
+} 
+
+tbody td {
+  background-color: white;
+}   
+tbody td.odd {   
+  background-color: #666;   
+  color: white;   
+}
+
+tbody td.hovered, tbody td.odd.hovered {
+  background-color: lightblue;
+  color: #666;
+}
+
+#filter { display: none; }   
+
+th.sortable {
+    color: #666;
+    cursor: pointer;
+    text-decoration: underline;
+}
+th.sortable:hover { color: black; }
+th.sorted-asc, th.sorted-desc  { color: black; }
+
+
+
+.pseudodraggable { float: left; height: 120px; }
+.draggable, .pseudodraggable { border: 2px solid black; background: silver; margin: 2px; padding: 5px; width: 100px; }
+.draggable { cursor: move; height: 100px; }
+
+.droppable { overflow:auto;overflow-x:hide;overflow-y:visible;-ms-overflow-y: visible; width: 100%; background: gray; color: white; padding: 10px; }
+
 .tracklist {
     height: 330px;
     overflow: auto;
@@ -8,12 +44,9 @@ label, input { display:block; }
 input.text { margin-bottom:12px; width:95%; padding: .4em; }
 fieldset { padding:0; border:0; margin-top:25px; }
 h1 { font-size: 1.2em; margin: .6em 0; }
-div#artists-contain { width: 350px; margin: 20px 0; height: 330px; overflow: auto;}
-div#artists-contain table { margin: 1em 0; border-collapse: collapse; width: 100%;  height: 330px; overflow: auto;}
-div#artists-contain table td, div#artists-contain table th { border: 1px solid; padding: .6em 10px; text-align: left; height: 330px; overflow: auto; }
-.ui-accordion-content {
-    height:330px;
-}
+div#artists-contain { width: 350px; margin: 20px 0; }
+div#artists-contain table { margin: 1em 0; border-collapse: collapse; width: 100%; }
+div#artists-contain table td, div#artists-contain table th { border: 1px solid #eee; padding: .6em 10px; text-align: left; }
 .ui-dialog .ui-state-error { padding: .3em; }
 .validateTips { border: 1px solid transparent; padding: 0.3em; }
 

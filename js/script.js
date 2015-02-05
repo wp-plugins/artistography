@@ -36,7 +36,7 @@ $(document).ready(function() {
         url = $(this).find('a').attr('href');
         img = $(this).find('img').attr('src');
         img_size = $(this).find('img').attr('width');
-        new_img = '/wp/wp-content/plugins/artistography/css/images/ajax-loader.gif';
+        new_img = 'wp-content/plugins/artistography/css/images/ajax-loader.gif';
 
         //remove the image
         $('img', this).remove();
