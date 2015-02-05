@@ -1,39 +1,3 @@
-table {   
-  background-color: white;   
-  width: 100%;   
-} 
-
-tbody td {   
-  background-color: white;   
-}   
-tbody td.odd {   
-  background-color: #666;   
-  color: white;   
-}
-
-tbody td.hovered, tbody td.odd.hovered {
-  background-color: lightblue;
-  color: #666;
-}
-
-#filter { display: none; }   
-
-th.sortable {
-    color: #666;
-    cursor: pointer;
-    text-decoration: underline;
-}
-th.sortable:hover { color: black; }
-th.sorted-asc, th.sorted-desc  { color: black; }
-
-
-
-.pseudodraggable { float: left; height: 120px; }
-.draggable, .pseudodraggable { border: 2px solid black; background: silver; margin: 2px; padding: 5px; width: 100px; }
-.draggable { cursor: move; height: 100px; }
-
-.droppable { overflow:auto;overflow-x:hide;overflow-y:visible;-ms-overflow-y: visible; width: 100%; background: gray; color: white; padding: 10px; }
-
 .tracklist {
     height: 330px;
     overflow: auto;

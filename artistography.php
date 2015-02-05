@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.0.6
+ * Version: 0.0.7
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -12,7 +12,7 @@ define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true); 
 define('WP_DEBUG_DISPLAY', true);
 
-define('ARTISTOGRAPHY_VERSION', '0.0.6');
+define('ARTISTOGRAPHY_VERSION', '0.0.7');
  // whether to preserve database on plugin deactivation
 define('PRESERVE_DATABASE_TABLES', true);  // TODO: make this user configurable for later
 
@@ -350,7 +350,7 @@ function artistography_enqueue_admin_style_and_scripts() {
     wp_enqueue_style( 'jquery-ui', plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/jquery-ui-1.11.2/jquery-ui.theme.css', $artistography_plugin_dir), array(), '1.11.2', 'all');
     wp_enqueue_script( 'jquery-ui',  plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/jquery-ui-1.11.2/jquery-ui.js', $artistography_plugin_dir), array( 'jquery' ), '1.0.0');
 
-    wp_enqueue_style( 'artistography', plugins_url(ARTISTOGRAPHY_DIR_NAME . '/css/style.css', $artistography_plugin_dir), array(), ARTISTOGRAPHY_VERSION, 'all');
+    wp_enqueue_style( 'artistography', plugins_url(ARTISTOGRAPHY_DIR_NAME . '/css/admin-style.css', $artistography_plugin_dir), array(), ARTISTOGRAPHY_VERSION, 'all');
     wp_enqueue_script( 'artistography',  plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/admin.js', $artistography_plugin_dir), array( 'jquery-ui' ), ARTISTOGRAPHY_VERSION);
 }
 
