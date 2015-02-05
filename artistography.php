@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.0.4-dev
+ * Version: 0.0.4
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -12,7 +12,7 @@ define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true); 
 define('WP_DEBUG_DISPLAY', true);
 
-define('ARTISTOGRAPHY_VERSION', '0.0.4-dev');
+define('ARTISTOGRAPHY_VERSION', '0.0.4');
  // whether to preserve database on plugin deactivation
 define('PRESERVE_DATABASE_TABLES', true);  // TODO: make this user configurable for later
 
