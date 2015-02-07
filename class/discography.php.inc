@@ -191,7 +191,7 @@ class Discography
         $html = "";
 
         if ($artist->loadById($id)->getTotalRows() > 0) {
-
+            $artist->incrementPageViewsById($id);
             $discography->loadEnabledByArtistId($id);
             $num = $discography->getTotalRows();
             $video_postslist = $artist->getVideoPosts();
@@ -217,7 +217,7 @@ class Discography
             }
             $html .= "  </ul>\n"
                   .  "  <div id='tabs-1'>\n";
-             /* Display artist About tab */
+             /*** DISPLAY ARTIST ABOUT TAB ***/
             $html .= "    <p><table width='100%' border='1'><tr><td><img src='" .stripslashes($artist->picture_url)
                   .  "' height='225' width='225' align='left' style='margin-right:1.0em;overflow:auto;' />\n";
             if(empty($content)) {
@@ -227,7 +227,7 @@ class Discography
             }
             $html .= "  </td></tr></table></div>\n";
 
-             /* Display the Music/Discography tab */
+             /*** DISPLAY THE MUSIC/DISCOGRAPHY TAB ***/
             if ($num > 0) {
                 $cols = 1;
                 $rows = ((int)($num / $cols) < (float)($num / $cols)) ? (int)($num / $cols) + 1 : (int)($num / $cols);
@@ -274,6 +274,7 @@ class Discography
                       .  "</div>";
             }
 
+             /*** DISPLAY VIDEOS TAB ***/
             if ( !empty($video_postslist) ) {
                 $html .= "  <div id='tabs-3'>\n"
                       .  "    <div id='accordion2'>\n";
@@ -295,6 +296,7 @@ class Discography
                       .  "  </div>\n";
             }
 
+             /*** DISPLAY RELATED POSTS TAB ***/
             if ( !empty($related_postslist) ) {
                 $html .= "  <div id='tabs-4'>\n"
                       .  "    <div id='accordion3'>\n";
@@ -302,7 +304,7 @@ class Discography
                     $html .= "    <h3><a href='#'>$post->post_title</a></h3>\n"
                           .  "    <div><p><table><tr><td>" .do_shortcode($post->post_content). "</td></tr>"
                           .  "    <tr><td><hr width='100%'></td></tr>"
-                          .  "    <tr><td><a href='" .get_permalink($post->ID). "' target='_blank'>Permalink</a></td></tr>"
+                          .  "    <tr><td><a href='" .get_permalink($post->ID). "' target='_blank'>Permalink</a>: " .get_permalink($post->ID). "</td></tr>"
                           .  "    </table></p></div>\n";
                 }
                 $html .= "    </div>\n"

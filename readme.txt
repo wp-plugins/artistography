@@ -3,7 +3,7 @@ Contributors: MistahWrite
 Tags: artistography, artist, discography
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stabe tag: 0.0.5
+Stabe tag: 0.0.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,8 +26,8 @@ Artistography allows a user to organize albums and videos onto an artist page.  
 [artistography_artist_name id=1]
      Displays the name of the artist with database id=1.
 
-[artistography_display_enabled_artists]
-     Displays "enabled" artists in a table with pictures that break away on mouse-over
+[artistography_display_artists]
+     Displays artists in a table with pictures that break away on mouse-over
           Optional paramaters:
                cols=(default 4)
 
@@ -52,6 +52,31 @@ Artistography allows a user to organize albums and videos onto an artist page.  
      Displays artist name of album with album database id=1
 
 == Changelog ==
+
+=0.0.9=
+* Removed track_list database and support routines
+* Removed stats page
+* Moved Options page towards the bottom
+* Made textbox into textarea for artist description
+* Fixed FTP Uploader page with plugs_url()
+
+=0.0.8=
+* Updated style for admin panels
+* Worked on AJAX Artist Create, Edit, Update, and Delete Artist
+* Dropped artist birthday from database
+* Dropped support for regular post methods for artist create, edit, and update
+* Preparing for full internationalization support
+* Finally using $artist->incrementPageViewsById($id) when shortcode is used: [artistography_display_artist_page id=x]
+* Displaying artist page views in manage artist admin panel
+
+=0.0.7-alpha=
+* Fixed Related Posts size so that accordions would be visible
+
+= 0.0.7 =
+* Split up css for admin and display site
+
+= 0.0.6 =
+* Added function: artistography_enqueue_admin_style_and_scripts()
 
 = 0.0.5 =
 * Fixed broken css/javascript include path: artistography_enqueue_style_and_scripts
