@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.0.5
+ * Version: 0.0.8
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -12,7 +12,7 @@ define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true); 
 define('WP_DEBUG_DISPLAY', true);
 
-define('ARTISTOGRAPHY_VERSION', '0.0.5');
+define('ARTISTOGRAPHY_VERSION', '0.0.8');
  // whether to preserve database on plugin deactivation
 define('PRESERVE_DATABASE_TABLES', true);  // TODO: make this user configurable for later
 
@@ -26,7 +26,7 @@ define('TABLE_ARTIST_IMAGE_GALLERY', 5);
 
 define('WP_ROOT', str_replace('/wp-admin', '', dirname($_SERVER['SCRIPT_FILENAME'])));
 
-define('ARTISTOGRAPHY_FILE_PATH', dirname(__FILE__));
+define('ARTISTOGRAPHY_FILE_PATH', '/artistography'); //dirname(__FILE__));
 define('ARTISTOGRAPHY_DIR_NAME', basename(ARTISTOGRAPHY_FILE_PATH));
 
 GLOBAL $i18n_domain; $i18n_domain = 'artistography'; // Localization/Internationalization
@@ -177,20 +177,35 @@ function artistography_pluginInstall() {
   GLOBAL $wpdb, $TABLE_NAME, $download_path, $download_folder, $i18n_domain;
  
   $version = get_option('wp_artistography_version');
+  $fresh_install = false;
 
    /*** Store any options ***/
   if(!$version) {
      // this is a fresh install/activation
     add_option('wp_artistography_version', ARTISTOGRAPHY_VERSION, NULL, true);
-
-  } else if (version_compare($version, "0.0.3-beta", '<')) {
-     // this is an update
-      $thetablev = $wpdb->prefix . $TABLE_NAME[TABLE_ARTISTS];
-      $query = "ALTER TABLE '$thetable'
-                DROP 'myspace_url'";
+    $fresh_install = true;
+  } else {
+    if (version_compare($version, "0.0.3-beta", '<')) {
+       // this is an update to at least 0.0.3-beta
+      $thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTISTS];
+      $query = "ALTER TABLE $thetable
+                DROP COLUMN myspace_url";
       $wpdb->query($query);
+    }
+
+    if (version_compare($version, "0.0.8", '<')) {
+       // this is an update to at least 0.0.8
+      $thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTISTS];
+      $query = "ALTER TABLE $thetable
+                DROP COLUMN birthday";
+      $wpdb->query($query); 
+      $query = "ALTER TABLE $thetable
+                DROP COLUMN enabled";
+      $wpdb->query($query);      
+    }
+
+    update_option('wp_artistography_version', ARTISTOGRAPHY_VERSION);
   }
-  update_option('wp_artistography_version', ARTISTOGRAPHY_VERSION);
 
   if (!is_dir($download_path)) {
     mkdir($download_path);
@@ -218,7 +233,6 @@ function artistography_pluginInstall() {
         case TABLE_ARTISTS:
           $query .= "page_views INT(10) UNSIGNED DEFAULT '0' NOT NULL,
                      name TEXT NOT NULL,
-                     birthday DATETIME,
                      picture_url TEXT NOT NULL,
                      url TEXT,
                      description LONGTEXT,
@@ -345,15 +359,22 @@ add_action('init', 'artistography_init');
   define(SUBMENU_FTP_UPLOADER, 'artistography-submenu-ftp-uploader');
   define(SUBMENU_ABOUT_HANDLE, 'artistography-submenu-about');
 
+function artistography_enqueue_admin_style_and_scripts() {
+    wp_enqueue_style( 'jquery-ui', plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/jquery-ui-1.11.2/jquery-ui.css', $artistography_plugin_dir), array(), '1.11.2', 'all');
+    wp_enqueue_style( 'jquery-ui', plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/jquery-ui-1.11.2/jquery-ui.theme.css', $artistography_plugin_dir), array(), '1.11.2', 'all');
+    wp_enqueue_script( 'jquery-ui',  plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/jquery-ui-1.11.2/jquery-ui.js', $artistography_plugin_dir), array( 'jquery' ), '1.0.0');
+
+    wp_enqueue_style( 'artistography', plugins_url(ARTISTOGRAPHY_DIR_NAME . '/css/admin-style.css', $artistography_plugin_dir), array(), ARTISTOGRAPHY_VERSION, 'all');
+    wp_enqueue_script( 'artistography',  plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/admin.js', $artistography_plugin_dir), array( 'jquery-ui' ), ARTISTOGRAPHY_VERSION);
+}
+
 function artistography_enqueue_style_and_scripts() {
+    wp_enqueue_style( 'jquery-ui', plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/jquery-ui-1.11.2/jquery-ui.css', $artistography_plugin_dir), array(), '1.11.2', 'all');
+    wp_enqueue_style( 'jquery-ui', plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/jquery-ui-1.11.2/jquery-ui.theme.css', $artistography_plugin_dir), array(), '1.11.2', 'all');
+    wp_enqueue_script( 'jquery-ui',  plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/jquery-ui-1.11.2/jquery-ui.js', $artistography_plugin_dir), array( 'jquery' ), '1.0.0');
 
-
-    wp_enqueue_style( 'jquery-ui', plugins_url('/artistography/js/jquery-ui-1.11.2/jquery-ui.css', $artistography_plugin_dir), array(), '1.0.0', 'all');
-    wp_enqueue_style( 'jquery-ui', plugins_url('/artistography/js/jquery-ui-1.11.2/jquery-ui.theme.css', $artistography_plugin_dir), array(), '1.0.0', 'all');
-    wp_enqueue_style( 'artistography', plugins_url('/artistography/css/style.css', $artistography_plugin_dir), array(), '1.0.0', 'all');
-
-    wp_enqueue_script( 'jquery-ui',  plugins_url('/artistography/js/jquery-ui-1.11.2/jquery-ui.js', $artistography_plugin_dir), array( 'jquery' ), '1.0.0');
-    wp_enqueue_script( 'artistography',  plugins_url('/artistography/js/admin.js', $artistography_plugin_dir), array( 'jquery-ui' ), '1.0.0');
+    wp_enqueue_style( 'artistography', plugins_url(ARTISTOGRAPHY_DIR_NAME . '/css/style.css', $artistography_plugin_dir), array(), ARTISTOGRAPHY_VERSION, 'all');
+    wp_enqueue_script( 'artistography',  plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/script.js', $artistography_plugin_dir), array( 'jquery-ui' ), ARTISTOGRAPHY_VERSION);
 }
 
  /* START ADMIN MENU INTERFACE */
@@ -363,7 +384,7 @@ function artistography_plugin_menu() {
   GLOBAL $artistography_plugin_dir, $i18n_domain;
 
   if( FALSE !== stripos($_GET['page'], 'artistography') ) {
-    artistography_enqueue_style_and_scripts();
+    artistography_enqueue_admin_style_and_scripts();
   }
 
   add_menu_page(ADMIN_MENU_STATS, __('Artistography', $i18n_domain), 'manage_options', TOP_LEVEL_HANDLE, 'artistography_plugin_options');
