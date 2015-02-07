@@ -13,6 +13,10 @@ Artistography allows you to have a discography on a record label of artists with
 
 Artistography allows a user to organize albums and videos onto an artist page.  The artist page has jQuery-UI style tabs, and polls tags on posts for the artist's name and then files them into the Related Posts tab.
 
+Uses for FTP and file browsing capability:
+ * http://sourceforge.net/projects/encode-explorer/ (version 6.3)
+ * http://sourceforge.net/projects/zupload/ 
+
 == Installation ==
 
 1. Install the Artisography plugin to your blog, and Activate it.  
@@ -52,6 +56,11 @@ Artistography allows a user to organize albums and videos onto an artist page.  
      Displays artist name of album with album database id=1
 
 == Changelog ==
+
+=0.1.0=
+* Added ZUpload from sourceforge instead of unlimited_ftp
+* Added eXtplorer 2.1.5 from sourceforge for PHP file browser
+* Fixed options screen
 
 =0.0.9=
 * Removed track_list database and support routines

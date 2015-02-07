@@ -10,7 +10,15 @@
 
   mail($email, $subject, $message);
 */
-?>    <font face="Arial, Helvetica, sans-serif" size="2">
-	<script language="javascript" src="<? echo plugins_url('artistography/ftp/uftpscript.js', 'artistography'); ?>"></script>
-	<br/><br/>
-  <? _e("This software requires Java&trade; technology.", $i18n_domain); ?> <a href="http://www.java.com" target="_blank"><img src="<? echo plugins_url('artistography/ftp/images/get_java_green_button.gif', 'artistography'); ?>" width="88" height="31" border="0"></a></font>
+?>
+<div align="left">
+<applet code="ZUpload" Archive="<? echo plugins_url('artistography/ftp/ZUpload.jar', 'artistography'); ?>" width="450" height="300" border="0">
+<param name="host" value="<? echo get_option('wp_artistography_ftp_host'); ?>">
+<param name="user" value="<? echo get_option('wp_artistography_ftp_user'); ?>">
+<param name="pass" value="<? echo get_option('wp_artistography_ftp_pass'); ?>">
+<param name="path" value="<? echo get_option('wp_artistography_ftp_path'); ?>">
+<param name="postscript" value="url_of_script">
+</applet>
+</div><div align="right">
+<iframe src='<? echo plugins_url('artistography/downloads', 'artistography'); ?>' height="400" width="100%"></iframe>
+</div>
