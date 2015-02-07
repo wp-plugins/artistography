@@ -3,7 +3,7 @@ Contributors: MistahWrite
 Tags: artistography, artist, discography
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stabe tag: 0.0.7-alpha
+Stabe tag: 0.0.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,7 +51,17 @@ Artistography allows a user to organize albums and videos onto an artist page.  
 [artistography_display_album_artist id=1]
      Displays artist name of album with album database id=1
 
-== Changelog ==
+== Changelog =
+
+=0.0.8=
+* Updated style for admin panels
+* Worked on AJAX Artist Create, Edit, Update, and Delete Artist
+* Dropped artist birthday from database
+* Dropped support for regular post methods for artist create, edit, and update
+* Preparing for full internationalization support
+* Finally using $artist->incrementPageViewsById($id) when shortcode is used: [artistography_display_artist_page id=x]
+* Displaying artist page views in manage artist admin panel
+
 =0.0.7-alpha=
 * Fixed Related Posts size so that accordions would be visible
 

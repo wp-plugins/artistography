@@ -191,7 +191,7 @@ class Discography
         $html = "";
 
         if ($artist->loadById($id)->getTotalRows() > 0) {
-
+            $artist->incrementPageViewsById($id);
             $discography->loadEnabledByArtistId($id);
             $num = $discography->getTotalRows();
             $video_postslist = $artist->getVideoPosts();

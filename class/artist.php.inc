@@ -2,11 +2,13 @@
  // Shortcode helpers
 add_filter( 'the_posts', 'Artist::conditionally_add_scripts_and_styles'); // the_posts gets triggered before wp_head
 add_shortcode( 'artistography_artist_name', 'Artist::shortCodeArtistName' );
-add_shortcode( 'artistography_display_enabled_artists', 'Artist::shortCodeDisplayEnabledArtists' );
+add_shortcode( 'artistography_display_artists', 'Artist::shortCodeDisplayArtists' );
 add_shortcode( 'artistography_display_artist', 'Artist::shortCodeDisplayArtist' );
 
  // AJAX Administration
 add_action('wp_ajax_Create_Artist', 'Artist::callback_Create_Artist');
+add_action('wp_ajax_Update_Artist', 'Artist::callback_Update_Artist');
+add_action('wp_ajax_Edit_Artist', 'Artist::callback_Edit_Artist');
 add_action('wp_ajax_Delete_Artist', 'Artist::callback_Delete_Artist');
 
 class Artist
@@ -15,13 +17,12 @@ class Artist
 
      // property declaration
     public $id = NULL;
-    public $enabled = NULL;
+    public $page_views = NULL;
 
     public $name = NULL;
     public $url = NULL;
     public $picture_url = NULL;
     public $description = NULL;
-    public $birthday = NULL;
 
      // meta data property declarations
     public $last_updated_by_id = NULL;
@@ -48,17 +49,57 @@ class Artist
         GLOBAL $i18n_domain;
 
         $artist = new Artist;
-/*        $artist->insert($_POST['artist_name'],
-                        $_POST['url'],
-                        $_POST['picture_url'],
-                        $artist->formatDateTime($_POST['artist_day'], $_POST['artist_month'], $_POST['artist_year']),
-                        $_POST['artist_descr'],
-                        (strcmp($_POST['enabled'], NULL)) ? TRUE : FALSE);
-*/
-        if ($artist->getTotalRows() <= 0) {
-            _e("Failure...", $i18n_domain);  // failed
+
+        $artist_id = stripslashes($_POST['artist_id']);
+        $artist_name = stripslashes($_POST['artist_name']);
+        $url = stripslashes($_POST['url']);
+        $picture_url = stripslashes($_POST['picture_url']);
+        $artist_descr = stripslashes($_POST['artist_descr']);
+
+        $result = $artist->insert($artist_name, $url, $picture_url, $artist_descr);
+        if(is_numeric($result)) {
+          echo $result;
         } else {
-            echo "1"; // success
+          echo sprinf(__("Failed: %s", $i18n_domain), $result);  // failed
+        }
+
+        unset($artist);
+        die;
+    }
+
+    public static function callback_Update_Artist(){
+        GLOBAL $i18n_domain;
+
+        $artist = new Artist;
+
+        $artist_id = stripslashes($_POST['artist_id']);
+        $artist_name = stripslashes($_POST['artist_name']);
+        $url = stripslashes($_POST['url']);
+        $picture_url = stripslashes($_POST['picture_url']);
+        $artist_descr = stripslashes($_POST['artist_descr']);
+
+        if($artist->updateById ($artist_id, $artist_name, $url, $picture_url, $artist_descr) ) {
+          echo '1'; //success
+        } else {
+          echo sprintf(__("Failed: Unable to Update Artist id: %u", $i18n_domain), $artist_id);
+        }
+
+        unset($artist);
+        die;
+    }
+
+    public static function callback_Edit_Artist(){
+        GLOBAL $i18n_domain;
+
+        $artist = new Artist;
+
+        if($artist->loadById($_POST['artist_id'])->getTotalRows() > 0) {
+
+          echo $artist->id
+               ."##$$##". stripslashes($artist->name)
+              ."##$$##".  stripslashes($artist->picture_url)
+              ."##$$##".  stripslashes($artist->url)
+              ."##$$##".  stripslashes($artist->description) ."";
         }
 
         unset($artist);
@@ -118,8 +159,8 @@ class Artist
         return $html;
     }
 
-     // [artistography_display_enabled_artists cols="4" size="75"]
-    public static function shortCodeDisplayEnabledArtists( $atts ) {
+     // [artistography_display_artists cols="4" size="75"]
+    public static function shortCodeDisplayArtists( $atts ) {
 	extract( shortcode_atts( array(
 		'cols' => '2',
                 'size' => '126'
@@ -127,7 +168,7 @@ class Artist
 
         $artist = new Artist;
         $discography = new Discography;
-        $artist->loadAllEnabled('name');
+        $artist->loadAll('name');
         $num = $artist->getTotalRows();
         $html = "";
 
@@ -216,23 +257,23 @@ class Artist
 
              // meta data info update
             $this->id = $this->query_result->id;
-            $this->enabled = $this->query_result->enabled;
+            $this->page_views = $this->query_result->page_views;
+
             $this->poster_id = $this->query_result->poster_id;
             $this->last_updated_by_id = $this->query_result->last_updated_by_id;
             $this->create_date = $this->query_result->create_date;
             $this->update_date = $this->query_result->update_date;
 
             $this->name = $this->query_result->name;
-//            $this->url = $this->query_result->url;
-            $this->url = "http://" .$_SERVER['SERVER_NAME'] . "/wp/artists/" . strtolower(str_replace(' ', '-', str_replace('& ', '', str_replace('.', '', $this->name))));
+            $this->url = $this->query_result->url;
+//            $this->url = "http://" .$_SERVER['SERVER_NAME'] . "/artists/" . strtolower(str_replace(' ', '-', str_replace('& ', '', str_replace('.', '', $this->name))));
             $this->picture_url = $this->query_result->picture_url;
             $this->description = $this->query_result->description;
-            $this->birthday = $this->query_result->birthday;
         } else {
             $this->query_result = 
 
             $this->id = 
-            $this->enabled = 
+            $this->page_views =
             $this->poster_id = 
             $this->last_updated_by_id = 
             $this->create_date = 
@@ -241,8 +282,7 @@ class Artist
             $this->name = 
             $this->url = 
             $this->picture_url = 
-            $this->description = 
-            $this->birthday = 0;
+            $this->description = 0; 
         }
         return $this;
     }
@@ -320,36 +360,6 @@ class Artist
         return $this->loadCurrNodeValues();
     }
 
-    public function &loadAllEnabled ($order_by = 'id') {
-        GLOBAL $wpdb, $i18n_domain;
-
-        $this->query = "SELECT *
-                        FROM " .self::$artistTable. "
-                        WHERE enabled = true
-                        ORDER BY $order_by";
-        $this->setTotalRows($wpdb->query($this->query));
-
-        if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
-
-        $this->setCurrNode(0); // set to first node
-        return $this->loadCurrNodeValues();
-    }
-
-    public function &loadAllDisabled ($order_by = 'id') {
-        GLOBAL $wpdb, $i18n_domain;
-
-        $this->query = "SELECT *
-                        FROM " .self::$artistTable. "
-                        WHERE enabled = false
-                        ORDER BY $order_by";
-        $this->setTotalRows($wpdb->query($this->query));
-
-        if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
-
-        $this->setCurrNode(0); // set to first node
-        return $this->loadCurrNodeValues();
-    }
-
     public function incrementPageViewsById ($id) {
         GLOBAL $wpdb, $i18n_domain;
 
@@ -413,7 +423,7 @@ class Artist
     }
 
      // update artist entry
-    public function updateById ($artist_id, $artist_name, $url, $picture_url, $birthday, $artist_descr, $enabled) {
+    public function updateById ($artist_id, $artist_name, $url, $picture_url, $artist_descr) {
         GLOBAL $wpdb, $i18n_domain;
         GLOBAL $current_user;
 
@@ -426,11 +436,9 @@ class Artist
                       url = %s,
                       picture_url = %s,
                       description = %s,
-                      birthday = %s,
-                      enabled = %s,
                       last_updated_by_id = %u
                   WHERE id = %s",
-                  $artist_name, $url, $picture_url, $artist_descr, $birthday, $enabled, $current_user->ID, $artist_id);
+                  $artist_name, $url, $picture_url, $artist_descr, $current_user->ID, $artist_id);
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === FALSE) {
@@ -441,7 +449,7 @@ class Artist
         }
     }
 
-    public function insert ($artist_name, $url, $picture_url, $birthday, $artist_descr, $enabled) {
+    public function insert ($artist_name, $url, $picture_url, $artist_descr) {
         GLOBAL $wpdb, $i18n_domain;
         GLOBAL $current_user;
 
@@ -449,68 +457,17 @@ class Artist
 
         $this->query = $wpdb->prepare(
                        "INSERT INTO " .self::$artistTable. "
-                        (create_date, update_date, poster_id, last_updated_by_id, name, url, picture_url, birthday, description, enabled)
-                        VALUES (now(), now(), %u, %u, %s, %s, %s, %s, %s, %b)",
-                        $current_user->ID, $current_user->ID, $artist_name, $url, $picture_url, $birthday, $artist_descr, $enabled);
+                        (create_date, update_date, poster_id, last_updated_by_id, name, url, picture_url, description)
+                        VALUES (now(), now(), %u, %u, %s, %s, %s, %s)",
+                        $current_user->ID, $current_user->ID, $artist_name, $url, $picture_url, $artist_descr);
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === 0 OR $this->getTotalRows() === FALSE) {
-            wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
+            return sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query); 
         } else {
              // was entered successfully into database
             return true;
         }
-    }
-
-    public function display_manage_artist_form ($artist_id = 0, $init_artist = '', $init_day = 0, $init_month = 0, $init_year = 0, $init_picture_url = '/', $init_url = '/', $init_artist_descr = '', $init_enabled = false, $new = 1) {
-
-        if ($init_day == 0) $init_day = (int)date("d");
-        if ($init_month == 0) $init_month = (int)date("m");
-        if ($init_year == 0) $init_year = (int)date("Y");
-
-        $text_width = "400px";
-
-        if ($new) { $fartist = 'fartist'; } else { $fartist = 'fupdateartist'; }
-        echo "<form name='$fartist' action='' method='post'>
-              <table>\n
-              <input type='hidden' name='artist_id' value='$artist_id' />\n
-              <tr><td style='text-align:right;'>Artist:</td><td><input style='width:$text_width;' type='textbox' name='artist_name' value='$init_artist' /></td></tr>\n
-              <tr><td style='text-align:right;'>Birthday:</td><td>\n
-              <select name='artist_day'>\n";
-        for($day=1; $day <= 31; $day++) {
-            echo "<option value='" .date("d", mktime(date("H"), date("i"), date("s"), $month, $day, date("Y"))). "'";
-            if($day == $init_day) echo " selected";
-            echo ">$day</option>\n";
-        }
-        echo "</select>\n&nbsp;
-              <select name='artist_month'>\n";
-        for($month=1; $month <= 12; $month++) {
-            echo "<option value='" .date("m", mktime(date("H"), date("i"), date("s"), $month, date("j"), date("Y"))). "'";
-            if ($month == $init_month) echo " selected";
-            echo ">" .date("m", mktime(date("H"), date("i"), date("s"), $month, date("j"), date("Y"))) ." - ". date("F", mktime(date("H"), date("i"), date("s"), $month, date("j"), date("Y"))). "</option>\n";
-        }
-        echo "</select>\n&nbsp;
-              <select name='artist_year'>\n";
-        for ($year=1+(int)date("Y"); $year >= 1930; $year--) {
-            echo "<option value='" .$year. "'";
-            if($year == $init_year) echo " selected";
-            echo ">" .$year. "</option>\n";
-        }
-        echo "</select>\n
-            </td></tr>\n";
-
-        echo "<tr><td style='text-align:right;'>Picture (URL):</td><td><input style='width:$text_width;' type='textbox' name='picture_url' value=\"$init_picture_url\" /></td></tr>\n
-              <tr><td style='text-align:right;'>Artist (URL):</td><td><input style='width:$text_width;' type='textbox' name='url' value=\"$init_url\" /></td></tr>\n
-              <tr><td style='text-align:right;'>Enabled:</td><td><input style='width:$text_width;' type='checkbox' name='enabled' " .(($init_enabled) ? "checked" : ""). " /></td></tr>\n
-              <tr><td style='text-align:right;'>Description:</td><td><textarea name='artist_descr'>$init_artist_descr</textarea></td></tr>\n
-              <tr><td colspan='2'></td></tr>\n";
-        if ($new) {
-            echo "<tr><td colspan='2' style='text-align:center;'><input type='submit' name='new' value='Add New Artist' /></td></tr>\n";
-        } else {
-            echo "<tr><td colspan='2' style='text-align:center;'><input type='submit' name='update' value='Update Artist' /></td></tr>\n";
-        }
-
-        echo "</table></form>\n";
     }
 }  /* end class Artist */
 

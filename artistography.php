@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.0.7-alpha
+ * Version: 0.0.8
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -12,7 +12,7 @@ define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true); 
 define('WP_DEBUG_DISPLAY', true);
 
-define('ARTISTOGRAPHY_VERSION', '0.0.7-alpha');
+define('ARTISTOGRAPHY_VERSION', '0.0.8');
  // whether to preserve database on plugin deactivation
 define('PRESERVE_DATABASE_TABLES', true);  // TODO: make this user configurable for later
 
@@ -177,20 +177,35 @@ function artistography_pluginInstall() {
   GLOBAL $wpdb, $TABLE_NAME, $download_path, $download_folder, $i18n_domain;
  
   $version = get_option('wp_artistography_version');
+  $fresh_install = false;
 
    /*** Store any options ***/
   if(!$version) {
      // this is a fresh install/activation
     add_option('wp_artistography_version', ARTISTOGRAPHY_VERSION, NULL, true);
-
-  } else if (version_compare($version, "0.0.3-beta", '<')) {
-     // this is an update
-      $thetablev = $wpdb->prefix . $TABLE_NAME[TABLE_ARTISTS];
-      $query = "ALTER TABLE '$thetable'
-                DROP 'myspace_url'";
+    $fresh_install = true;
+  } else {
+    if (version_compare($version, "0.0.3-beta", '<')) {
+       // this is an update to at least 0.0.3-beta
+      $thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTISTS];
+      $query = "ALTER TABLE $thetable
+                DROP COLUMN myspace_url";
       $wpdb->query($query);
+    }
+
+    if (version_compare($version, "0.0.8", '<')) {
+       // this is an update to at least 0.0.8
+      $thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTISTS];
+      $query = "ALTER TABLE $thetable
+                DROP COLUMN birthday";
+      $wpdb->query($query); 
+      $query = "ALTER TABLE $thetable
+                DROP COLUMN enabled";
+      $wpdb->query($query);      
+    }
+
+    update_option('wp_artistography_version', ARTISTOGRAPHY_VERSION);
   }
-  update_option('wp_artistography_version', ARTISTOGRAPHY_VERSION);
 
   if (!is_dir($download_path)) {
     mkdir($download_path);
@@ -218,7 +233,6 @@ function artistography_pluginInstall() {
         case TABLE_ARTISTS:
           $query .= "page_views INT(10) UNSIGNED DEFAULT '0' NOT NULL,
                      name TEXT NOT NULL,
-                     birthday DATETIME,
                      picture_url TEXT NOT NULL,
                      url TEXT,
                      description LONGTEXT,

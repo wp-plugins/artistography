@@ -5,15 +5,22 @@ table {
 
 tbody td {
   background-color: white;
-}   
+  color: black;
+}
 tbody td.odd {   
   background-color: #666;   
-  color: white;   
+  color: black;   
 }
-
+.visible a, .visible a:visited, .visible a:active {
+  color: black;
+}
 tbody td.hovered, tbody td.odd.hovered {
   background-color: lightblue;
   color: #666;
+}
+
+a, a:visited, a:active {
+  color: black;
 }
 
 #filter { display: none; }   
