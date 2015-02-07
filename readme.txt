@@ -3,7 +3,7 @@ Contributors: MistahWrite
 Tags: artistography, artist, discography
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stabe tag: 0.0.8
+Stabe tag: 0.0.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -26,8 +26,8 @@ Artistography allows a user to organize albums and videos onto an artist page.  
 [artistography_artist_name id=1]
      Displays the name of the artist with database id=1.
 
-[artistography_display_enabled_artists]
-     Displays "enabled" artists in a table with pictures that break away on mouse-over
+[artistography_display_artists]
+     Displays artists in a table with pictures that break away on mouse-over
           Optional paramaters:
                cols=(default 4)
 
@@ -51,7 +51,7 @@ Artistography allows a user to organize albums and videos onto an artist page.  
 [artistography_display_album_artist id=1]
      Displays artist name of album with album database id=1
 
-== Changelog =
+== Changelog ==
 
 =0.0.8=
 * Updated style for admin panels
