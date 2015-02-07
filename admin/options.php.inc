@@ -1,8 +1,8 @@
 <?php
 
 if (strcmp($_POST['save'], NULL)) {
-  update_option('wp_artistography_preserve_database', $_POST['preserve_database']);
-  update_option('wp_artistography_email_notify_ftp', $_POST['email_notify_ftp']);
+  update_option('wp_artistography_preserve_database', ((!strcmp($_POST['preserve_database'], NULL)) ? true : false));
+  update_option('wp_artistography_email_notify_ftp', ((!strcmp($_POST['email_notify_ftp'], NULL)) ? true : false));
   update_option('wp_artistography_ftp_host', $_POST['ftp_host']);
   update_option('wp_artistography_ftp_user', $_POST['ftp_user']);
   update_option('wp_artistography_ftp_pass', $_POST['ftp_pass']);
