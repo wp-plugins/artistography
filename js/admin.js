@@ -470,7 +470,7 @@ $(document).ready(function() {
       autoOpen: false,
       show: "implode",
       hide: "explode",
-      height: 400,
+      height: 450,
       width: 350,
       modal: true,
       buttons: {

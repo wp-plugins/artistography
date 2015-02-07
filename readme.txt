@@ -53,6 +53,13 @@ Artistography allows a user to organize albums and videos onto an artist page.  
 
 == Changelog ==
 
+=0.0.9=
+* Removed track_list database and support routines
+* Removed stats page
+* Moved Options page towards the bottom
+* Made textbox into textarea for artist description
+* Fixed FTP Uploader page with plugs_url()
+
 =0.0.8=
 * Updated style for admin panels
 * Worked on AJAX Artist Create, Edit, Update, and Delete Artist
