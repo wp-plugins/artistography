@@ -1,0 +1,201 @@
+# Dutch language file for Unlimited FTP
+LABEL.LOCALFILESYSTEM=Uw Computer
+LABEL.NOHOST=Geen Host
+LABEL.STATUS=Status
+LABEL.FILESSELECTEDFORUPLOAD=Bestand(en)
+LABEL.MYCOMP=Bladeren en selecteren bestand.
+LABEL.SELECTIONPREVIEW=Selectie op dit moment
+LABEL.UPLOADLIST=Upload kaart
+LABEL.INSTRUCTIONS=Selecteer bestanden/mappen aan de linkerkant en verplaats deze door middel van de pijltjes toetsen.\nbestanden/mappen die aan de rechterkant zijn geplaatst worden verwerkt op het moment dat u de verzenden knop in drukt.
+
+LABEL.CHECKALL=check/de-selecteer alles
+LABEL.CHECKSELECTED=geselecteerd
+
+BUTTON.HELP=Help
+BUTTON.SYNC=Sync
+BUTTON.PUT=Upload
+BUTTON.GET=Download
+BUTTON.CONNECT=Verbinden
+BUTTON.DISCONNECT=Afsluiten
+BUTTON.ABOUT=Info
+BUTTON.DELETE=Weggooien
+BUTTON.VIEW=Openen
+BUTTON.DIRINFO=Map Info
+BUTTON.REFRESH=Vernieuwen
+BUTTON.RENAME=Herbenoemen
+BUTTON.CHANGEDIR=Verander map.
+BUTTON.MAKEDIR=Maak map.
+BUTTON.SITE=Site
+BUTTON.BROWSE=Browse...
+BUTTON.SEND=Verzenden
+BUTTON.ADD=Bijvoegen
+BUTTON.REMOVE=Verwijderen
+BUTTON.STARTUPLOAD=Upload
+BUTTON.STOPUPLOAD=Afbreken
+
+DIALOG.OK=Ok
+DIALOG.YES=Ja
+DIALOG.YESALL=Ja voor alles
+DIALOG.NO=Nee
+DIALOG.NOALL=Nee voor alles
+DIALOG.CANCEL=Afbreken
+DIALOG.OPEN=Open
+
+MESSAGE.TRANSFERCOMPLETE=Overdracht compleet.
+MESSAGE.TRANSFERRING=Bezig met verzenden
+MESSAGE.TRANSFERRED=Verzonden
+MESSAGE.DISCONNECTING=Aan het afsluiten
+MESSAGE.DISCONNECTED=Verbinding afgesloten
+MESSAGE.CONNECTING=Contact maken
+MESSAGE.ERROR=Fout
+MESSAGE.IDLE=Inactief
+MESSAGE.BROWSING.LIMIT=Bladeren is beperkt
+MESSAGE.CANCELLED=Geannuleerd
+MESSAGE.TRANSFERCANCELLED=Verzenden geannuleerd
+
+FILEDIALOG.TITLE=Selecteer bestanden/mappen voor de upload
+FILEDIALOG.FILENAME=Bestandsnaam
+FILEDIALOG.FILETYPE=Bestanden van type
+
+DIALOG.RESUME.TITLE=Doorgaan met verzenden?
+DIALOG.RESUME.MESSAGE=is gedeeltelijk verzonden. Wilt u verder gaan met verzenden ?
+
+DIALOG.OVERWRITE.TITLE=Overschrijven?
+DIALOG.OVERWRITE.MESSAGE=bestand bestaat al, overschrijven?
+
+DIALOG.RENAME.LOCAL.TITLE=Herbenoem lokaal bestand
+DIALOG.RENAME.REMOTE.TITLE=Herbenoem bestand op de server
+DIALOG.RENAME.MESSAGE=Geef nieuwe naam:
+DIALOG.RENAME.ERROR=bestand kan niet herbenoemd worden.
+DIALOG.RENAME.SUCCESS=Bestand succesvol herbenoemd.
+
+DIALOG.DELETE.TITLE=Bevestig verwijderen
+DIALOG.DELETE.MESSAGE=Weet u zeker dat u de geselecteerde bestanden wilt verwijderen?
+DIALOG.DELETE.ERROR=Een of meer bestanden kunnen niet worden verwijderd
+
+DIALOG.CHANGEDIR.LOCAL.TITLE=Verander lokale map
+DIALOG.CHANGEDIR.REMOTE.TITLE=Verander van map op de server
+DIALOG.CHANGEDIR.MESSAGE=Selecteer doelmap:
+DIALOG.CHANGEDIR.ERROR=Kan niet van map veranderen
+
+DIALOG.MAKEDIR.LOCAL.TITLE=Maak een lokale map
+DIALOG.MAKEDIR.REMOTE.TITLE=Maak een map op de server
+DIALOG.MAKEDIR.MESSAGE=Enter new directory name:
+DIALOG.MAKEDIR.ERROR=The directory could not be created
+DIALOG.MAKEDIR.SUCCESS=The directory was created successfully
+
+DIALOG.DIRINFO.LOCAL.TITLE=Local Directory Info
+DIALOG.DIRINFO.REMOTE.TITLE=Remote Directory Info
+DIALOG.DIRINFO.ERROR=Error displaying directory info.
+
+DIALOG.CHMOD.TITLE=Chmod
+DIALOG.CHMOD.MESSAGE=Geef permissies aan voor de geselecteerde bestanden?
+
+DIALOG.NEWVOLUME.TITLE=Nieuw volume gedetecteerd
+DIALOG.NEWVOLUME.MESSAGE=Inhoud nieuw volume weergeven?
+
+DIALOG.VIEW.ERROR=Kan niet bekeken worden
+o
+DIALOG.SITE.TITLE=Site command
+DIALOG.SITE.MESSAGE=Voer een site commando in:
+DIALOG.SITE.ERROR=De server begrijpt geen site commando's.
+
+DIALOG.PASSWORD.TITLE=Wachtwoord nodig
+DIALOG.PASSWORD.MESSAGE=Voer uw wachtwoord in:
+
+DIALOG.ABOUT.TITLE=Informatie
+
+DIALOG.BUSY.TITLE=Even geduld a.u.b. ...
+DIALOG.BUSY.CONNECTING=Verbinden met
+DIALOG.BUSY.CREATINGZIP=Maak zip bestand
+DIALOG.BUSY.PUT=Voorbereiden voor uploaden...
+DIALOG.BUSY.GET=Voorbereiden voor downloaden...
+DIALOG.BUSY.SYNC=Voorbereiden voor synchronisatie...
+DIALOG.BUSY.DELETING=Bestanden worden verwijderd...
+DIALOG.BUSY.CANCELLING=Verzenden geannuleerd...
+DIALOG.BUSY.CHMOD=Permissies worden gemaakt...
+
+DIALOG.SUCCESS.TITLE=Succes
+
+DIALOG.ERROR.TITLE=Fout
+DIALOG.ERROR.ENTERUSER=U moet een gebruikersnaam invoeren
+DIALOG.ERROR.ENTERPASSWORD=U moet een wachtwoord invoeren
+DIALOG.ERROR.ENTERHOST=U moet een geldige server invoeren
+DIALOG.ERROR.ENTERPORT=U moet een geldige poort invoeren
+DIALOG.ERROR.LOGONERROR=Gebruikersnaam of wachtwoord fout
+DIALOG.ERROR.CONNECTERROR=Kan niet verbinden met
+DIALOG.ERROR.FILENOTEXIST=Een of meer geselecteerde bestanden bestaan niet
+DIALOG.ERROR.CONFIG=Configuratie fout, neem contact op met de systeembeheerder
+DIALOG.ERROR.TRANSFER=Een of meerdere bestanden konden niet worden verzonden
+DIALOG.ERROR.SELECT=U moet bestanden/mappen selecteren voor deze actie
+DIALOG.ERROR.DRIVE=Geen disk in de drive, of de drive is niet klaar
+DIALOG.ERROR.NOTCONNECTED=U bent niet verbonden, verbind u met de server.
+DIALOG.ERROR.FILELISTING=Kan geen overzicht van de server weergeven.
+
+DIALOG.RECONNECT.TITLE=Opnieuw verbinden?
+DIALOG.RECONNECT.MESSAGE=Verbinding verbroken, opnieuw verbinden?
+
+# new as of UnlimitedFTP v2.8
+
+POPUP.OPTIONS=Opties
+POPUP.UPLOAD=Upload
+POPUP.UPLOADAS=Upload Als...
+POPUP.DOWNLOAD=Download
+POPUP.DOWNLOADAS=Download Als...
+POPUP.OPEN=Open
+POPUP.OPENWITH=Open Met...
+POPUP.EXPLORE=Verkennen
+POPUP.WINDOWSEXPLORER=Windows Explorer hier
+POPUP.COMMANDPROMPT=Command Prompt hier
+POPUP.CHMOD=chmod (UNIX)
+POPUP.DELETE=Verwijderen
+POPUP.RENAME=Herbenoemen
+POPUP.PROPERTIES=Eigenschappen
+POPUP.SELECTALL=Alles selecteren
+
+POPUP.REFRESH=Vernieuwen
+POPUP.DIRINFO=Map Info
+POPUP.MAKEDIR=Make Map
+POPUP.CHANGEDIR=Change Map
+POPUP.SITE=Site Commando
+
+
+POPUP.CLEARFTPMESSAGES=Verwijder FTP berichten
+
+HEADER.FILENAME=Bestandsnaam
+HEADER.DATE=Datum
+HEADER.SIZE=Grootte
+
+MESSAGE.CONNECTED=Verbonden
+
+LABEL.MYCOMPUTER=Deze Computer
+LABEL.FINDER=Finder
+LABEL.DESKTOP=Bureaublad
+LABEL.MYDOCS=Mijn Documenten
+LABEL.HOME=Home
+LABEL.NETHOOD=Netwerk
+
+DIALOG.COMFIRMUPLOAD.TITLE=Doorgaan?
+DIALOG.COMFIRMUPLOAD.MESSAGE1=Verzend bestanden naar
+DIALOG.COMFIRMUPLOAD.MESSAGE2=Wilt u doorgaan?
+
+DIALOG.COMFIRMDOWNLOAD.TITLE=Doorgaan?
+DIALOG.COMFIRMDOWNLOAD.MESSAGE1=Downloaden naar
+DIALOG.COMFIRMDOWNLOAD.MESSAGE2=Wilt u doorgaan?
+
+
+
+
+TOOLTIP.CDUP=Up one folder
+TOOLTIP.ADD=Voeg geselecteerde bestanden to naar upload kader
+TOOLTIP.ADDALL=Voeg geselecteerde bestanden to uit deze map naar het upload kader
+TOOLTIP.REMOVE=Verwijder geselecteerde bestanden uit het upload kader
+TOOLTIP.REMOVEALL=Verwijder alle geselecteerde bestanden uit het upload kader
+TOOLTIP.HELP=Laat gebruiks instructies zien
+
+DIALOG.ERROR.MAXFILES=Maximum aantal bestanden voor deze upload is beperkt tot
+DIALOG.ERROR.MAXSIZE=Het geselecteerde bestand is te groot en niet verwerkt.
+DIALOG.ERROR.CARTEMPTY=Het upload kader is leeg
+
+DIALOG.BUSY.ADDING=Bijwerken upload kader...
+DIALOG.INSTRUCTIONS.TITLE=Instructies
