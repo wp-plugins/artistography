@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.1.0
+ * Version: 0.1.1
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -12,7 +12,7 @@ define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true); 
 define('WP_DEBUG_DISPLAY', true);
 
-define('ARTISTOGRAPHY_VERSION', '0.1.0');
+define('ARTISTOGRAPHY_VERSION', '0.1.1');
  // whether to preserve database on plugin deactivation
 define('PRESERVE_DATABASE_TABLES', true);  // TODO: make this user configurable for later
 
@@ -174,7 +174,6 @@ function artistography_pluginInstall() {
   GLOBAL $wpdb, $TABLE_NAME, $download_path, $download_folder, $i18n_domain;
  
   $version = get_option('wp_artistography_version');
-  $fresh_install = false;
 
    /*** Store any options ***/
   add_option('wp_artistography_preserve_database', true);
@@ -183,41 +182,26 @@ function artistography_pluginInstall() {
   add_option('wp_artistography_ftp_user', '');
   add_option('wp_artistography_ftp_pass', '');
   add_option('wp_artistography_ftp_path', '');
+  add_option('wp_artistography_version', ARTISTOGRAPHY_VERSION, NULL, true);
 
-  if(!$version) {
-     // this is a fresh install/activation
-    add_option('wp_artistography_version', ARTISTOGRAPHY_VERSION, NULL, true);
+  if (version_compare($version, "0.1.1", '<')) {
+     // this is an update to at least 0.1.1
+    $thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTISTS];
+    $query = "ALTER TABLE $thetable DROP COLUMN myspace_url";
+    $wpdb->query($query);
 
-    $fresh_install = true;
-  } else {
-    if (version_compare($version, "0.0.3-beta", '<')) {
-       // this is an update to at least 0.0.3-beta
-      $thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTISTS];
-      $query = "ALTER TABLE $thetable
-                DROP COLUMN myspace_url";
-      $wpdb->query($query);
-    }
+    $query = "ALTER TABLE $thetable DROP COLUMN birthday";
+    $wpdb->query($query); 
 
-    if (version_compare($version, "0.0.8", '<')) {
-       // this is an update to at least 0.0.8
-      $thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTISTS];
-      $query = "ALTER TABLE $thetable
-                DROP COLUMN birthday";
-      $wpdb->query($query); 
-      $query = "ALTER TABLE $thetable
-                DROP COLUMN enabled";
-      $wpdb->query($query);      
-    }
+    $query = "ALTER TABLE $thetable DROP COLUMN enabled";
+    $wpdb->query($query);      
 
-    if (version_compare($version, "0.0.9", '<')) {
-             // this is an update to at least 0.0.8
-      $thetable = $wpdb->prefix . "artistography_track_list";
-      $query = "DROP TABLE $thetable";
-      $wpdb->query($query);
-    }
-
-    update_option('wp_artistography_version', ARTISTOGRAPHY_VERSION);
+    $thetable = $wpdb->prefix . "artistography_track_list";
+    $query = "DROP TABLE $thetable";
+    $wpdb->query($query);
   }
+
+  update_option('wp_artistography_version', ARTISTOGRAPHY_VERSION);
 
   if (!is_dir($download_path)) {
     mkdir($download_path);
@@ -305,8 +289,14 @@ function artistography_pluginUninstall() {
    // TODO: Remove download.php link, make sure we are deleting from correct directory via variables
   //delete('/download.php'); 
 
-  if(!PRESERVE_DATABASE_TABLES) {
+  if (strcmp(get_option('wp_artistography_preserve_database'), NULL)) {
      //Delete any options that's stored also?
+    delete_option('wp_artistography_preserve_database');
+    delete_option('wp_artistography_email_notify_ftp');
+    delete_option('wp_artistography_ftp_host');
+    delete_option('wp_artistography_ftp_user');
+    delete_option('wp_artistography_ftp_pass');
+    delete_option('wp_artistography_ftp_path');
     delete_option('wp_artistography_version');
 
     foreach ($TABLE_NAME as $key => $value) {
