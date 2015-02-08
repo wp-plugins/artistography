@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.1.1
+ * Version: 0.1.2
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -12,7 +12,7 @@ define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true); 
 define('WP_DEBUG_DISPLAY', true);
 
-define('ARTISTOGRAPHY_VERSION', '0.1.1');
+define('ARTISTOGRAPHY_VERSION', '0.1.2');
  // whether to preserve database on plugin deactivation
 define('PRESERVE_DATABASE_TABLES', true);  // TODO: make this user configurable for later
 
@@ -289,7 +289,7 @@ function artistography_pluginUninstall() {
    // TODO: Remove download.php link, make sure we are deleting from correct directory via variables
   //delete('/download.php'); 
 
-  if (strcmp(get_option('wp_artistography_preserve_database'), NULL)) {
+  if (!strcmp(get_option('wp_artistography_preserve_database'), NULL)) {
      //Delete any options that's stored also?
     delete_option('wp_artistography_preserve_database');
     delete_option('wp_artistography_email_notify_ftp');

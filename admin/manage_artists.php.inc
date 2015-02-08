@@ -43,7 +43,7 @@ echo "	<div style='float:left;'><h1>" .__('Existing Artists:', $i18n_domain). "<
 
 if ($artist->loadAll('name ASC')->getTotalRows() === 0) {
   echo "	        <tr>\n"
-     . "	            <td colspan='4'>\n"
+     . "	            <td colspan='5'>\n"
      . __('No Artists Available in the Database!', $i18n_domain)
      . "\n	            </td>\n"
      . "	        </tr>\n";
