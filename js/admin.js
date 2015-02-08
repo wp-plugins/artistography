@@ -7,33 +7,61 @@ $(document).ready(function() {
 
   if ( $( "#artistsTable" ).length != 0 ) {
 
-      function addArtist() {
+      function addArtist(name, artist_url, artist_picture_url, artist_description) {
           var data_add = {
-                  action: 'Create_Artist'
+                  action: 'Create_Artist',
+                  artist_name: name,
+                  url: artist_url,
+                  picture_url: artist_picture_url,
+                  artist_descr: artist_description
           };
 
           // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
           $.post(ajaxurl, data_add, function(response) {
-              if(response === '1') {
-//                  if ($.trim($('#album_id_' + add_album_id).html()).length == default_droppable_message.length) {
-//                      $('#album_id_' + add_album_id).html('');
-//                  }
-//                  $('#artist_id_' + add_artist_id).clone(true)
-//                    .attr('id', 'album_id_' + add_album_id + '-artist_id_' + add_artist_id)
-//                    .appendTo('#album_id_' + add_album_id)
-//                    .toggleClass('draggable', false).toggleClass('pseudodraggable')
-//                    .append( "<button id='delete_" + add_album_id + "-" + add_artist_id + "'>Delete</button>");
-//                  $( "#delete_" + add_album_id + "-" + add_artist_id ).button({
-//                      text: false,
-//                      icons: {
-//                          primary: "ui-icon-trash"
-//                      }
-//		  }).click(function() {
-//                      delArtist(add_artist_id, add_album_id);
-//                  });
+              if($.isNumeric(response)) {
+                  // artist was just added successfully
+                return response; // TODO: make the id of newly added artist
               } else {
                   alert('Got this from the server: ' + response);
               }
+          });
+      }
+
+      function updateArtist(update_artist_id, name, artist_url, artist_picture_url, artist_description) {
+          var data_update = {
+              action: 'Update_Artist',
+              artist_id: update_artist_id,
+              artist_name: name,
+              url: artist_url,
+              picture_url: artist_picture_url,
+              artist_descr: artist_description
+          };
+
+          $.post(ajaxurl, data_update, function(response) {
+              if(response === '1') {
+              } else {
+                  alert('Got this from the server: ' + response);
+              }
+          });
+      }
+
+      function editArtist(edit_artist_id) {
+          var data_edit = {
+                  action: 'Edit_Artist',
+                  artist_id: edit_artist_id
+          };
+
+          $.post(ajaxurl, data_edit, function(response) {
+              var res = response.split("##$$##");
+              $( "#url" ).value = res[2];
+              
+              $( "#dialog-form" ).dialog( "open" );
+              $( "#id" ).val(res[0]);
+              $( "#name" ).val(res[1]);
+              $( "#url" ).val(res[3]);
+              $( "#picture_url" ).val(res[2]);
+              $( "#artist_descr" ).val(res[4]);
+
           });
       }
 
@@ -58,11 +86,21 @@ $(document).ready(function() {
           });
       }
 
+      $( ".edit_button" ).button({
+          text: true,
+          icons: {
+              primary: "ui-icon-pencil"
+          }
+      }).click(function() {
+          var id = $( this ).attr('id').replace('edit_', '');
+          editArtist(id);
+      });
+
       $( ".delete_button" ).button({
-          text: false,
+          text: true,
           icons: {
               primary: "ui-icon-trash"
-      }
+          }
       }).click(function() {
            // show alert to verify whether we are really wanting to delete this album
           if ( confirm('Are you sure you want to delete that artist?  Also deletes all references to this artist in the Discography.') ) {
@@ -203,7 +241,7 @@ $(document).ready(function() {
       }
 
       $( ".delete_button" ).button({
-          text: false,
+          text: true,
           icons: {
               primary: "ui-icon-trash"
       }
@@ -401,10 +439,12 @@ $(document).ready(function() {
     // a workaround for a flaw in the demo system (http://dev.jqueryui.com/ticket/4375), ignore!
     $( "#dialog:ui-dialog" ).dialog( "destroy" );
 
-    var name = $( "#name" ),
-     email = $( "#email" ),
-     password = $( "#password" ),
-     allFields = $( [] ).add( name ).add( email ).add( password ),
+    var id = $( "#id" ),
+     name = $( "#name" ),
+     url = $( "#url" ),
+     picture_url = $( "#picture_url" ),
+     artist_descr = $( "#artist_descr" ),
+     allFields = $( [] ).add( id ).add( name ).add( url ).add( picture_url ).add( artist_descr ),
      tips = $( ".validateTips" );
 
     function updateTips( t ) {
@@ -426,34 +466,30 @@ $(document).ready(function() {
       }
     }
 
-    function checkRegexp( o, regexp, n ) {
-      if ( !( regexp.test( o.val() ) ) ) {
-        o.addClass( "ui-state-error" );
-        updateTips( n );
-        return false;
-      } else {
-        return true;
-      }
-    }
-		
     $( "#dialog-form" ).dialog({
       autoOpen: false,
       show: "implode",
       hide: "explode",
-      height: 600,
+      height: 450,
       width: 350,
       modal: true,
       buttons: {
-        "Create the Artist": function() {
-          var bValid = true;
+        "Save": function() {
+          var result = false, bValid = true;
           allFields.removeClass( "ui-state-error" );
 
-          bValid = bValid && checkLength( name, "name", 3, 50 );
+          bValid = bValid && checkLength( name, "name", 3, 100 );
 
-          bValid = bValid && checkRegexp( name, /^[a-z]([0-9a-z_])+$/i, "Artist name may consist of a-z, 0-9, underscores, begin with a letter." );
-          if ( bValid ) {
-            $( "#artists tbody" ).append( "<tr>" + "<td>" + name.val() + "</td>" + "</tr>" ); 
+          if ( id.val() === '' && bValid ) {
+            id = addArtist(name.val(), url.val(), picture_url.val(), artist_descr.val());
+            $( "#artistsTable tbody" ).append( "<tr>" + "<td align='center'>" + id + "</td><td align='center'><a href='" + url.val() + "' target='_blank'><img src='" + picture_url.val() + "' height='75' width='75' /></a></td><td align='center'><a href='" + url.val() + "' target='_blank'>" + name.val() + "</a></td><td align='center'>0</td><td align'center'>Pending Creation...</td></tr>" );
+
+            zebraRows('tbody tr:odd td', 'odd');
             $( this ).dialog( "close" );
+          } else {
+            result = updateArtist(id.val(), name.val(), url.val(), picture_url.val(), artist_descr.val());
+            $( this ).dialog( 'close' );
+            location.reload();
           }
         },
         Cancel: function() {
@@ -466,12 +502,6 @@ $(document).ready(function() {
     });
 
     $( "#create-artist" )
-      .button()
-      .click(function() {
-        $( "#dialog-form" ).dialog( "open" );
-      });
-
-    $( ".edit-artist" )
       .button()
       .click(function() {
         $( "#dialog-form" ).dialog( "open" );
