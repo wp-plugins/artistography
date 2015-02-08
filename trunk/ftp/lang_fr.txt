@@ -1,0 +1,174 @@
+# English language file for Unlimited FTP
+LABEL.LOCALFILESYSTEM=Fichiers sur votre ordinateur
+LABEL.NOHOST=Fichiers Distants (Pas connecté)
+LABEL.STATUS=Statut
+LABEL.FILESSELECTEDFORUPLOAD=fichier(s)
+LABEL.MYCOMP=Choisissez les dossiers ci-dessous.
+LABEL.SELECTIONPREVIEW=Prévision de choix
+LABEL.UPLOADLIST=Liste de fichiers selectionnés
+LABEL.INSTRUCTIONS=Choisissez les fichiers/docssiers à partir du carreau de côté gauche \n et ajoutez-les au carreau à droite en utilisant les flèches.\nVotre choix sera énumérée dans le carreau du côté droit votre choix sera soumis \nquand le bouton de téléchargement est appuyé.
+
+BUTTON.HELP=Aide
+BUTTON.SYNC=Sync
+BUTTON.PUT=Envoyer
+BUTTON.GET=Recevoir
+BUTTON.CONNECT=Connecter
+BUTTON.DISCONNECT=Déconnecter
+BUTTON.ABOUT=À propos
+BUTTON.DELETE=Supprimer
+BUTTON.VIEW=Ouvrir
+BUTTON.DIRINFO=Informations
+BUTTON.REFRESH=Rafraichir
+BUTTON.RENAME=Retitrer
+BUTTON.CHANGEDIR=Changer Dossier
+BUTTON.MAKEDIR=Créer un Dossier
+BUTTON.SITE=Site
+BUTTON.BROWSE=Parcourir...
+BUTTON.SEND=Envoyer
+BUTTON.ADD=Ajouter
+BUTTON.REMOVE=Enlever
+BUTTON.STARTUPLOAD=Commencer l'envoi
+BUTTON.STOPUPLOAD=Annuler
+BUTTON.CDUP=Répertoire parent 
+
+DIALOG.OK=Ok
+DIALOG.YES=Oui
+DIALOG.YESALL=Oui, tous!
+DIALOG.NO=Non
+DIALOG.NOALL= Non, aucun!
+DIALOG.CANCEL=Annuler
+DIALOG.OPEN=Ouvrir
+
+
+MESSAGE.TRANSFERCOMPLETE=Transfert Complet
+MESSAGE.TRANSFERRING=Patience ...
+MESSAGE.TRANSFERRED=Transferé
+MESSAGE.DISCONNECTING=Déconection de
+MESSAGE.DISCONNECTED=Débranché
+MESSAGE.CONNECTING=Connection à
+MESSAGE.ERROR=L'erreur s'est produite
+MESSAGE.IDLE=Ralenti
+MESSAGE.BROWSING.LIMIT=Vous êtes limités au 
+MESSAGE.CANCELLED=Annulé
+MESSAGE.TRANSFERCANCELLED=Transfert Annulé
+
+FILEDIALOG.TITLE=Choisissez les dossiers ou les directorys pour télécharger
+FILEDIALOG.FILENAME=Nom de fichier
+FILEDIALOG.FILETYPE=Type de fichier
+
+DIALOG.RESUME.TITLE=Reprendre ?
+DIALOG.RESUME.MESSAGE=n'a pas été terminé, continuer le transfert ou il en était ?
+DIALOG.OVERWRITE.TITLE=Ecraser ?
+DIALOG.OVERWRITE.MESSAGE=Existe déja, voulez-vous le remplacer ?
+
+DIALOG.RENAME.LOCAL.TITLE=Retitrer Fichier Local
+DIALOG.RENAME.REMOTE.TITLE=Retitrer Fichier sur le serveur
+DIALOG.RENAME.MESSAGE=Entre un nouveau nom:
+DIALOG.RENAME.ERROR=Impossible ! Vous ne disposez pas des autorisations !
+DIALOG.RENAME.SUCCESS=Le fichier a été renommé
+
+DIALOG.DELETE.TITLE=Confirmation
+DIALOG.DELETE.MESSAGE=Estes-vous certain de vouloir supprimer ces fichiers ?
+DIALOG.DELETE.ERROR=Un ou plusieurs fichiers n'ont pas été soupprimer!
+
+DIALOG.CHANGEDIR.LOCAL.TITLE=Changer le répertoire local
+DIALOG.CHANGEDIR.REMOTE.TITLE=Changer le répertoire sur le serveur
+DIALOG.CHANGEDIR.MESSAGE=Entrez le nouveau répertoire:
+DIALOG.CHANGEDIR.ERROR=Le répertoire n'a pas été changé
+
+DIALOG.MAKEDIR.LOCAL.TITLE=Créer un répertoire sur votre ordinateur
+DIALOG.MAKEDIR.REMOTE.TITLE=Créer un répertoire sur le serveur-backup
+DIALOG.MAKEDIR.MESSAGE=Entrez le nouveau répertoire:
+DIALOG.MAKEDIR.ERROR=Impossible ! Vous ne disposez pas des autorisations !
+DIALOG.MAKEDIR.SUCCESS=Le dossier à bien été creé
+
+DIALOG.DIRINFO.LOCAL.TITLE=Information sur le répertoire
+DIALOG.DIRINFO.REMOTE.TITLE=Information sur le répertoire
+DIALOG.DIRINFO.ERROR=Problème avec affichage de répertoire
+
+DIALOG.CHMOD.TITLE=Chmod
+DIALOG.CHMOD.MESSAGE=Entrez les permissions?
+
+DIALOG.NEWVOLUME.TITLE=Un nouveau volume a été trouvé
+DIALOG.NEWVOLUME.MESSAGE=Voullez-vous afficher le contenu de ce volume ?
+
+DIALOG.VIEW.ERROR=Le fichier n'a pas été ouvert
+
+DIALOG.SITE.TITLE=Commande "Site"
+DIALOG.SITE.MESSAGE=Entrez votre commande:
+DIALOG.SITE.ERROR=Le serveur n'a pas compris votre commande.
+
+DIALOG.PASSWORD.TITLE=Mot de Passe Requis
+DIALOG.PASSWORD.MESSAGE=Entre votre mot de passe:
+
+DIALOG.ABOUT.TITLE=À propos
+
+DIALOG.BUSY.TITLE=Patience ...
+DIALOG.BUSY.CONNECTING=Connection à
+DIALOG.BUSY.CREATINGZIP=Ziping ...
+DIALOG.BUSY.PUT=Paré à l'envoi ...
+DIALOG.BUSY.GET=Paré au téléchargement ...
+DIALOG.BUSY.SYNC=Paré pour synch ...
+DIALOG.BUSY.DELETING=Destruction fichier(s) ...
+DIALOG.BUSY.CANCELLING=Annulation transfert
+DIALOG.BUSY.CHMOD=Mise de permissions sur les fichiers ...
+
+DIALOG.SUCCESS.TITLE=Succès
+
+DIALOG.ERROR.TITLE=Erreur
+DIALOG.ERROR.ENTERUSER=Entrez un nom d'utilisateur
+DIALOG.ERROR.ENTERPASSWORD=Entrez votre mot de passe
+DIALOG.ERROR.ENTERHOST=Entrez un nom de serveur valide
+DIALOG.ERROR.ENTERPORT=Entrez un numéro de port
+DIALOG.ERROR.LOGONERROR=Nom d'utilisateur ou mot de passe invalide
+DIALOG.ERROR.CONNECTERROR=Impossible de se connecter à
+DIALOG.ERROR.FILENOTEXIST=Le fichier spécifié n'existe pas !
+DIALOG.ERROR.CONFIG=Défaillance Générale
+DIALOG.ERROR.TRANSFER=Un ou plusieurs fichiers ne peuvent être transferés !
+DIALOG.ERROR.SELECT=Vous devez séléctionner un fichier avant de pouvoir faire cela !
+DIALOG.ERROR.DRIVE=Pas de disque ou le volume n'est pas prêt
+DIALOG.ERROR.NOTCONNECTED=Vous n'êtes pas connectés
+DIALOG.ERROR.FILELISTING=Could not load remote file listing.
+
+DIALOG.RECONNECT.TITLE=Reconnection?
+DIALOG.RECONNECT.MESSAGE=Voulez-vous vous reconnecter?
+
+# new as of UnlimitedFTP v2.8
+
+POPUP.OPTIONS=Options
+POPUP.UPLOAD=Envoi
+POPUP.UPLOADAS=Envoyer comme...
+POPUP.DOWNLOAD=Transfert
+POPUP.DOWNLOADAS=Transferer comme...
+POPUP.OPEN=Ouvrir
+POPUP.OPENWITH=Ouvrir avec...
+POPUP.EXPLORE=Explorer
+POPUP.WINDOWSEXPLORER=Windows Explorer ici
+POPUP.COMMANDPROMPT=Command Prompt ici
+POPUP.CHMOD=chmod (UNIX)
+POPUP.DELETE=Supprimer
+POPUP.RENAME=Renommer
+POPUP.PROPERTIES=Propriétés
+POPUP.SELECTALL=Choisir Tout
+
+POPUP.CLEARFTPMESSAGES=Effacer la fenêtre des messages
+
+HEADER.FILENAME=Nom de fichier
+HEADER.DATE=Date
+HEADER.SIZE=Grandeur
+
+MESSAGE.CONNECTED=Connecté
+
+LABEL.MYCOMPUTER=Mon Ordinateur
+LABEL.FINDER=Finder
+LABEL.DESKTOP=Mon bureau
+LABEL.MYDOCS=Mes Documents
+LABEL.HOME=Home
+
+DIALOG.COMFIRMUPLOAD.TITLE=Continue?
+DIALOG.COMFIRMUPLOAD.MESSAGE1=Envoi de fichier vers
+DIALOG.COMFIRMUPLOAD.MESSAGE2=Continuer?
+
+DIALOG.COMFIRMDOWNLOAD.TITLE=Continuer?
+DIALOG.COMFIRMDOWNLOAD.MESSAGE1=Transfert des fichiers vers
+DIALOG.COMFIRMDOWNLOAD.MESSAGE2=Continuer?
