@@ -75,7 +75,6 @@ class Download
 
 	      $donate_email = get_option('wp_artistography_donate_email');
 
-              header("Location: " .$loc, true, 303);
               $html = "<meta http-equiv='refresh' content='2;url=$loc'>"
                     . __("If your download does not begin in 2-5 seconds please click here", $i18n_domain)
                     . ": <a href='$loc' target='_blank'>$loc</a><br/><br/>"

@@ -1,5 +1,5 @@
 <?php
-  GLOBAL $i18n_domain;
+  GLOBAL $i18n_domain, $download_folder;
 
 if (strcmp(get_option('wp_artistography_email_notify_ftp'), NULL)) {
   $IP_Address = $_SERVER['REMOTE_ADDR'];
@@ -24,5 +24,5 @@ if (strcmp(get_option('wp_artistography_email_notify_ftp'), NULL)) {
 <param name="postscript" value="url_of_script">
 </applet>
 </div><div align="right">
-<iframe src='<? echo plugins_url('artistography/downloads', 'artistography'); ?>' height="400" width="100%"></iframe>
+<iframe src='<? echo get_option('siteurl') . $download_folder; ?>' height="400" width="100%"></iframe>
 </div>

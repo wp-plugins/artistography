@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.1.4
+ * Version: 0.1.5
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -12,7 +12,7 @@ define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true); 
 define('WP_DEBUG_DISPLAY', true);
 
-define('ARTISTOGRAPHY_VERSION', '0.1.4');
+define('ARTISTOGRAPHY_VERSION', '0.1.5');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -31,7 +31,9 @@ GLOBAL $i18n_domain; $i18n_domain = 'artistography'; // Localization/Internation
 GLOBAL $artistography_plugin_dir; $artistography_plugin_dir = plugins_url('artistography', 'artistography');
 GLOBAL $artistography_plugin_lang_dir; $artistography_plugin_lang_dir = basename(dirname(__FILE__));
 
-GLOBAL $download_path; $download_path = dirname(dirname($_SERVER['SCRIPT_FILENAME'])) . "/wp-content/plugins/artistography/downloads/";
+GLOBAL $download_folder; $download_folder = '/downloads/';
+GLOBAL $download_path; $download_path = WP_ROOT . $download_folder;
+GLOBAL $explorer_path; $explorer_path = dirname(dirname($_SERVER['SCRIPT_FILENAME'])) . "/wp-content/plugins/artistography/downloads/index.php";
 
 GLOBAL $download_icon_url; $download_icon_url = $artistography_plugin_dir . '/css/images/download.gif';
 GLOBAL $download_icon_width; $download_icon_width = '150';
@@ -69,7 +71,7 @@ function folder_is_empty($folder) {
 
  // ACTIVATION FOR PLUGIN
 function artistography_pluginInstall() {
-  GLOBAL $wpdb, $TABLE_NAME, $download_path, $download_folder, $i18n_domain;
+  GLOBAL $wpdb, $TABLE_NAME, $download_path, $explorer_path, $download_folder, $i18n_domain;
  
   $version = get_option('wp_artistography_version', false);
 
@@ -100,8 +102,12 @@ function artistography_pluginInstall() {
     if($my_post_id) {
       add_option('wp_artistography_download_page', $my_post_id);
     }
-  } 
-  
+  }
+ 
+  if (!is_dir($download_path)) {
+    mkdir($download_path);
+  }
+  copy($explorer_path, $download_path . "/index.php");
 
   if (version_compare($version, "0.1.1", '<')) {
      // this is an update to at least 0.1.1
@@ -118,10 +124,6 @@ function artistography_pluginInstall() {
     $thetable = $wpdb->prefix . "artistography_track_list";
     $query = "DROP TABLE $thetable";
     $wpdb->query($query);
-  }
-
-  if (version_compare($version, "0.1.4", '<')) {
-    rmdir('/downloads');
   }
 
   update_option('wp_artistography_version', ARTISTOGRAPHY_VERSION);
