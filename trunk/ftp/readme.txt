@@ -1,0 +1,3 @@
+- The applet documentation is an HTML document titled "documentation.html", which explains configuration and usage.
+- index.html loads an applet based on the configuration found in uftpscript.js
+- uftpscript.js is a javascript and configuration file.  Edit with any editor to set server and login credentials.

@@ -1,0 +1,87 @@
+<html>
+
+<head>
+
+<title>UnlimitedFTP Dynamic login sample</title>
+<script>
+<!-- 
+// Enter your server and port information here.  These will be sent through
+// the form as hidden values.  Username and Password will be entered
+// into the form by the user.  21 is the default FTP port.
+var server= "Your_FTP_Server_Here";
+var port = "21";
+
+//set the random number for key
+var somedate = new Date();
+var ek = Math.floor(Math.random()*11111111)+"abc";
+
+function doSubmit(){
+if (document.f.u.value == ""){
+	alert("Username is Required");
+	return;
+}
+if (document.f.p.value == ""){
+	alert("Password is Required");
+	return;
+}
+
+//the login form is valid; let's submit the encrypted values
+var user = document.f.u.value;
+var pass = document.f.p.value;
+document.f.u.value= encode(user,ek);
+document.f.p.value = encode(pass,ek);
+document.f.k.value =ek;
+document.f.s.value = encode(server,ek);
+document.f.prt.value=port;
+document.f.submit();
+}
+
+function encode(sstring,skey) {
+    var i;
+    var keyLength = skey.length;
+    var newstring = "";
+    for (i = 0; i < sstring.length; i++){
+      var value = sstring.charCodeAt(i);
+      var newval = value+skey.charCodeAt(i%keyLength);
+      while (newval<=32||newval>126||newval==34||newval==39)
+        newval=(newval<=32)?126-Math.abs(32-newval):(newval>126)?newval-94:newval+skey.charCodeAt(i%keyLength);
+      newstring = newstring + String.fromCharCode(newval);
+    }
+    return newstring;
+}
+
+-->
+</script>
+
+</head>
+
+<body>
+
+<FORM name='f' action="javascript_example_pro.html" method="GET">
+  <TABLE cellpadding=5 width=250 border=1 cellspacing="0" align="center">
+    <TR>
+      <TD align=middle colSpan=2>
+        <H2>UnlimitedFTP Login</H2>
+        <H5>You must edit this file and set the name and port to your own FTP server.</H5>	
+      </TD>
+	</TR>
+    <TR>
+      <TD>Username:</TD>
+      <TD><INPUT name=u></TD>
+	</TR>
+    <TR>
+      <TD>Password:</TD>
+      <TD><INPUT type=password name=p></TD>
+	</TR>
+	<input type=hidden name=k>
+	<input type=hidden name=s>
+    <input type=hidden name=prt>
+    <TR>
+      <TD height="70" colSpan="2" align="center" valign="middle" style="color: #FFFFFF">
+        <INPUT type=button onClick='doSubmit()' value=Login>
+      </TD>
+    </TR>
+  </TABLE>
+</FORM>
+
+</body>
