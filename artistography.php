@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.1.5
+ * Version: 0.1.6
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -12,7 +12,7 @@ define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true); 
 define('WP_DEBUG_DISPLAY', true);
 
-define('ARTISTOGRAPHY_VERSION', '0.1.5');
+define('ARTISTOGRAPHY_VERSION', '0.1.6');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -107,7 +107,7 @@ function artistography_pluginInstall() {
   if (!is_dir($download_path)) {
     mkdir($download_path);
   }
-  copy($explorer_path, $download_path . "/index.php");
+  exec("cp $explorer_path $download_path/");
 
   if (version_compare($version, "0.1.1", '<')) {
      // this is an update to at least 0.1.1
@@ -327,7 +327,7 @@ function artistography_plugin_menu() {
 }
 
 function artistography_plugin_options() {
-  GLOBAL $wpdb, $i18n_domain, $title, $TABLE_NAME, $download_folder, $download_path, $ftpuploader_folder, $ftpuploader_path, $artistography_plugin_dir;
+  GLOBAL $wpdb, $i18n_domain, $title, $TABLE_NAME, $download_folder, $download_path, $explorer_path, $artistography_plugin_dir;
 
   if (!current_user_can('manage_options'))  {
     wp_die( __('You do not have sufficient permissions to access this page.', $i18n_domain) );

@@ -1,4 +1,7 @@
 <?php
+echo "download path = " .$download_path ."<br/>";
+echo "explorer_path = " .$explorer_path;
+
 $download = new Download;
 
 if ($_POST['do_choose'] && !strcmp($_POST['file'], "")) {
