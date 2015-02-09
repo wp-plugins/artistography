@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.1.3
+ * Version: 0.1.4
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -12,8 +12,7 @@ define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true); 
 define('WP_DEBUG_DISPLAY', true);
 
-define('ARTISTOGRAPHY_VERSION', '0.1.3');
- // whether to preserve database on plugin deactivation
+define('ARTISTOGRAPHY_VERSION', '0.1.4');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -31,6 +30,8 @@ GLOBAL $i18n_domain; $i18n_domain = 'artistography'; // Localization/Internation
 
 GLOBAL $artistography_plugin_dir; $artistography_plugin_dir = plugins_url('artistography', 'artistography');
 GLOBAL $artistography_plugin_lang_dir; $artistography_plugin_lang_dir = basename(dirname(__FILE__));
+
+GLOBAL $download_path; $download_path = dirname(dirname($_SERVER['SCRIPT_FILENAME'])) . "/wp-content/plugins/artistography/downloads/";
 
 GLOBAL $download_icon_url; $download_icon_url = $artistography_plugin_dir . '/css/images/download.gif';
 GLOBAL $download_icon_width; $download_icon_width = '150';
@@ -117,6 +118,10 @@ function artistography_pluginInstall() {
     $thetable = $wpdb->prefix . "artistography_track_list";
     $query = "DROP TABLE $thetable";
     $wpdb->query($query);
+  }
+
+  if (version_compare($version, "0.1.4", '<')) {
+    rmdir('/downloads');
   }
 
   update_option('wp_artistography_version', ARTISTOGRAPHY_VERSION);
@@ -256,7 +261,7 @@ add_action('init', 'artistography_init');
 
   define(ADMIN_MENU_MANAGE_ARTISTS, __('Manage Artists', $i18n_domain));
   define(ADMIN_MENU_MANAGE_MUSIC, __('Music Albums', $i18n_domain));
-  define(ADMIN_MENU_MANAGE_ALBUM_DOWNLOADS, __('Album Downloads', $i18n_domain));
+  define(ADMIN_MENU_MANAGE_DOWNLOADS, __('Downloads', $i18n_domain));
   define(ADMIN_MENU_MANAGE_DISCOGRAPHY, __('Discography', $i18n_domain));
 //  define(ADMIN_MENU_MANAGE_GALLERIES, __('Galleries', $i18n_domain));
 //  define(ADMIN_MENU_MANAGE_ALBUM_ART, __('Album Art', $i18n_domain));
@@ -267,7 +272,7 @@ add_action('init', 'artistography_init');
   define(TOP_LEVEL_HANDLE, 'artistography-top-level');
   define(SUBMENU_MANAGE_ARTISTS_HANDLE, 'artistography-submenu-manage-artists');
   define(SUBMENU_MANAGE_MUSIC_HANDLE, 'artistography-submenu-manage-music');
-  define(SUBMENU_MANAGE_ALBUM_DOWNLOADS_HANDLE, 'artistography-submenu-manage-album-downloads');
+  define(SUBMENU_MANAGE_DOWNLOADS_HANDLE, 'artistography-submenu-manage-downloads');
   define(SUBMENU_MANAGE_DISCOGRAPHY_HANDLE, 'artistography-submenu-manage-discography');
 //  define(SUBMENU_MANAGE_GALLERIES_HANDLE, 'artistography-submenu-manage-galleries');
   define(SUBMENU_FTP_UPLOADER, 'artistography-submenu-ftp-uploader');
@@ -309,8 +314,8 @@ function artistography_plugin_menu() {
   add_menu_page(ADMIN_MENU_STATS, __('Artistography', $i18n_domain), 'manage_options', TOP_LEVEL_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_ARTISTS), ADMIN_MENU_MANAGE_ARTISTS, 'manage_options', TOP_LEVEL_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_MUSIC), ADMIN_MENU_MANAGE_MUSIC, 'manage_options', SUBMENU_MANAGE_MUSIC_HANDLE, 'artistography_plugin_options');
-  add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_ALBUM_DOWNLOADS), ADMIN_MENU_MANAGE_ALBUM_DOWNLOADS, 'manage_options', SUBMENU_MANAGE_ALBUM_DOWNLOADS_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_DISCOGRAPHY), ADMIN_MENU_MANAGE_DISCOGRAPHY, 'manage_options', SUBMENU_MANAGE_DISCOGRAPHY_HANDLE, 'artistography_plugin_options');
+  add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_DOWNLOADS), ADMIN_MENU_MANAGE_DOWNLOADS, 'manage_options', SUBMENU_MANAGE_DOWNLOADS_HANDLE, 'artistography_plugin_options');
 //  add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_GALLERIES), ADMIN_MENU_MANAGE_GALLERIES, 'manage_options', SUBMENU_MANAGE_GALLERIES_HANDLE, 'artistography_plugin_options');
 //  add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_ALBUM_ART), ADMIN_MENU_MANAGE_ALBUM_ART, 'manage_options', SUBMENU_MANAGE_ALBUM_ART_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_FTP_UPLOADER), ADMIN_MENU_FTP_UPLOADER, 'manage_options', SUBMENU_FTP_UPLOADER, 'artistography_plugin_options');
@@ -341,7 +346,7 @@ function artistography_plugin_options() {
       require_once('admin/manage_music.php.inc');
       break;
 
-    case sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_ALBUM_DOWNLOADS):
+    case sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_DOWNLOADS):
       require_once('admin/download_insert.php.inc');
       require_once('admin/download_stats.php.inc');
       break;

@@ -3,7 +3,7 @@ Contributors: MistahWrite
 Tags: artistography, artist, discography
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stabe tag: 0.1.3
+Stabe tag: 0.1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,9 +20,11 @@ Uses for FTP and file browsing capability:
 == Installation ==
 
 1. Install the Artisography plugin to your blog, and Activate it.  
-2. Next, Enter an Artist into the Admin/Dashboard > Artistography > Artists
-3. To populate the artist's Related Posts tab just tag posts with the Artist's name.  Artistography will automatically find it.
-4. Use the following shortcodes on a page/post:
+2. Admin/Dashboard > Artistography > Artists: Create An Artist
+3. Admin/Dashboard > Artistography > Music Albums: Create An Album
+4. Admin/Dashboard > Artistography > Discography: Drag and Drop the Artist to the Music Album
+5. To populate the artist's Related Posts tab just tag posts with the Artist's name.  Artistography will automatically find it.
+6. Use the following shortcodes on a page/post:
 
 [artistography_display_artist_page id=1]
      Displays photo/bio, discography, videos, and related posts of artist with database id=1
@@ -56,6 +58,11 @@ Uses for FTP and file browsing capability:
      Displays artist name of album with album database id=1
 
 == Changelog ==
+
+=0.1.4=
+*Fixed directory to files
+*Changed FTP Password to Password textbox
+*Fixed Downloads admin interface
 
 =0.1.3=
 *Fixed FTP Uploader ... Misplaced semi-colon broke page in last version

@@ -248,7 +248,7 @@ class Download
         }
     }
 
-    public function insert ($enabled, $file_name) {
+    public function insert ($file_name) {
         GLOBAL $wpdb, $i18n_domain, $current_user;
 
         get_currentuserinfo();
@@ -257,11 +257,11 @@ class Download
                        "INSERT INTO " .(string)self::$downloadTable. "
                         (create_date, update_date, poster_id, last_updated_by_id, enabled, file_name)
                         VALUES (now(), now(), %u, %u, %b, %s)",
-                        $current_user->ID, $current_user->ID, $enabled, $file_name);
+                        $current_user->ID, $current_user->ID, true, $file_name);
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === 0 OR $this->getTotalRows() === FALSE) {
-            wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
+            return false;
         } else {
              // was entered successfully into database
             return true;

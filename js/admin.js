@@ -402,7 +402,7 @@ $(document).ready(function() {
 
     $(".original_connection").each(function() {
         $( this ).button({
-            text: false,
+            text: true,
             icons: {
                 primary: "ui-icon-trash"
             }

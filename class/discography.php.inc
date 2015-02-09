@@ -179,7 +179,7 @@ class Discography
 		'gid' => '0'
 	), $atts ) );
 
-        GLOBAL $i18n_domain;
+        GLOBAL $i18n_domain, $download_icon_url, $download_icon_width, $download_icon_height;
 
         $id = esc_attr($id);
         $gid = esc_attr($gid);
@@ -232,6 +232,7 @@ class Discography
                 $rows = ((int)($num / $cols) < (float)($num / $cols)) ? (int)($num / $cols) + 1 : (int)($num / $cols);
                 $width = '225px';
                 $height = '225px';
+                $siteurl = get_option('siteurl');
                 $html .= " <div id='tabs-2'>\n"
                       .  "<center><table border='0'>";
                 for ($i = 0; $i < $rows; $i++) {
@@ -251,8 +252,8 @@ class Discography
                               .  "       <a href='$album->store_url'>"
                               .  "        <img src='$album->picture_url' style='border:1px solid black;height:$height;width:$width;' /></a><br/>";
                         if ($album->download_id > 0) {
-                            $html .= "       <a href='/download/$album->download_id'>"
-                                  .  "        <img width='112' height='75' src='/images/download.icon.png' /></a>";
+                            $html .= "       <a href='$siteurl/artistography_download/$album->download_id'>"
+                                  .  "        <img width='$download_icon_width' height='$download_icon_height' src='$download_icon_url' /></a>";
                         }
                         $html .= "    </font></center>"
                               .  "  </td>"
