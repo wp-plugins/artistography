@@ -74,6 +74,7 @@ function artistography_pluginInstall() {
 
    /*** Store any options ***/
   add_option('wp_artistography_donate_email', 'mistahwrite@gmail.com');
+  add_option('wp_artistography_preserve_hidden_pages', true);
   add_option('wp_artistography_preserve_database', true);
   add_option('wp_artistography_email_notify_ftp', true);
   add_option('wp_artistography_ftp_host', '');
@@ -190,19 +191,22 @@ register_activation_hook( __FILE__, 'artistography_pluginInstall' );
 function artistography_pluginUninstall() {
   GLOBAL $wpdb, $TABLE_NAME, $download_path, $i18n_domain;
 
-   /* Delete Download Page - So it isn't visible while Artistography is disabled */
-  $download_page_id = get_option('wp_artistography_download_page');
-  if ($download_page_id) {
-     // force delete download pageI
-    $result = wp_delete_post( $download_page_id, true ); 
-    if(!$result) {
-      delete_option('wp_artistography_download_page');
+  if (!strcmp(get_option('wp_artistography_preserve_hidden_pages'), NULL)) {
+     /* Delete Download Page - So it isn't visible while Artistography is disabled */
+    $download_page_id = get_option('wp_artistography_download_page');
+    if ($download_page_id) {
+       // force delete download pageI
+      $result = wp_delete_post( $download_page_id, true ); 
+      if(!$result) {
+        delete_option('wp_artistography_download_page');
+      }
     }
   }
 
   if (!strcmp(get_option('wp_artistography_preserve_database'), NULL)) {
      //Delete any options that's stored
     delete_option('wp_artistography_donate_email');
+    delete_option('wp_artistography_preserve_hidden_pages');
     delete_option('wp_artistography_preserve_database');
     delete_option('wp_artistography_email_notify_ftp');
     delete_option('wp_artistography_ftp_host');
