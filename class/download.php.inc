@@ -50,6 +50,7 @@ class Download
     public static function shortCodeDownload( $atts, $content=null, $code="" ) {
       GLOBAL $wpdb, $i18n_domain, $artistography_plugin_dir;
 
+      $Download = new Download;
       $uri = explode('/', $_SERVER["REQUEST_URI"]);
       $this_id = 0; $download_id = 0;
 
@@ -67,10 +68,10 @@ class Download
       if($download_id == 0 || $download_id == NULL) {
           $html = "Nothing to see here...";
       } else {
-          if(loadById ($download_id)) {
-              increaseCounterById ($download_id);
+          if($Download->loadById ($download_id)) {
+              $Download->increaseCounterById ($download_id);
 
-              $loc = $artistography_plugin_dir . "/download/" . $this->file_name;
+              $loc = $artistography_plugin_dir . "/downloads/" . $Download->file_name;
 
 	      $donate_email = get_option('wp_artistography_donate_email');
 
@@ -78,7 +79,7 @@ class Download
               $html = "<meta http-equiv='refresh' content='2;url=$loc'>"
                     . __("If your download does not begin in 2-5 seconds please click here", $i18n_domain)
                     . ": <a href='$loc' target='_blank'>$loc</a><br/><br/>"
-                    . sprintf(__("This has been downloaded <i><b>%s</b></i> times.", $i18n_domain), $this->download_count)
+                    . sprintf(__("This has been downloaded <i><b>%s</b></i> times.", $i18n_domain), $Download->download_count)
 		    . __("We appreciate your interest, and hope that you will consider at least a $1.00 donation by clicking the link below.  Feel free to tell us why you're donating to us as it means a lot.  Many thanks from the crew!", $i18n_domain)
                     . '<br/><br/>
 			<center>
