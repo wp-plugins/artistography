@@ -5,7 +5,6 @@ add_shortcode( 'artistography_display_artist_page', 'Discography::shortCodeDispl
 add_shortcode( 'artistography_album_download_link', 'Discography::shortCodeAlbumDownloadLink' );
 add_shortcode( 'artistography_album_art', 'Discography::shortCodeAlbumArt' );
 
-
  // AJAX Administration Drag/Drop Discography Auto-Save feature
 add_action('wp_ajax_Connect_Artist_to_Album', 'Discography::callback_Connect_Artist_to_Album');
 add_action('wp_ajax_Disconnect_Artist_from_Album', 'Discography::callback_Disconnect_Artist_from_Album');
@@ -154,7 +153,7 @@ class Discography
 		'id' => '0'
 	), $atts ) );
 
-        GLOBAL $i18n_domain;
+        GLOBAL $i18n_domain, $artistography_plugin_dir, $download_icon_url, $download_icon_width, $download_icon_height;
 
         $id = esc_attr($id);
 
@@ -164,7 +163,7 @@ class Discography
         $html = "";
         $album->loadById($id);
 
-        $html = "<p style='text-align: center;'><a href='http://www.sprucegooserecords.com/download/$album->download_id' target='_blank'><img class='aligncenter size-full wp-image-529' title=\"Download &quot;$album->album_name&quot; by $album->artist_name\" src='http://www.sprucegooserecords.com/wp-content/uploads/2011/05/download.icon_.png' alt=\"Download &quot;$album->album_name&quot; by $album->artist_name\" width='183' height='122' /></a></p>\n";
+        $html = "<p style='text-align: center;'><a href='downloads/$album->download_id' target='_blank'><img class='aligncenter size-full wp-image-529' title=\"Download &quot;$album->album_name&quot; by $album->artist_name\" src='$download_icon_url' alt=\"Download &quot;$album->album_name&quot; by $album->artist_name\" width='$download_icon_width' height='$download_icon_height' /></a></p>\n";
 
 //        unset($discography);
 //        unset($artist);
@@ -180,7 +179,7 @@ class Discography
 		'gid' => '0'
 	), $atts ) );
 
-        GLOBAL $i18n_domain;
+        GLOBAL $i18n_domain, $download_icon_url, $download_icon_width, $download_icon_height;
 
         $id = esc_attr($id);
         $gid = esc_attr($gid);
@@ -191,7 +190,7 @@ class Discography
         $html = "";
 
         if ($artist->loadById($id)->getTotalRows() > 0) {
-
+            $artist->incrementPageViewsById($id);
             $discography->loadEnabledByArtistId($id);
             $num = $discography->getTotalRows();
             $video_postslist = $artist->getVideoPosts();
@@ -217,7 +216,7 @@ class Discography
             }
             $html .= "  </ul>\n"
                   .  "  <div id='tabs-1'>\n";
-             /* Display artist About tab */
+             /*** DISPLAY ARTIST ABOUT TAB ***/
             $html .= "    <p><table width='100%' border='1'><tr><td><img src='" .stripslashes($artist->picture_url)
                   .  "' height='225' width='225' align='left' style='margin-right:1.0em;overflow:auto;' />\n";
             if(empty($content)) {
@@ -227,12 +226,13 @@ class Discography
             }
             $html .= "  </td></tr></table></div>\n";
 
-             /* Display the Music/Discography tab */
+             /*** DISPLAY THE MUSIC/DISCOGRAPHY TAB ***/
             if ($num > 0) {
                 $cols = 1;
                 $rows = ((int)($num / $cols) < (float)($num / $cols)) ? (int)($num / $cols) + 1 : (int)($num / $cols);
                 $width = '225px';
                 $height = '225px';
+                $siteurl = get_option('siteurl');
                 $html .= " <div id='tabs-2'>\n"
                       .  "<center><table border='0'>";
                 for ($i = 0; $i < $rows; $i++) {
@@ -252,8 +252,8 @@ class Discography
                               .  "       <a href='$album->store_url'>"
                               .  "        <img src='$album->picture_url' style='border:1px solid black;height:$height;width:$width;' /></a><br/>";
                         if ($album->download_id > 0) {
-                            $html .= "       <a href='/download/$album->download_id'>"
-                                  .  "        <img width='112' height='75' src='/images/download.icon.png' /></a>";
+                            $html .= "       <a href='$siteurl/artistography_download/$album->download_id'>"
+                                  .  "        <img width='$download_icon_width' height='$download_icon_height' src='$download_icon_url' /></a>";
                         }
                         $html .= "    </font></center>"
                               .  "  </td>"
@@ -274,6 +274,7 @@ class Discography
                       .  "</div>";
             }
 
+             /*** DISPLAY VIDEOS TAB ***/
             if ( !empty($video_postslist) ) {
                 $html .= "  <div id='tabs-3'>\n"
                       .  "    <div id='accordion2'>\n";
@@ -287,22 +288,28 @@ class Discography
                           .  "    <div><table><tr><td>" .do_shortcode($post->post_content). "</td></tr>"
                           .  "    <tr><td><hr width='100%' /></td></tr>"
                           .  "    <tr><td><a href='"
-                          .  get_permalink($post->ID). "'>Permalink</a> | <a href='"
-                          .  get_permalink($post->ID). "'>Comments (" .$comment_counter. ")</a></td></tr>"
+                          .  get_permalink($post->ID). "' target='_blank'>Permalink</a> | <a href='"
+                          .  get_permalink($post->ID). "' target='_blank'>Comments (" .$comment_counter. ")</a></td></tr>"
                           .  "    </table></div>\n";
                 }
                 $html .= "    </div>\n"
                       .  "  </div>\n";
             }
 
+             /*** DISPLAY RELATED POSTS TAB ***/
             if ( !empty($related_postslist) ) {
                 $html .= "  <div id='tabs-4'>\n"
                       .  "    <div id='accordion3'>\n";
                 foreach ($related_postslist as $post) {
+                    $comment_array = get_approved_comments($post->ID);
+                    $comment_counter = 0;
+                    foreach($comment_array as $comment){
+                        $comment_counter += 1;
+                    }
                     $html .= "    <h3><a href='#'>$post->post_title</a></h3>\n"
                           .  "    <div><p><table><tr><td>" .do_shortcode($post->post_content). "</td></tr>"
                           .  "    <tr><td><hr width='100%'></td></tr>"
-                          .  "    <tr><td><a href='" .get_permalink($post->ID). "' target='_blank'>Permalink</a></td></tr>"
+                          .  "    <tr><td><a href='" .get_permalink($post->ID). "' target='_blank'>Comments (" .$comment_counter. ")</a> | <a href='" .get_permalink($post->ID). "' target='_blank'>Permalink</a></td></tr>"
                           .  "    </table></p></div>\n";
                 }
                 $html .= "    </div>\n"
