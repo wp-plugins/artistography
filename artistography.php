@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.1.2
+ * Version: 0.1.3
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -12,9 +12,8 @@ define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true); 
 define('WP_DEBUG_DISPLAY', true);
 
-define('ARTISTOGRAPHY_VERSION', '0.1.2');
+define('ARTISTOGRAPHY_VERSION', '0.1.3');
  // whether to preserve database on plugin deactivation
-define('PRESERVE_DATABASE_TABLES', true);  // TODO: make this user configurable for later
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -29,14 +28,14 @@ define('ARTISTOGRAPHY_FILE_PATH', '/artistography'); //dirname(__FILE__));
 define('ARTISTOGRAPHY_DIR_NAME', basename(ARTISTOGRAPHY_FILE_PATH));
 
 GLOBAL $i18n_domain; $i18n_domain = 'artistography'; // Localization/Internationalization
-GLOBAL $download_folder; $download_folder = '/downloads/';
-GLOBAL $download_path; $download_path = WP_ROOT . $download_folder;
 
-GLOBAL $ftpuploader_folder; $ftpuploader_folder = '/ftpuploader/';
-GLOBAL $ftpuploader_path; $ftpuploader_path = WP_ROOT . $ftpuploader_folder;
-
-GLOBAL $artistography_plugin_dir; $artistography_plugin_dir = __FILE__;
+GLOBAL $artistography_plugin_dir; $artistography_plugin_dir = plugins_url('artistography', 'artistography');
 GLOBAL $artistography_plugin_lang_dir; $artistography_plugin_lang_dir = basename(dirname(__FILE__));
+
+GLOBAL $download_icon_url; $download_icon_url = $artistography_plugin_dir . '/css/images/download.gif';
+GLOBAL $download_icon_width; $download_icon_width = '150';
+GLOBAL $download_icon_height; $download_icon_height = '127';
+
 GLOBAL $TABLE_NAME; $TABLE_NAME =
   array ('artistography_artists',
          'artistography_artist_album_linker',
@@ -48,111 +47,9 @@ require_once('class/item.php.inc');
 require_once('class/artist.php.inc');
 require_once('class/music.php.inc');
 require_once('class/discography.php.inc');
+require_once('class/download.php.inc');
 //require_once('class/image_gallery.php.inc');
 require_once('admin/general_funcs.php.inc');
-
- /* Process Download request */
-add_action('parse_request', 'my_custom_url_handler');
-function my_custom_url_handler() {
-
-   global $wpdb, $i18n_domain, $TABLE_NAME;
-
-   $uri = explode('/', $_SERVER["REQUEST_URI"]);
-   $this_id = 0; $val = 0;
-   foreach ($uri as $key => $value) {
-     if ($value === 'artistography-download' or $value === 'download') {
-       $this_id = $key + 1;
-       $val = $uri[$this_id];
-       break;
-     }
-   }
-   unset($value);
-
-   if( $this_id != 0 ) {
-      $thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_FILE_DOWNLOAD];
-      $query = $wpdb->prepare("SELECT *
-                                 FROM $thetable
-                                WHERE id = %u", $val);
-      $the_row = $wpdb->get_row($query);
-      $num_rows = $wpdb->num_rows;
-      $loc = get_option('siteurl') . "/downloads/" . $the_row->file_name;
-
-//      header("Location: " .$loc, true, 303);
-      get_header();
-
-       //increase counter
-      $query = $wpdb->prepare("UPDATE $thetable
-                                  SET download_count=download_count+1
-                               WHERE id = %u", $val);
-      $wpdb->query($query);
-
-?>
-<div class="mainbar">
-    <div class="mainbar_top">
-        <div class="mainbar_bottom">
-            <div class="mainbar_inner">                
-                <div class="post firstpost">
-                    <div class="post_date">
-                        <div class="post_date_top"><? echo date('d'); ?></div>
-                        <div class="post_date_bottom"><? echo date('M'); ?></div>                                            
-                    </div>
-                    <h2 class="post_header" id="post-x"><a href="" rel="bookmark" title="<? printf(__("Permanent Link to Download ID %s", $i18n_domain), $this_id); ?>"><? _e("Download", $i18n_domain); ?></a></h2>
-                    <div class="post_line"></div>
-                    <div class="post_content">
-<? if ($num_rows > 0) { ?>
-                      <meta http-equiv="refresh" content="2;url=<? echo $loc; ?>">
-                      <? _e("If your download does not begin in about 2-5 seconds, please click here", $i18n_domain); ?>: <a href='<? echo $loc; ?>'><? echo $loc; ?></a>.<br/><br/>
-
-printf(__("This has been downloaded <i><b>%s</b></i> times.", $i18n_domain), $the_row->download_count); ?><br/><br/>
-
-<? _e("We appreciate your interest, and hope that you will consider at least a $1.00 donation by clicking the link below.  Feel free to tell us why you're donating to us as it means a lot.  Many thanks from the crew!", $i18n_domain); ?><br/><br/>
-
-<center>
-<form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-<input type="hidden" name="cmd" value="_donations">
-<input type="hidden" name="business" value="skimpkillah@gmail.com">
-<input type="hidden" name="lc" value="US">
-<input type="hidden" name="no_note" value="0">
-<input type="hidden" name="currency_code" value="USD">
-<input type="hidden" name="bn" value="PP-DonationsBF:btn_donateCC_LG.gif:NonHostedGuest">
-<input type="image" src="https://www.paypalobjects.com/WEBSCR-640-20110429-1/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-<img alt="" border="0" src="https://www.paypalobjects.com/WEBSCR-640-20110429-1/en_US/i/scr/pixel.gif" width="1" height="1">
-</form>
-<br/><br/>
-</center>
-
-<? } else {
-     _e("That download is not available at this time.", $i18n_domain);
-   }
-      if (0) {
-        echo "$num_rows" . "<br/>\n";
-        echo "$the_row->file_name" . "<br/>\n";
-        echo "download ID = $val" . "<br/>\n";
-
-        echo "DOCUMENT ROOT = " . $_SERVER['DOCUMENT_ROOT'] . "<br/>\n";
-        echo "ARTISTOGRAPHY_DIR_NAME = " . ARTISTOGRAPHY_DIR_NAME . "<br/>\n";
-        echo "Artistography Dir Name: " . ARTISTOGRAPHY_FILE_PATH . "<br/>\n";
-        echo "home: " .get_option('home'). "<br/>\n";
-        echo "site url: " .get_option('siteurl'). "<br/>\n";
-        echo "Document Root: " .$_SERVER['DOCUMENT_ROOT']. "<br/>\n";
-        echo "dirname(SERVER['SCRIPT_FILENAME']): " .dirname($_SERVER['SCRIPT_FILENAME']). "<br/>\n";
-        echo "SCRIPT_NAME : " .$_SERVER['SCRIPT_NAME']. "<br/>\n";
-      }
-?>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<?php
-get_sidebar();
-get_footer();
-
-      exit();
-   }
-}
 
 function folder_is_empty($folder) {
   $counter = 0;
@@ -173,9 +70,10 @@ function folder_is_empty($folder) {
 function artistography_pluginInstall() {
   GLOBAL $wpdb, $TABLE_NAME, $download_path, $download_folder, $i18n_domain;
  
-  $version = get_option('wp_artistography_version');
+  $version = get_option('wp_artistography_version', false);
 
    /*** Store any options ***/
+  add_option('wp_artistography_donate_email', 'mistahwrite@gmail.com');
   add_option('wp_artistography_preserve_database', true);
   add_option('wp_artistography_email_notify_ftp', true);
   add_option('wp_artistography_ftp_host', '');
@@ -183,6 +81,25 @@ function artistography_pluginInstall() {
   add_option('wp_artistography_ftp_pass', '');
   add_option('wp_artistography_ftp_path', '');
   add_option('wp_artistography_version', ARTISTOGRAPHY_VERSION, NULL, true);
+
+   /* Create Download Page */
+  if (!get_option('wp_artistography_download_page')) {
+     // Create post object
+    $my_post = array(
+       'post_title' => 'Download',
+       'post_name' => 'artistography_download',
+       'post_content' => '[artistography_download]',
+       'post_status' => 'publish',
+       'post_type' => 'page'
+    );
+
+     // Insert the post into the database
+    $my_post_id = wp_insert_post( $my_post );
+    if($my_post_id) {
+      add_option('wp_artistography_download_page', $my_post_id);
+    }
+  } 
+  
 
   if (version_compare($version, "0.1.1", '<')) {
      // this is an update to at least 0.1.1
@@ -203,15 +120,6 @@ function artistography_pluginInstall() {
 
   update_option('wp_artistography_version', ARTISTOGRAPHY_VERSION);
 
-  if (!is_dir($download_path)) {
-    mkdir($download_path);
-  }
-
-   // TODO: Link download.php instead, make sure we are providing the correct directory structure via variables
-/*  if (!copy('/wp-content/plugins/artistography/download.php', '/download.php')) {
-    wp_die( __('Failed to copy download.php to root directory.', $i18n_domain) );
-  }
-*/
     // Create Data Tables If They Don't Already Exist
   foreach ($TABLE_NAME as $key => $value) {
     $thetable = $wpdb->prefix . $value;
@@ -282,15 +190,19 @@ register_activation_hook( __FILE__, 'artistography_pluginInstall' );
 function artistography_pluginUninstall() {
   GLOBAL $wpdb, $TABLE_NAME, $download_path, $i18n_domain;
 
-  if(folder_is_empty($download_path)) {
-    rmdir($download_path);
+   /* Delete Download Page - So it isn't visible while Artistography is disabled */
+  $download_page_id = get_option('wp_artistography_download_page');
+  if ($download_page_id) {
+     // force delete download pageI
+    $result = wp_delete_post( $download_page_id, true ); 
+    if(!$result) {
+      delete_option('wp_artistography_download_page');
+    }
   }
 
-   // TODO: Remove download.php link, make sure we are deleting from correct directory via variables
-  //delete('/download.php'); 
-
   if (!strcmp(get_option('wp_artistography_preserve_database'), NULL)) {
-     //Delete any options that's stored also?
+     //Delete any options that's stored
+    delete_option('wp_artistography_donate_email');
     delete_option('wp_artistography_preserve_database');
     delete_option('wp_artistography_email_notify_ftp');
     delete_option('wp_artistography_ftp_host');
@@ -313,8 +225,24 @@ function artistography_is_current_version() {
   return version_compare($version, ARTISTOGRAPHY_VERSION, '=') ? true : false;
 }
 
+function artistography_exclude_pages ($pages) {
+
+	$excluded_ids = array( get_option('wp_artistography_download_page') );
+	$shaved_pages = array();
+	foreach($pages as $page) {
+		if ( ! in_array($page->ID, $excluded_ids) ) {
+			$shaved_pages[] = $page;
+		}
+	}
+	return $shaved_pages;
+}
+
+
 function artistography_init() {
   GLOBAL $i18n_domain, $artistography_plugin_dir;
+
+   /* Hide Pages from Menu */
+  add_filter('get_pages', 'artistography_exclude_pages');
 
   if(!artistography_is_current_version()) artistography_pluginInstall();
 
@@ -343,21 +271,25 @@ add_action('init', 'artistography_init');
   define(SUBMENU_ABOUT_HANDLE, 'artistography-submenu-about');
 
 function artistography_enqueue_admin_style_and_scripts() {
-    wp_enqueue_style( 'jquery-ui', plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/jquery-ui-1.11.2/jquery-ui.css', $artistography_plugin_dir), array(), '1.11.2', 'all');
-    wp_enqueue_style( 'jquery-ui', plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/jquery-ui-1.11.2/jquery-ui.theme.css', $artistography_plugin_dir), array(), '1.11.2', 'all');
-    wp_enqueue_script( 'jquery-ui',  plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/jquery-ui-1.11.2/jquery-ui.js', $artistography_plugin_dir), array( 'jquery' ), '1.0.0');
+    GLOBAL $artistography_plugin_dir;
 
-    wp_enqueue_style( 'artistography', plugins_url(ARTISTOGRAPHY_DIR_NAME . '/css/admin-style.css', $artistography_plugin_dir), array(), ARTISTOGRAPHY_VERSION, 'all');
-    wp_enqueue_script( 'artistography',  plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/admin.js', $artistography_plugin_dir), array( 'jquery-ui' ), ARTISTOGRAPHY_VERSION);
+    wp_enqueue_style( 'jquery-ui', $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.css', array(), '1.11.2', 'all');
+    wp_enqueue_style( 'jquery-ui', $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.theme.css', array(), '1.11.2', 'all');
+    wp_enqueue_script( 'jquery-ui',  $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.js', array( 'jquery' ), '1.0.0');
+
+    wp_enqueue_style( 'artistography', $artistography_plugin_dir . '/css/admin-style.css', array(), ARTISTOGRAPHY_VERSION, 'all');
+    wp_enqueue_script( 'artistography',  $artistography_plugin_dir . '/js/admin.js', array( 'jquery-ui' ), ARTISTOGRAPHY_VERSION);
 }
 
 function artistography_enqueue_style_and_scripts() {
-    wp_enqueue_style( 'jquery-ui', plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/jquery-ui-1.11.2/jquery-ui.css', $artistography_plugin_dir), array(), '1.11.2', 'all');
-    wp_enqueue_style( 'jquery-ui', plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/jquery-ui-1.11.2/jquery-ui.theme.css', $artistography_plugin_dir), array(), '1.11.2', 'all');
-    wp_enqueue_script( 'jquery-ui',  plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/jquery-ui-1.11.2/jquery-ui.js', $artistography_plugin_dir), array( 'jquery' ), '1.0.0');
+    GLOBAL $artistography_plugin_dir;
 
-    wp_enqueue_style( 'artistography', plugins_url(ARTISTOGRAPHY_DIR_NAME . '/css/style.css', $artistography_plugin_dir), array(), ARTISTOGRAPHY_VERSION, 'all');
-    wp_enqueue_script( 'artistography',  plugins_url(ARTISTOGRAPHY_DIR_NAME . '/js/script.js', $artistography_plugin_dir), array( 'jquery-ui' ), ARTISTOGRAPHY_VERSION);
+    wp_enqueue_style( 'jquery-ui', $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.css', array(), '1.11.2', 'all');
+    wp_enqueue_style( 'jquery-ui', $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.theme.css', array(), '1.11.2', 'all');
+    wp_enqueue_script( 'jquery-ui',  $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.js', array( 'jquery' ), '1.0.0');
+
+    wp_enqueue_style( 'artistography', $artistography_plugin_dir . '/css/style.css', array(), ARTISTOGRAPHY_VERSION, 'all');
+    wp_enqueue_script( 'artistography',  $artistography_plugin_dir . '/js/script.js', array( 'jquery-ui' ), ARTISTOGRAPHY_VERSION);
 }
 
  /* START ADMIN MENU INTERFACE */

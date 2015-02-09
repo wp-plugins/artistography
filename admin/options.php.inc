@@ -1,6 +1,7 @@
 <?php
 
 if (strcmp($_POST['save'], NULL)) {
+  update_option('wp_artistography_donate_email', $_POST['donate_email']);
   update_option('wp_artistography_preserve_database', ((strcmp($_POST['preserve_database'], NULL)) ? true : false));
   update_option('wp_artistography_email_notify_ftp', ((strcmp($_POST['email_notify_ftp'], NULL)) ? true : false));
   update_option('wp_artistography_ftp_host', $_POST['ftp_host']);
@@ -13,6 +14,7 @@ if (strcmp($_POST['save'], NULL)) {
 echo '<p>';
 echo "<form method='post' action=''>";
     echo "<u><h3>" .__("General", $i18n_domain). "</h3></u>";
+    echo __("PayPal Donation Email", $i18n_domain) .": <input type='textbox' name='donate_email' id='donate_email' value='". get_option('wp_artistography_donate_email') ."' /><br/>";
     echo "<input type='checkbox' name='preserve_database' id='preserve_database' " .((strcmp(get_option('wp_artistography_preserve_database'), NULL)) ? "checked='checked'" : ''). " />" .__("Preserve Database (DO NOT UNCHECK: will delete ALL artistography data between Updates or After Plugin Deactivation/Deletion)", $i18n_domain). "<br/>";
     echo "<input type='checkbox' name='email_notify_ftp' id='email_notify_ftp' " .((strcmp(get_option('wp_artistography_email_notify_ftp'), NULL)) ? "checked='checked'" : ''). " />" .__("Email Notifications on FTP Uploader Page Load", $i18n_domain). "<br/>";
     echo "<u><h3>" .__("FTP Uploader", $i18n_domain). "</h3></u>";

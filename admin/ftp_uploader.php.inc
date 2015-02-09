@@ -8,7 +8,7 @@ if (strcmp(get_option('wp_artistography_email_notify_ftp'), NULL)) {
   $email = get_option( 'admin_email' );
   $subject = __("Artistography FTP Uploader", $i18n_domain);
   $message = __("This is an automatically generated email to let you know somebody used the Artistography>FTP Uploader.", $i18n_domain)
-           . __("Website: ", $i18n_domain). ": $website\n";
+           . __("Website: ", $i18n_domain). ": $website\n"
            . __("IP Address", $i18n_domain). ": http://whatismyipaddress.com/ip/$IP_Address\n"
            . __("Time", $i18n_domain). ": " . date("D M j G:i:s T Y") . "\n\n\n";
 
