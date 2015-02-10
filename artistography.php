@@ -247,7 +247,7 @@ function artistography_pluginInstall() {
 
 	case TABLE_ARTIST_SALES:
 	  $query .= "user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
-		     music_album_id INT(10) UNSIGNED DEFAULT '0' NOT NULL";
+		     music_album_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,";
 	  break;
 
       } // end switch($key)
