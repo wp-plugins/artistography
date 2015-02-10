@@ -1,0 +1,173 @@
+# English language file for Unlimited FTP
+LABEL.LOCALFILESYSTEM=File locali
+LABEL.NOHOST=Senza host/dominio
+LABEL.STATUS=Stato
+LABEL.FILESSELECTEDFORUPLOAD=Il(i)file
+LABEL.MYCOMP=Localizza e seleziona i file sottoindicati.
+LABEL.SELECTIONPREVIEW=Visualizza l’anteprima
+LABEL.UPLOADLIST=Carica/Upload elenco
+LABEL.INSTRUCTIONS=Seleziona i file/cartelle a partire dal panello sinistro e aggiungili al panello destro utilizzando i quattro tasti freccia.\ Gli item elencati sul panello destro verranno inviati quando verrà premuto il tasto upload.
+
+BUTTON.HELP=Aiuto
+BUTTON.SYNC=Sincronizza
+BUTTON.PUT=Carica/upload
+BUTTON.GET=Scarica/download
+BUTTON.CONNECT=Connetti 
+BUTTON.DISCONNECT=Disconnetti
+BUTTON.ABOUT=Informazioni su
+BUTTON.DELETE=Elimina
+BUTTON.VIEW=visualizza
+BUTTON.DIRINFO=Info. sulle dir.
+BUTTON.REFRESH=Aggiorna
+BUTTON.RENAME=Rinomina
+BUTTON.CHANGEDIR=Cambia directory
+BUTTON.MAKEDIR=Creazione directory
+BUTTON.SITE=Sito
+BUTTON.BROWSE=Cerca…
+BUTTON.SEND=Invia
+BUTTON.ADD=Addiziona/add
+BUTTON.REMOVE=Sposta
+BUTTON.STARTUPLOAD=Upload/carica
+BUTTON.STOPUPLOAD=Cancella upload
+
+DIALOG.OK=Ok
+DIALOG.YES=Sì
+DIALOG.YESALL=Sì per tutti
+DIALOG.NO=No
+DIALOG.NOALL=No per tutti
+DIALOG.CANCEL=Cancellare
+DIALOG.OPEN=Apri
+
+MESSAGE.TRANSFERCOMPLETE=Trasferimento completato.
+MESSAGE.TRANSFERRING=Trasferimento in corso
+MESSAGE.TRANSFERRED=Trasferito
+MESSAGE.DISCONNECTING=Disconnessione (automatica) in corso
+MESSAGE.DISCONNECTED=Sconnesso
+MESSAGE.CONNECTING=Connessione in corso
+MESSAGE.ERROR=Si è verificato un errore
+MESSAGE.IDLE=Inattivo
+MESSAGE.BROWSING.LIMIT=Navigazione limitata a
+MESSAGE.CANCELLED=Cancellata
+MESSAGE.TRANSFERCANCELLED=Trasferimento Cancellato
+
+FILEDIALOG.TITLE=Seleziona file o cartelle da caricare
+FILEDIALOG.FILENAME=Titolo
+FILEDIALOG.FILETYPE=Tipo
+
+DIALOG.RESUME.TITLE=Riprendi trasferimento?
+DIALOG.RESUME.MESSAGE= Parzialmente trasferito.  Riprendi trasferimento?
+
+DIALOG.OVERWRITE.TITLE=Sovrascrivi/sostituisci?
+DIALOG.OVERWRITE.MESSAGE=Il file “x” esiste già, sostituirlo?0}
+
+DIALOG.RENAME.LOCAL.TITLE=Rinomina file locale
+DIALOG.RENAME.REMOTE.TITLE=Rinomina file remoto
+DIALOG.RENAME.MESSAGE=Rinomina:
+DIALOG.RENAME.ERROR=Impossibile rinominare il file.
+DIALOG.RENAME.SUCCESS=File rinominato con successo.
+
+DIALOG.DELETE.TITLE=Conferma eliminazione file
+DIALOG.DELETE.MESSAGE=Conferma eliminazione di più file?
+DIALOG.DELETE.ERROR=Impossibile eliminare uno o più file.
+
+DIALOG.CHANGEDIR.LOCAL.TITLE=Cambia directory locale.
+DIALOG.CHANGEDIR.REMOTE.TITLE=Cambia directory remota. 
+DIALOG.CHANGEDIR.MESSAGE=Indica la directory nella quale spostarsi:
+DIALOG.CHANGEDIR.ERROR=Impossibile cambiare directory.
+
+DIALOG.MAKEDIR.LOCAL.TITLE=Creazione di una directory locale.
+DIALOG.MAKEDIR.REMOTE.TITLE=Creazione di una directory remota.
+DIALOG.MAKEDIR.MESSAGE=Inserisci il nome di una nuova directory:
+DIALOG.MAKEDIR.ERROR=Impossibile rinominare la directory.
+DIALOG.MAKEDIR.SUCCESS=Directory creata con successo.
+
+DIALOG.DIRINFO.LOCAL.TITLE=Informazioni sulla directory locale. 
+DIALOG.DIRINFO.REMOTE.TITLE=Informazioni sulla directory remota. 
+DIALOG.DIRINFO.ERROR=Impossibile visualizzare informazioni sulla directory.
+
+DIALOG.CHMOD.TITLE=Chmod
+DIALOG.CHMOD.MESSAGE=Impostare i permessi di scrittura/lettura dei file selezionati?
+
+DIALOG.NEWVOLUME.TITLE= È stato rilevato un nuovo volume
+DIALOG.NEWVOLUME.MESSAGE=Esibire il contenuto del nuovo volume?
+
+DIALOG.VIEW.ERROR=Anteprima non disponibile.
+
+DIALOG.SITE.TITLE=Titolo del sito
+DIALOG.SITE.MESSAGE=Inserisci il titolo del sito:
+DIALOG.SITE.ERROR=Spiacente, la pagina richiesta non è stata trovata o non esiste.
+
+DIALOG.PASSWORD.TITLE=Password non valida
+DIALOG.PASSWORD.MESSAGE=Inserisci la password:
+
+DIALOG.ABOUT.TITLE=Informazioni su
+
+DIALOG.BUSY.TITLE=Attendere, prego…
+DIALOG.BUSY.CONNECTING=Connessione (automatica) in corso 
+DIALOG.BUSY.CREATINGZIP=Creazione file formato Zip in corso…
+DIALOG.BUSY.PUT= Upload in corso…
+DIALOG.BUSY.GET=Download in corso…
+DIALOG.BUSY.SYNC=Sincronizzazione in corso…
+DIALOG.BUSY.DELETING=Eliminazione file in corso...
+DIALOG.BUSY.CANCELLING=Interruzione trasferimento in corso…
+DIALOG.BUSY.CHMOD=Impostazione dei permessi sui file in corso…
+
+DIALOG.SUCCESS.TITLE=Successo
+
+DIALOG.ERROR.TITLE=Errore
+DIALOG.ERROR.ENTERUSER=Nome utente sconosciuto. Inserire nome utente.
+DIALOG.ERROR.ENTERPASSWORD=Password invalida. Inserire la password.
+DIALOG.ERROR.ENTERHOST=Impossibile attivare una connessione. Inserire un server/una pagina valido(a)
+DIALOG.ERROR.ENTERPORT=Porta non riconosciuta. Inserire una porta valida. 
+DIALOG.ERROR.LOGONERROR=Nome utente sconosciuto o password non valida
+DIALOG.ERROR.CONNECTERROR=Impossibile attivare una connessione al server. 
+DIALOG.ERROR.FILENOTEXIST=Una directory o un file specificato non è disponibile o non esiste.
+DIALOG.ERROR.CONFIG=Errore durante la configurazione, contattare l’amministratore del sito.
+DIALOG.ERROR.TRANSFER=Impossibile spostare uno o più file. 
+DIALOG.ERROR.SELECT=Operazione non autorizzata. Selezionare il(i) file per compiere questa operazione.
+DIALOG.ERROR.DRIVE=Nessun disco è presente nell’?unità o l’unità non è pronta
+DIALOG.ERROR.NOTCONNECTED=Non  sei connesso.  Attivare una connessione prima di eseguire qualunque operazione.
+DIALOG.ERROR.FILELISTING=Impossibile aprire l’elenco dei file remoti.
+
+DIALOG.RECONNECT.TITLE=Attivare una connessione?
+DIALOG.RECONNECT.MESSAGE=Disconnessione automatica. Attivare una connessione?
+
+# new as of UnlimitedFTP v2.8
+
+POPUP.OPTIONS=Opzioni
+POPUP.UPLOAD=Caricare/upload
+POPUP.UPLOADAS=Caricare come…/upload as…
+POPUP.DOWNLOAD=Scaricare/Download
+POPUP.DOWNLOADAS=Scaricare come/download as…
+POPUP.OPEN=Aprire
+POPUP.OPENWITH=Aprire come…
+POPUP.EXPLORE=Esplora
+POPUP.WINDOWSEXPLORER=Windows Explorer
+POPUP.COMMANDPROMPT=Finestra di dialogo
+POPUP.CHMOD=Chmod (UNIX)
+POPUP.DELETE=Elimina
+POPUP.RENAME=Rinomina
+POPUP.PROPERTIES=Proprietà
+POPUP.SELECTALL=Seleziona tutto
+
+POPUP.CLEARFTPMESSAGES=Elimina i messaggi FTP
+
+HEADER.FILENAME=Nome del file
+HEADER.DATE=Dati/Data
+HEADER.SIZE=Dimensione
+
+MESSAGE.CONNECTED=Connesso
+
+LABEL.MYCOMPUTER=Risorse del computer
+LABEL.FINDER=Finder/Localizzatore
+LABEL.DESKTOP=Desktop
+LABEL.MYDOCS=Documenti
+LABEL.HOME=Inizio/Home
+
+DIALOG.COMFIRMUPLOAD.TITLE=Avanti?
+DIALOG.COMFIRMUPLOAD.MESSAGE1=Caricare file per
+DIALOG.COMFIRMUPLOAD.MESSAGE2=Conferma upload?
+
+DIALOG.COMFIRMDOWNLOAD.TITLE=Avanti?
+DIALOG.COMFIRMDOWNLOAD.MESSAGE1=Avanti
+DIALOG.COMFIRMDOWNLOAD.MESSAGE2=Conferma download?
