@@ -1,6 +1,5 @@
 <?php
 echo "download path = " .$download_path ."<br/>";
-echo "explorer_path = " .$explorer_path;
 
 $download = new Download;
 
@@ -31,7 +30,6 @@ else if($_POST['do_select']) {
    // read files from $download_path
    // don't display files if we already added them to the database
   if ($handle = opendir($download_path)) {
-    echo "PATH: " . $download_path . "<br/>";
     while (false !== ($file = readdir($handle))) {
       if(!strcmp($file, ".") || !strcmp($file, "..")) continue;
       $found = false;

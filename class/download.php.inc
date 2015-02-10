@@ -71,7 +71,7 @@ class Download
           if($Download->loadById ($download_id)) {
               $Download->increaseCounterById ($download_id);
 
-              $loc = $artistography_plugin_dir . "/downloads/" . $Download->file_name;
+              $loc = get_option('siteurl') . "/downloads/" . $Download->file_name;
 
 	      $donate_email = get_option('wp_artistography_donate_email');
 

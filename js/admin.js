@@ -385,7 +385,7 @@ $(document).ready(function() {
                   .toggleClass('draggable', false).toggleClass('pseudodraggable')
                   .append( "<button id='delete_" + add_album_id + "-" + add_artist_id + "'>Delete</button>");
                 $( "#delete_" + add_album_id + "-" + add_artist_id ).button({
-                    text: false,
+                    text: true,
                     icons: {
                         primary: "ui-icon-trash"
                     }

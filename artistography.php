@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.1.6
+ * Version: 0.1.7
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -12,7 +12,7 @@ define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true); 
 define('WP_DEBUG_DISPLAY', true);
 
-define('ARTISTOGRAPHY_VERSION', '0.1.6');
+define('ARTISTOGRAPHY_VERSION', '0.1.7');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -101,6 +101,40 @@ function artistography_pluginInstall() {
     $my_post_id = wp_insert_post( $my_post );
     if($my_post_id) {
       add_option('wp_artistography_download_page', $my_post_id);
+    }
+  }
+   /* Create Cart Page */
+  if (!get_option('wp_artistography_products_cart_page')) {
+     // Create post object
+    $my_post = array(
+       'post_title' => 'Cart',
+       'post_name' => 'artistography_products_cart',
+       'post_content' => '[artistography_product]',
+       'post_status' => 'publish',
+       'post_type' => 'page'
+    );
+
+     // Insert the post into the database
+    $my_post_id = wp_insert_post( $my_post );
+    if($my_post_id) {
+      add_option('wp_artistography_products_cart_page', $my_post_id);
+    }
+  }
+   /* Create Checkout Page */
+  if (!get_option('wp_artistography_products_checkout_page')) {
+     // Create post object
+    $my_post = array(
+       'post_title' => 'Checkout',
+       'post_name' => 'artistography_products_checkout',
+       'post_content' => '[artistography_products_checkout]',
+       'post_status' => 'publish',
+       'post_type' => 'page'
+    );
+
+     // Insert the post into the database
+    $my_post_id = wp_insert_post( $my_post );
+    if($my_post_id) {
+      add_option('wp_artistography_products_checkout_page', $my_post_id);
     }
   }
  
@@ -202,10 +236,30 @@ function artistography_pluginUninstall() {
      /* Delete Download Page - So it isn't visible while Artistography is disabled */
     $download_page_id = get_option('wp_artistography_download_page');
     if ($download_page_id) {
-       // force delete download pageI
+       // force delete download page
       $result = wp_delete_post( $download_page_id, true ); 
       if(!$result) {
         delete_option('wp_artistography_download_page');
+      }
+    }
+
+     /* Delete Cart Page - So it isn't visible while Artistography is disabled */
+    $download_page_id = get_option('wp_artistography_products_cart_page');
+    if ($products_cart_page_id) {
+       // force delete cart page
+      $result = wp_delete_post( $products_cart_page_id, true );
+      if(!$result) {
+        delete_option('wp_artistography_products_cart_page');
+      }
+    }
+
+     /* Delete Checkout Page - So it isn't visible while Artistography is disabled */
+    $products_checkout_page_id = get_option('wp_artistography_products_checkout_page');
+    if ($products_checkout_page_id) {
+       // force delete checkout page
+      $result = wp_delete_post( $products_checkout_page_id, true );
+      if(!$result) {
+        delete_option('wp_artistography_products_checkout_page');
       }
     }
   }
@@ -238,7 +292,9 @@ function artistography_is_current_version() {
 
 function artistography_exclude_pages ($pages) {
 
-	$excluded_ids = array( get_option('wp_artistography_download_page') );
+	$excluded_ids =  array( get_option('wp_artistography_download_page'),
+				get_option('wp_artistography_products_cart_page'),
+				get_option('wp_artistography_products_checkout_page') );
 	$shaved_pages = array();
 	foreach($pages as $page) {
 		if ( ! in_array($page->ID, $excluded_ids) ) {
