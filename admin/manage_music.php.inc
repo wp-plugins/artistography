@@ -98,6 +98,7 @@ echo "<div class='aform'><div id='dialog-form' title='" .__('Create New Album', 
    . "	            <th>" .__("ID", $i18n_domain). "</th>\n"
    . "	            <th>" .__("Art", $i18n_domain). "</th>\n"
    . "	            <th>" .__("Album", $i18n_domain). "</th>\n"
+   . "		    <th>" .__("Downloads", $i18n_domain). "</th>\n"
    . "	            <th>" .__("Price", $i18n_domain). "</th>\n"
    . "	            <th>" .__("Actions", $i18n_domain). "</th>\n"
    . "	        </tr>\n"
@@ -125,7 +126,7 @@ if ($music->loadAll('id DESC')->getTotalRows() === 0) {
         echo $music->album_month. '.' .$music->album_day. '.' .$music->album_year. "
             </center>
          </td>";
-
+	echo "<td>$music->total_downloads</td>\n";
         echo "<td>" .CURRENCY.$music->price. "</td>\n
           <td>";
 

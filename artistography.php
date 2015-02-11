@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.2.0
+ * Version: 0.2.1
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -14,7 +14,7 @@ define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true); 
 define('WP_DEBUG_DISPLAY', true);
 
-define('ARTISTOGRAPHY_VERSION', '0.2.0');
+define('ARTISTOGRAPHY_VERSION', '0.2.1');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -304,6 +304,12 @@ function artistography_pluginInstall() {
     wp_update_post( $my_post );
   }
 
+  if (version_compare($version, "0.2.1", '<')) {
+    $thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_ORDERS];
+    $query = "ALTER TABLE $thetable ADD COLUMN user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL";
+    $wpdb->query($query);
+  }
+
   update_option('wp_artistography_version', ARTISTOGRAPHY_VERSION);
 
     // Create Data Tables If They Don't Already Exist
@@ -372,7 +378,8 @@ function artistography_pluginInstall() {
                      itemsOrdered TEXT NOT NULL,
 		     created DATETIME NOT NULL,
                      txn_id TEXT NOT NULL,
-                     user_ip TEXT NOT NULL,";
+                     user_ip TEXT NOT NULL,
+		     user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,";
 	  break;
 
       } // end switch($key)

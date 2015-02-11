@@ -12,7 +12,6 @@ add_action('wp_ajax_Delete_Album', 'Music::callback_Delete_Album');
 
 class Music
 {
-    protected static $artistTable = NULL;  // TABLE NAME of ARTIST TABLE
     protected static $musicTable = NULL;  // TABLE NAME of MUSIC ALBUM TABLE
 
      // property declaration
@@ -30,6 +29,7 @@ class Music
     public $price = NULL;
 
     public $download_id = NULL;
+    public $total_downloads = NULL;
     public $description = NULL;
 
     public $album_year = NULL;
@@ -205,7 +205,6 @@ class Music
     public function __construct() {
         GLOBAL $wpdb, $TABLE_NAME;
 
-        self::$artistTable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTISTS];
         self::$musicTable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_MUSIC_ALBUMS];
 
         $this->loadAll();
@@ -247,6 +246,12 @@ class Music
             $this->album_day = date("d", strtotime($this->album_date));
 
             $this->download_id = $this->query_result->download_id;
+	    if($this->download_id != NULL and $this->download_id != 0) {
+	    	$downloads = new Download;
+	    	$this->total_downloads = $downloads->loadById($this->download_id)->download_count;
+	    } else {
+                $this->total_downloads = NULL;
+	    }
 
             if($this->artist_id != 0) {
                 $this->artist->loadById($this->artist_id);
@@ -306,6 +311,20 @@ class Music
         $this->query = $wpdb->prepare("SELECT *
                         FROM " .self::$musicTable. "
                         WHERE id = %u", $id);
+        $this->setTotalRows($wpdb->query($this->query));
+
+        if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
+
+        $this->setCurrNode(0); // set to first node
+        return $this->loadCurrNodeValues();
+    }
+
+    public function &loadByDownloadId ($id) {
+        GLOBAL $wpdb, $i18n_domain;
+
+        $this->query = $wpdb->prepare("SELECT *
+                        FROM " .self::$musicTable. "
+                        WHERE download_id = %u", $id);
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );

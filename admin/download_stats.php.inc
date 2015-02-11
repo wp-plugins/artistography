@@ -22,8 +22,8 @@
             $filename = $row['file_name'];
             $counter = $row['download_count'];
 
-            echo "<tr><td style='border:2px solid black;'><a href='http://" .$_SERVER['SERVER_NAME']. "/download.php?id=$id' target='_blank'>$id</a></td>";
-            echo "  <td style='border:2px solid black;'><a href='http://" .$_SERVER['SERVER_NAME']. "$download_folder$filename' target='_blank'>$filename</a></td>";
+            echo "<tr><td style='border:2px solid black;'><a href='" .SITEURL. "/artistography_download/$id' target='_blank'>$id</a></td>";
+            echo "  <td style='border:2px solid black;'><a href='" .SITEURL. "$download_folder$filename' target='_blank'>$filename</a></td>";
             echo "  <td style='border:2px solid black;'>$counter</td></tr>";
             unset($row);
         }

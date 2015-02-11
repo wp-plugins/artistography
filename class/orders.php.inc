@@ -22,7 +22,9 @@ class Orders
         public $itemsOrdered = NULL;
         public $created = NULL;
         public $txn_id = NULL;
+	public $custom = NULL;
         public $user_ip = NULL;
+	public $user_id = NULL;
 
 	 // this class interfaces with the database
 	protected $query = NULL;
@@ -69,6 +71,7 @@ class Orders
 			$this->itemsOrdered = $this->query_result->itemsOrdered;
 			$this->created = $this->query_result->created;
 			$this->txn_id = $this->query_result->txn_id;
+			$this->user_id = $this->query_result->user_id;
 			$this->user_ip = $this->query_result->user_ip;
 		} else {
 			$this->query_result =
@@ -86,8 +89,10 @@ class Orders
 
 			$this->itemsOrdered =
 			$this->created =
-			$this->txn_id =           
-			$this->user_ip = 0;     
+			$this->txn_id =
+			$this->custom =
+			$this->user_ip = 
+			$this->user_id = 0;
         	}
 		return $this;
 	}
@@ -151,6 +156,20 @@ class Orders
         return $this->loadCurrNodeValues();
     }
 
+    public function &loadByUserId ($id) {
+        GLOBAL $wpdb, $i18n_domain;
+
+        $this->query = $wpdb->prepare("SELECT *
+                        FROM " .self::$ordersTable. "
+                        WHERE user_id = %u", $id);
+        $this->setTotalRows($wpdb->query($this->query));
+
+        if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
+
+        $this->setCurrNode(0); // set to first node
+        return $this->loadCurrNodeValues();
+    }
+
     public function &loadAll ($order_by = 'id') {
         GLOBAL $wpdb, $i18n_domain;
 
@@ -164,6 +183,35 @@ class Orders
         $this->setCurrNode(0); // set to first node
         return $this->loadCurrNodeValues();
     }
+
+	public function locateOrderMusicId($music_id) {
+		GLOBAL $wpdb, $i18n_domain;
+
+		$Music = new Music;
+		$Music->loadById($music_id);
+		$item_name = $Music->id .' - '. $Music->artist_name .' - '. $Music->album_name;
+		
+		$found = false;
+		$i = 0;
+		
+        	if ($this->getTotalRows() > 0) {
+                	do {
+                		$products = unserialize($this->itemsOrdered);
+                		for($j = 0; $j < count($products); $j++) {
+					$product_id = explode(' - ', $products[$j])[0];
+                        		if (strcmp($music_id, $product_id) == 0) {
+						$found = true;
+					}
+                		}
+                		$orders->getNodeNext();
+                		$i++;
+        	        } while($i<$orders->getTotalRows());
+	        } else {
+			$found = false;
+		}
+
+		return $found;
+	}
 
 	public static function shortCodeShowCart( $atts, $content=null, $code="" ) {
 		GLOBAL $i18n_domain;
@@ -221,7 +269,7 @@ class Orders
 				$i = 1;
 				foreach($_SESSION['artistography_cart'] as $product => $qty) {
 				  $album->loadById($product);
-				  $html .= "<input type='hidden' name='item_name_$i' value='$album->artist_name - $album->album_name' />";
+				  $html .= "<input type='hidden' name='item_name_$i' value='$album->id - $album->artist_name - $album->album_name' />";
 				  $html .= "<input type='hidden' name='quantity_$i' value='$qty' />";
 				  $html .= "<input type='hidden' name='amount_$i' value='$album->price' />";
 				  $i++;
@@ -230,6 +278,7 @@ class Orders
 					  <input type='hidden' name='upload' value='1' />
 					  <input type='hidden' name='business' value='" .get_option('wp_artistography_donate_email'). "' />";
 
+				$html .= "<input type='hidden' name='custom' value='user_id=" .get_current_user_id(). "' />";
 				$html .= "<input type='hidden' name='currency_code' value='USD' />\n";
                                 $html .= "<input type='hidden' name='lc' value='US' />\n";
                                 $html .= "<input type='hidden' name='rm' value='2' />\n";
@@ -304,6 +353,10 @@ class Orders
 					$productsBought	= $_POST[''];
 					$txnID		= $_POST['txn_id'];
 
+        	                        $this->custom = array();
+	                                parse_str($txn_id->custom, $this->custom);
+					$userID = $this->custom['user_id'];
+
 					 //Used to store quickly items bought
 					$i = 1;
 					foreach($_POST as $key => $value) {
@@ -324,7 +377,8 @@ class Orders
 						'itemsOrdered'		=> $products,
 						'created'		=> current_time('mysql'),
 						'txn_id'		=> $txnID,
-						'user_ip'		=> $_SERVER['REMOTE_ADDR']
+						'user_ip'		=> $_SERVER['REMOTE_ADDR'],
+						'user_id'		=> $userID
 					),
 					array(	'%s',			// FORENAME
 						'%s',			// SURNAME
@@ -335,7 +389,8 @@ class Orders
 						'%s',			// ORDERED
 						'%s',			// STATUS
 						'%s',			// CREATED
-						'%s'			// USER IP
+						'%s',			// USER IP
+						'%s'			// WORDPRESS USER ID
 					));
 				} else if (strcmp($res, "INVALID") == 0) {
 					// You may prefer to store the transaction even if fail
