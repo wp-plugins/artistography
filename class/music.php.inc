@@ -418,9 +418,9 @@ class Music
         get_currentuserinfo();
 
         $this->query = $wpdb->prepare(
-                       "INSERT INTO " .(string)self::$musicTable. "
+                       "INSERT INTO " .self::$musicTable. "
                         (create_date, update_date, poster_id, last_updated_by_id, artist_id, artist_name, album_name, album_date, artist_url, picture_url, store_url, price, download_id, description)
-                        VALUES (now(), now(), %u, %u, %u, %s, %s, %s, %s, %s, %s, %s, %u, %b, %b, %s, %b)",
+                        VALUES (now(), now(), %u, %u, %u, %s, %s, %s, %s, %s, %s, %s, %u, %s)",
                         $current_user->ID, $current_user->ID, $artist_id, $artist_name, $album_name, $album_date, $artist_url, $picture_url, $store_url, $price, $download_id, $description);
         $this->setTotalRows($wpdb->query($this->query));
 
