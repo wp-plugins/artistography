@@ -153,20 +153,34 @@ class Discography
 		'id' => '0'
 	), $atts ) );
 
-        GLOBAL $i18n_domain, $artistography_plugin_dir, $download_icon_url, $download_icon_width, $download_icon_height;
+        GLOBAL $i18n_domain, $artistography_plugin_dir;
+        GLOBAL $download_icon_url, $download_icon_width, $download_icon_height;
+        GLOBAL $add_to_cart_icon_url, $add_to_cart_icon_width, $add_to_cart_icon_height;
 
         $id = esc_attr($id);
 
-//        $discography = new Discography;
-//        $artist = new Artist;
         $album = new Music;
         $html = "";
         $album->loadById($id);
 
-        $html = "<p style='text-align: center;'><a href='downloads/$album->download_id' target='_blank'><img class='aligncenter size-full wp-image-529' title=\"Download &quot;$album->album_name&quot; by $album->artist_name\" src='$download_icon_url' alt=\"Download &quot;$album->album_name&quot; by $album->artist_name\" width='$download_icon_width' height='$download_icon_height' /></a></p>\n";
+	if ($album->download_id > 0) {
+        	if ($album->price == "0.00") {
+               	  $html .= "       <a href='$siteurl/artistography_download/$album->download_id'>"
+                        .  "        <img width='$download_icon_width' height='$download_icon_height' src='$download_icon_url' /></a>";
+                } else {
+                  $html .= "<font style='font-size:14pt'>Price: " .CURRENCY. "$album->price</font><br/>\n"
+                        .  " <form method='post' action='" .SITEURL."/artistography_cart'>"
+                        .  "    <input type='hidden' name='artistography_qty' value='1' />\n"
+                        .  "    <input type='hidden' name='artistography_action' value='add' />\n"
+                        .  "    <input type='hidden' name='artistography_product_id' value='$album->id' />\n"
+                        .  "    <input type='submit' value=''
+                             style=\"border: none;
+                                     width: " .$add_to_cart_icon_width. "px; height: " .$add_to_cart_icon_height. "px;
+                                     background:url($add_to_cart_icon_url) no-repeat;
+				     background-size: " .$add_to_cart_icon_width ."px " .$add_to_cart_icon_height ."px;\"";
+                }
+        }
 
-//        unset($discography);
-//        unset($artist);
         unset($album);
         return $html;
     }
@@ -180,7 +194,7 @@ class Discography
 	), $atts ) );
 
         GLOBAL $i18n_domain, $download_icon_url, $download_icon_width, $download_icon_height;
-
+	GLOBAL $add_to_cart_icon_url, $add_to_cart_icon_width, $add_to_cart_icon_height;
         $id = esc_attr($id);
         $gid = esc_attr($gid);
 
@@ -251,11 +265,8 @@ class Discography
                               .  "       </a><br/>"
                               .  "       <a href='$album->store_url'>"
                               .  "        <img src='$album->picture_url' style='border:1px solid black;height:$height;width:$width;' /></a><br/>";
-                        if ($album->download_id > 0) {
-                            $html .= "       <a href='$siteurl/artistography_download/$album->download_id'>"
-                                  .  "        <img width='$download_icon_width' height='$download_icon_height' src='$download_icon_url' /></a>";
-                        }
-                        $html .= "    </font></center>"
+                        $html .= "      [artistography_album_download_link id='$album->id']"
+			      .  "    </font></center>"
                               .  "  </td>"
                               .  "  <td style='border:0;'>"
                               .  "    <div class='tracklist'><font style='font-size:8pt;text-align:left;'>"
