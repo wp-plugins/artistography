@@ -10,11 +10,9 @@ if (strcmp($_POST['update'], NULL)) {
                            $_POST['artist_url'],
                            $_POST['picture_url'],
                            $_POST['store_url'],
+			   $_POST['price'],
                            $_POST['download_id'],
-                           (strcmp($_POST['free_download_enabled'], NULL)) ? TRUE : FALSE,
-                           (strcmp($_POST['featured'], NULL)) ? TRUE : FALSE,
-                           $_POST['description'],
-                           (strcmp($_POST['enabled'], NULL)) ? TRUE : FALSE)) {
+                           $_POST['description']) ) {
         _e("The album was successfully updated in the database!<br/>\n", $i18n_domain);
     } else {
         _e("A problem occurred while trying to update the album and the update information was lost!<br/>\n", $i18n_domain);
@@ -34,11 +32,9 @@ else if (strcmp($_POST['edit'], NULL) && strcmp($_POST['edit'], '0')) {
                                                $music->picture_url,
                                                $music->artist_url,
                                                $music->store_url,
-                                               $music->download_id,
-                                               $music->free_download_enabled,
-                                               $music->featured,
+                                               $music->price,
+					       $music->download_id,
                                                $music->description,
-                                               $music->enabled,
                                                FALSE );
         }
     }
@@ -51,11 +47,9 @@ else if (strcmp($_POST['edit'], NULL) && strcmp($_POST['edit'], '0')) {
                        $_POST['artist_url'],
                        $_POST['picture_url'],
                        $_POST['store_url'],
+		       $_POST['price'],
                        $_POST['download_id'],
-                       (strcmp($_POST['free_download_enabled'], NULL)) ? TRUE : FALSE,
-                       (strcmp($_POST['featured'], NULL)) ? TRUE : FALSE,
-                       $_POST['description'],
-                       (strcmp($_POST['enabled'], NULL)) ? TRUE : FALSE)) {
+                       $_POST['description']) ) {
         _e('The album was successfully entered into the database!', $i18n_domain);
     }
 }
@@ -86,8 +80,6 @@ echo "<div class='aform'><div id='dialog-form' title='" .__('Create New Album', 
    . "		<input type='text' name='picture_url' id='picture_url' class='text ui-widget-content ui-corner-all' />\n"
    . "		<label for='name'>" .__("Artist URL", $i18ndomain). "</label>\n"
    . "		<input type='text' name='artist_url' id='artist_url' class='text ui-widget-content ui-corner-all' />\n"
-   . "		<label for='name'>" .__("Enabled", $i18ndomain). "</label>\n"
-   . "		<input type='checkbox' name='enabled' id='enabled' class='text ui-widget-content ui-corner-all' />\n"
    . "		<label for='name'>" .__("Description", $i18ndomain). "</label>\n"
    . "		<input type='text' name='description' id='description' class='text ui-widget-content ui-corner-all' />\n"
    . "	</fieldset>\n"
@@ -106,9 +98,8 @@ echo "<div class='aform'><div id='dialog-form' title='" .__('Create New Album', 
    . "	            <th>" .__("ID", $i18n_domain). "</th>\n"
    . "	            <th>" .__("Art", $i18n_domain). "</th>\n"
    . "	            <th>" .__("Album", $i18n_domain). "</th>\n"
-   . "	            <th>" .__("Free", $i18n_domain). "</th>\n"
-   . "	            <th>" .__("Featured", $i18n_domain). "</th>\n"
-   . "	            <th>" .__("Enabled", $i18n_domain). "</th>\n"
+   . "		    <th>" .__("Downloads", $i18n_domain). "</th>\n"
+   . "	            <th>" .__("Price", $i18n_domain). "</th>\n"
    . "	            <th>" .__("Actions", $i18n_domain). "</th>\n"
    . "	        </tr>\n"
    . "	    </thead>\n"
@@ -135,21 +126,8 @@ if ($music->loadAll('id DESC')->getTotalRows() === 0) {
         echo $music->album_month. '.' .$music->album_day. '.' .$music->album_year. "
             </center>
          </td>";
-
-         /* Free Download Enabled */
-        echo "<td>"
-         .(($music->free_download_enabled) ? "<font color='green'>" .__("YES", $i18n_domain). "</font>" : "<font color='red'>" .__("NO", $i18n_domain). "</font>").
-         "</td>\n";
-
-         /* Featured */
-        echo "<td>"
-         .(($music->featured) ? "<font color='green'>" .__("YES", $i18n_domain). "</font>" : "<font color='red'>" .__("NO", $i18n_domain). "</font>").
-         "</td>\n";
-
-         /* Enabled */
-        echo "<td>"
-         .(($music->enabled) ? "<font color='green'>" .__("YES", $i18n_domain). "</font>" : "<font color='red'>" .__("NO", $i18n_domain). "</font>").
-         "</td>
+	echo "<td>$music->total_downloads</td>\n";
+        echo "<td>" .CURRENCY.$music->price. "</td>\n
           <td>";
 
          /* Edit Button */

@@ -51,6 +51,9 @@ class Download
       GLOBAL $wpdb, $i18n_domain, $artistography_plugin_dir;
 
       $Download = new Download;
+      $Music = new Music;
+      $Orders = new Orders;
+
       $uri = explode('/', $_SERVER["REQUEST_URI"]);
       $this_id = 0; $download_id = 0;
 
@@ -68,37 +71,58 @@ class Download
       if($download_id == 0 || $download_id == NULL) {
           $html = "Nothing to see here...";
       } else {
+	$price = $Music->loadByDownloadId($download_id)->price;
+	if ($price == "0.00") {
+		$html = $Download->do_download($download_id);
+	} else {
+	   /* Music is not free */
+	  /* TODO: Test if order has processed */
+//		$Orders->loadByUserId(current_user_id());
+		$order_processed = $Orders->locateOrderMusicId($Music->id);
+		if($order_processed) {
+			$html = $Download->do_download($download_id);
+		} else {
+			$html = "This download is not free!<br/>\n";
+			$html .= "[artistography_album_download_link id='$Music->id']<br/>\n";
+		}
+	}
+      }
+      return do_shortcode($html);
+    }
+
+    public function do_download($download_id) {
+	$Download = new Download;
+
           if($Download->loadById ($download_id)) {
               $Download->increaseCounterById ($download_id);
 
-              $loc = get_option('siteurl') . "/downloads/" . $Download->file_name;
+              $loc = SITEURL . "/downloads/" . $Download->file_name;
 
-	      $donate_email = get_option('wp_artistography_donate_email');
+              $donate_email = get_option('wp_artistography_donate_email');
 
               $html = "<meta http-equiv='refresh' content='2;url=$loc'>"
                     . __("If your download does not begin in 2-5 seconds please click here", $i18n_domain)
                     . ": <a href='$loc' target='_blank'>$loc</a><br/><br/>"
                     . sprintf(__("This has been downloaded <i><b>%s</b></i> times.", $i18n_domain), $Download->download_count)
-		    . __("We appreciate your interest, and hope that you will consider at least a $1.00 donation by clicking the link below.  Feel free to tell us why you're donating to us as it means a lot.  Many thanks from the crew!", $i18n_domain)
+                    . __("We appreciate your interest, and hope that you will consider at least a $1.00 donation by clicking the link below.  Feel free to tell us why you're donating to us as it means a lot.  Many thanks from the crew!", $i18n_domain)
                     . '<br/><br/>
-			<center>
-			    <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
-				<input type="hidden" name="cmd" value="_donations">
-				<input type="hidden" name="business" value="' .$donate_email. '">
-				<input type="hidden" name="lc" value="US">
-				<input type="hidden" name="no_note" value="0">
-				<input type="hidden" name="currency_code" value="USD">
-				<input type="hidden" name="bn" value="PP-DonationsBF:btn_donateCC_LG.gif:NonHostedGuest">
-				<input type="image" src="https://www.paypalobjects.com/WEBSCR-640-20110429-1/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
-				<img alt="" border="0" src="https://www.paypalobjects.com/WEBSCR-640-20110429-1/en_US/i/scr/pixel.gif" width="1" height="1">
-			    </form>
-			    <br/><br/>
-			</center>';
+                        <center>
+                            <form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+                                <input type="hidden" name="cmd" value="_donations">
+                                <input type="hidden" name="business" value="' .$donate_email. '">
+                                <input type="hidden" name="lc" value="US">
+                                <input type="hidden" name="no_note" value="0">
+                                <input type="hidden" name="currency_code" value="USD">
+                                <input type="hidden" name="bn" value="PP-DonationsBF:btn_donateCC_LG.gif:NonHostedGuest">
+                                <input type="image" src="https://www.paypalobjects.com/WEBSCR-640-20110429-1/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal - The safer, easier way to pay online!">
+                                <img alt="" border="0" src="https://www.paypalobjects.com/WEBSCR-640-20110429-1/en_US/i/scr/pixel.gif" width="1" height="1">
+                            </form>
+                            <br/><br/>
+                        </center>';
           } else {
-	      $html = "Invalid download id.  Nothing to see here...";
-	  }
-      }
-      return $html;
+              $html = "Invalid download id.  Nothing to see here...";
+          }
+	return $html;
     }
 
     protected function &loadCurrNodeValues () {
