@@ -3,7 +3,7 @@ Contributors: MistahWrite
 Tags: artistography, artist, discography
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stabe tag: 0.2.1
+Stabe tag: 0.2.1-alpha
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,6 +59,9 @@ Uses for FTP and file browsing capability:
      Displays artist name of album with album database id=1
 
 == Changelog ==
+
+=0.2.1-alpha=
+*Fixed bug in insert music album script preventing music from being added
 
 =0.2.1=
 *Added security and Orders processed checking to Downloads
