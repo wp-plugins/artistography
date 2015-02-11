@@ -6,7 +6,7 @@ add_shortcode( 'artistography_show_orders', 'Orders::shortCodeShowOrders' );
 add_shortcode( 'artistography_ipn', 'Orders::shortCodeIPN' );
 class Orders
 {
-	protected static $musicTable = NULL;  // TABLE NAME of MUSIC ALBUM TABLE
+	protected static $ordersTable = NULL;  // TABLE NAME of MUSIC ALBUM TABLE
 
 	public $album_id = NULL;
 	public $album = NULL;
@@ -24,13 +24,146 @@ class Orders
         public $txn_id = NULL;
         public $user_ip = NULL;
 
+	 // this class interfaces with the database
+	protected $query = NULL;
+	protected $query_result = NULL;
+	protected $query_total_rows = NULL;
+	protected $query_curr_node = NULL;
+
+	 // set funcs (protected)
+	protected function setTotalRows ($rows) {    $this->query_total_rows = $rows;    }
+	protected function setCurrNode ($node)  {    $this->query_curr_node = $node;    }
+
+	 // get funcs (public)
+	public function getTotalRows ()   {    return $this->query_total_rows;    }
+	public function getCurrNode ()    {    return $this->query_curr_node;    }
+	public function getQueryResult () {    return $this->query_result;    }
+
 	public function __construct() {
 		GLOBAL $wpdb, $TABLE_NAME;
+
+		self::$ordersTable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_ORDERS];
+
+		$this->loadAll();
 	}
 
 	public function __destruct() {
 		 /* Just in case we need it */
 	}
+
+	protected function &loadCurrNodeValues () {
+        	GLOBAL $wpdb, $_SERVER;
+
+        	if ($this->getTotalRows() > 0) {
+            		$this->query_result = $wpdb->get_row($this->query, OBJECT, $this->getCurrNode());
+
+			 // meta data info update
+			$this->id = $this->query_result->id;
+			$this->forename = $this->query_result->forename;
+			$this->surname = $this->query_result->surname;
+			$this->email = $this->query_result->email;
+			$this->album_line_1 = $this->query_result->address_line_1;
+			$this->postcode = $this->query_result->postcode;
+			$this->town = $this->query_result->town;
+
+			$this->itemsOrdered = $this->query_result->itemsOrdered;
+			$this->created = $this->query_result->created;
+			$this->txn_id = $this->query_result->txn_id;
+			$this->user_ip = $this->query_result->user_ip;
+		} else {
+			$this->query_result =
+            
+			$this->album_id =
+			$this->album =
+
+			$this->id =
+			$this->forename =          
+			$this->surname =
+			$this->email =
+			$this->address_line_1 =
+			$this->postcode =   
+			$this->town =       
+
+			$this->itemsOrdered =
+			$this->created =
+			$this->txn_id =           
+			$this->user_ip = 0;     
+        	}
+		return $this;
+	}
+
+    public function formatDateTime($day, $month, $year, $hour = 0, $min = 0, $sec = 0) {
+         // "YYYY-MM-DD HH:mm:SS";
+        if(strlen($month) < 2) $month = "0$month";
+        if(strlen($day) < 2) $day = "0$day";
+        if(strlen($hour) < 2) $hour = "0$hour";
+        if(strlen($min) < 2) $min = "0$min";
+        if(strlen($sec) < 2) $sec = "0$sec";
+        return "$year-$month-$day $hour:$min:$sec";
+    }
+
+    public function &getNodeNext () {
+    // when this function is used, it's assumed that a query was already run
+    // meant to simply load the nth item in the query through a for loop
+    // assumes query, query_curr_node, and query_total_rows is set
+
+        if (($this->query_curr_node + 1) <= $this->getTotalRows()) {
+            $this->query_curr_node += 1;
+            $this->loadCurrNodeValues();
+        }
+        return $this;
+    }
+
+    public function &getNodePrev () {
+    // when this function is used, it's assumed that a query was already run
+    // meant to simply load the nth item in the query through a for loop
+    // assumes query, query_curr_node, and query_total_rows is set
+
+        if (($this->query_curr_node - 1) >= 0 AND $this->getTotalRows() > 0) {
+            $this->query_curr_node -= 1;
+            $this->loadCurrNodeValues();
+        }
+        return $this;
+    }
+
+    public function &loadByNode ($node) {
+    // when this function is used, it's assumed that a query was already run
+    // meant to simply load the nth item in the query through a for loop
+
+        if ($node < $this->getTotalRows() AND $node >= 0 AND $this->getTotalRows() > 0) {
+            $this->setCurrNode($node);
+            $this->loadCurrNodeValues();
+        }
+        return $this;
+    }
+
+    public function &loadById ($id) {
+        GLOBAL $wpdb, $i18n_domain;
+
+        $this->query = $wpdb->prepare("SELECT *
+                        FROM " .self::$ordersTable. "
+                        WHERE id = %u", $id);
+        $this->setTotalRows($wpdb->query($this->query));
+
+        if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
+
+        $this->setCurrNode(0); // set to first node
+        return $this->loadCurrNodeValues();
+    }
+
+    public function &loadAll ($order_by = 'id') {
+        GLOBAL $wpdb, $i18n_domain;
+
+        $this->query = "SELECT *
+                        FROM " .self::$ordersTable. "
+                        ORDER BY $order_by";
+        $this->setTotalRows($wpdb->query($this->query));
+
+        if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
+
+        $this->setCurrNode(0); // set to first node
+        return $this->loadCurrNodeValues();
+    }
 
 	public static function shortCodeShowCart( $atts, $content=null, $code="" ) {
 		GLOBAL $i18n_domain;
@@ -63,7 +196,7 @@ class Orders
 		$html = '';
 
 		$album = new Music;
-		$sandbox = true;
+		$sandbox = get_option('wp_artistography_paypal_sandbox');
 
 		if(!is_user_logged_in()) {
 			$html .= "In order to buy you must first register or be logged into our website that way we can keep track of your orders, and you can return to download your files again at a later time if you lose them.<br/>\n";
@@ -181,7 +314,7 @@ class Orders
 					}
 					$products = serialize($products_bought);
 
-					$wpdb->insert($wpdb->prefix.$TABLE_NAME[TABLE_ARTIST_ORDERS],
+					$wpdb->insert(self::$ordersTable,
 					array(	'forename'		=> $firstName,
 						'surname'		=> $lastName,
 						'email'			=> $payerEmail,

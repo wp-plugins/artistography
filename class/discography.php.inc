@@ -165,8 +165,8 @@ class Discography
 
 	if ($album->download_id > 0) {
         	if ($album->price == "0.00") {
-               	  $html .= "       <a href='$siteurl/artistography_download/$album->download_id'>"
-                        .  "        <img width='$download_icon_width' height='$download_icon_height' src='$download_icon_url' /></a>";
+               	  $html .= "       <center><a href='$siteurl/artistography_download/$album->download_id'>"
+                        .  "        <img width='$download_icon_width' height='$download_icon_height' src='$download_icon_url' style='border:none;' /></a></center>";
                 } else {
                   $html .= "<font style='font-size:14pt'>Price: " .CURRENCY. "$album->price</font><br/>\n"
                         .  " <form method='post' action='" .SITEURL."/artistography_cart'>"

@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.1.9
+ * Version: 0.2.0
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -14,7 +14,7 @@ define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true); 
 define('WP_DEBUG_DISPLAY', true);
 
-define('ARTISTOGRAPHY_VERSION', '0.1.9');
+define('ARTISTOGRAPHY_VERSION', '0.2.0');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -97,6 +97,7 @@ function artistography_pluginInstall() {
 
    /*** Store any options ***/
   add_option('wp_artistography_donate_email', 'mistahwrite@gmail.com');
+  add_option('wp_artistography_paypal_sandbox', true);
   add_option('wp_artistography_preserve_hidden_pages', true);
   add_option('wp_artistography_preserve_database', true);
   add_option('wp_artistography_email_notify_ftp', true);
@@ -451,6 +452,7 @@ function artistography_pluginUninstall() {
   if (!strcmp(get_option('wp_artistography_preserve_database'), NULL)) {
      //Delete any options that's stored
     delete_option('wp_artistography_donate_email');
+    delete_option('wp_artistography_paypal_sandbox');
     delete_option('wp_artistography_preserve_hidden_pages');
     delete_option('wp_artistography_preserve_database');
     delete_option('wp_artistography_email_notify_ftp');
