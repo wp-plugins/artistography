@@ -3,16 +3,18 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.1.7
+ * Version: 0.2.0
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
  */
+session_start();
+
 define('WP_DEBUG', true); 
 define('WP_DEBUG_LOG', true); 
 define('WP_DEBUG_DISPLAY', true);
 
-define('ARTISTOGRAPHY_VERSION', '0.1.7');
+define('ARTISTOGRAPHY_VERSION', '0.2.0');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -20,11 +22,15 @@ define('TABLE_ARTIST_ALBUM_LINKER', 1);
 define('TABLE_ARTIST_FILE_DOWNLOAD', 2);
 define('TABLE_ARTIST_MUSIC_ALBUMS', 3);
 define('TABLE_ARTIST_IMAGE_GALLERY', 4);
+define('TABLE_ARTIST_ORDERS', 5);
 
 define('WP_ROOT', str_replace('/wp-admin', '', dirname($_SERVER['SCRIPT_FILENAME'])));
+define('SITEURL', get_option('siteurl'));
 
 define('ARTISTOGRAPHY_FILE_PATH', '/artistography'); //dirname(__FILE__));
 define('ARTISTOGRAPHY_DIR_NAME', basename(ARTISTOGRAPHY_FILE_PATH));
+
+define('CURRENCY', '$');
 
 GLOBAL $i18n_domain; $i18n_domain = 'artistography'; // Localization/Internationalization
 
@@ -39,12 +45,25 @@ GLOBAL $download_icon_url; $download_icon_url = $artistography_plugin_dir . '/cs
 GLOBAL $download_icon_width; $download_icon_width = '150';
 GLOBAL $download_icon_height; $download_icon_height = '127';
 
+GLOBAL $add_to_cart_icon_url; $add_to_cart_icon_url = $artistography_plugin_dir . '/css/images/addtocartcc-orange.png';
+GLOBAL $add_to_cart_icon_width; $add_to_cart_icon_width = '150';
+GLOBAL $add_to_cart_icon_height; $add_to_cart_icon_height = '51';
+
+GLOBAL $checkout_icon_url; $checkout_icon_url = $artistography_plugin_dir . '/css/images/yellow_checkout.png';
+GLOBAL $checkout_icon_width; $checkout_icon_width = '150';
+GLOBAL $checkout_icon_height; $checkout_icon_height = '50';
+
+GLOBAL $buynow_icon_url; $buynow_icon_url = $artistography_plugin_dir . '/css/images/buynowcc-orange-2.png';
+GLOBAL $buynow_icon_width; $buynow_icon_width = '213';
+GLOBAL $buynow_icon_height; $buynow_icon_height = '95';
+
 GLOBAL $TABLE_NAME; $TABLE_NAME =
   array ('artistography_artists',
          'artistography_artist_album_linker',
          'artistography_file_download',
          'artistography_music_albums',
-         'artistography_image_gallery');
+         'artistography_image_gallery',
+         'artistography_orders');
 
 require_once('class/item.php.inc');
 require_once('class/artist.php.inc');
@@ -52,6 +71,7 @@ require_once('class/music.php.inc');
 require_once('class/discography.php.inc');
 require_once('class/download.php.inc');
 //require_once('class/image_gallery.php.inc');
+require_once('class/orders.php.inc');
 require_once('admin/general_funcs.php.inc');
 
 function folder_is_empty($folder) {
@@ -77,6 +97,7 @@ function artistography_pluginInstall() {
 
    /*** Store any options ***/
   add_option('wp_artistography_donate_email', 'mistahwrite@gmail.com');
+  add_option('wp_artistography_paypal_sandbox', true);
   add_option('wp_artistography_preserve_hidden_pages', true);
   add_option('wp_artistography_preserve_database', true);
   add_option('wp_artistography_email_notify_ftp', true);
@@ -93,6 +114,8 @@ function artistography_pluginInstall() {
        'post_title' => 'Download',
        'post_name' => 'artistography_download',
        'post_content' => '[artistography_download]',
+       'comment_status' => 'closed',
+       'ping_status' => 'closed',
        'post_status' => 'publish',
        'post_type' => 'page'
     );
@@ -104,12 +127,14 @@ function artistography_pluginInstall() {
     }
   }
    /* Create Cart Page */
-  if (!get_option('wp_artistography_products_cart_page')) {
+  if (!get_option('wp_artistography_cart_page')) {
      // Create post object
     $my_post = array(
        'post_title' => 'Cart',
-       'post_name' => 'artistography_products_cart',
-       'post_content' => '[artistography_product]',
+       'post_name' => 'artistography_cart',
+       'post_content' => '[artistography_show_cart]',
+       'comment_status' => 'closed',
+       'ping_status' => 'closed',
        'post_status' => 'publish',
        'post_type' => 'page'
     );
@@ -117,16 +142,18 @@ function artistography_pluginInstall() {
      // Insert the post into the database
     $my_post_id = wp_insert_post( $my_post );
     if($my_post_id) {
-      add_option('wp_artistography_products_cart_page', $my_post_id);
+      add_option('wp_artistography_cart_page', $my_post_id);
     }
   }
    /* Create Checkout Page */
-  if (!get_option('wp_artistography_products_checkout_page')) {
+  if (!get_option('wp_artistography_checkout_page')) {
      // Create post object
     $my_post = array(
        'post_title' => 'Checkout',
-       'post_name' => 'artistography_products_checkout',
-       'post_content' => '[artistography_products_checkout]',
+       'post_name' => 'artistography_checkout',
+       'post_content' => '[artistography_show_checkout]',
+       'comment_status' => 'closed',
+       'ping_status' => 'closed',
        'post_status' => 'publish',
        'post_type' => 'page'
     );
@@ -134,7 +161,67 @@ function artistography_pluginInstall() {
      // Insert the post into the database
     $my_post_id = wp_insert_post( $my_post );
     if($my_post_id) {
-      add_option('wp_artistography_products_checkout_page', $my_post_id);
+      add_option('wp_artistography_checkout_page', $my_post_id);
+    }
+  }
+
+   /* Create Thank You Page */
+  if (!get_option('wp_artistography_thankyou_page')) {
+     // Create post object
+    $my_post = array(
+       'post_title' => 'Thank You',
+       'post_name' => 'artistography_thankyou',
+       'post_content' => '[artistography_show_thankyou]',
+       'comment_status' => 'closed',
+       'ping_status' => 'closed',
+       'post_status' => 'publish',
+       'post_type' => 'page'
+    );
+
+     // Insert the post into the database
+    $my_post_id = wp_insert_post( $my_post );
+    if($my_post_id) {
+      add_option('wp_artistography_thankyou_page', $my_post_id);
+    }
+  }
+
+   /* Create Orders Page */
+  if (!get_option('wp_artistography_orders_page')) {
+     // Create post object
+    $my_post = array(
+       'post_title' => 'Orders',
+       'post_name' => 'artistography_orders',
+       'post_content' => '[artistography_show_orders]',
+       'comment_status' => 'closed',
+       'ping_status' => 'closed',
+       'post_status' => 'publish',
+       'post_type' => 'page'
+    );
+
+     // Insert the post into the database
+    $my_post_id = wp_insert_post( $my_post );
+    if($my_post_id) {
+      add_option('wp_artistography_orders_page', $my_post_id);
+    }
+  }
+
+   /* Create IPN Page - PayPal Instant Notifications */
+  if (!get_option('wp_artistography_ipn_page')) {
+     // Create post object
+    $my_post = array(
+       'post_title' => 'IPN',
+       'post_name' => 'artistography_ipn',
+       'post_content' => '[artistography_ipn]',
+       'comment_status' => 'closed',
+       'ping_status' => 'closed',
+       'post_status' => 'publish',
+       'post_type' => 'page'
+    );
+
+     // Insert the post into the database
+    $my_post_id = wp_insert_post( $my_post );
+    if($my_post_id) {
+      add_option('wp_artistography_ipn_page', $my_post_id);
     }
   }
  
@@ -158,6 +245,63 @@ function artistography_pluginInstall() {
     $thetable = $wpdb->prefix . "artistography_track_list";
     $query = "DROP TABLE $thetable";
     $wpdb->query($query);
+  }
+
+  if (version_compare($version, "0.1.8", '<')) {
+    $cart_page = get_option('wp_artistography_products_cart_page');
+    if($cart_page) {
+      $result = wp_delete_post($cart_page, true);
+      if($result) {
+        delete_option('wp_aristography_products_cart_page');
+      }
+    }
+
+    $checkout_page = get_option('wp_artistography_products_checkout_page');
+    if($checkout_page) {
+      $result = wp_delete_post($checkout_page, true);
+      if($result) {
+        delete_option('wp_aristography_products_checkout_page');
+      }
+    }
+  }
+
+  if (version_compare($version, "0.1.9", '<')) {
+    $thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_MUSIC_ALBUMS];
+    $query = "ALTER TABLE $thetable ADD COLUMN price DECIMAL (7,2) DEFAULT '0.00' NOT NULL";
+    $wpdb->query($query);
+
+    $query = "ALTER TABLE $thetable DELETE COLUMN free_download_enabled";
+    $wpdb->query($query);
+
+    $query = "ALTER TABLE $thetable DELETE COLUMN featured";
+    $wpdb->query($query);
+
+    $query = "ALTER TABLE $thetable DELETE COLUMN enabled";
+    $wpdb->query($query);
+
+    $query = "DROP TABLE wp_artistography_sales";
+    $wpdb->query($query);
+
+    $my_post = array(
+      'ID'           => get_option('wp_artistography_download_page'),
+      'comment_status' => 'closed',
+      'ping_status' => 'closed'
+    );
+    wp_update_post( $my_post );
+
+    $my_post = array(
+      'ID'           => get_option('wp_artistography_cart_page'),
+      'comment_status' => 'closed',
+      'ping_status' => 'closed'
+    );
+    wp_update_post( $my_post );
+
+    $my_post = array(
+      'ID'           => get_option('wp_artistography_checkout_page'),
+      'comment_status' => 'closed',
+      'ping_status' => 'closed'
+    );
+    wp_update_post( $my_post );
   }
 
   update_option('wp_artistography_version', ARTISTOGRAPHY_VERSION);
@@ -206,10 +350,8 @@ function artistography_pluginInstall() {
                      picture_url TEXT NOT NULL,
                      store_url TEXT NOT NULL,
                      download_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
-                     description LONGTEXT,
-                     free_download_enabled BOOLEAN DEFAULT false NOT NULL,
-                     featured BOOLEAN DEFAULT TRUE NOT NULL,
-                     enabled BOOLEAN DEFAULT FALSE NOT NULL,";
+                     price DECIMAL (7,2) DEFAULT '0.00' NOT NULL,
+                     description LONGTEXT,";
           break;
 
         case TABLE_ARTIST_IMAGE_GALLERY:
@@ -219,6 +361,19 @@ function artistography_pluginInstall() {
                      description LONGTEXT,
                      enabled BOOLEAN DEFAULT FALSE NOT NULL,";
           break;
+
+	case TABLE_ARTIST_ORDERS:
+	  $query .= "forename TEXT NOT NULL,
+		     surname TEXT NOT NULL,
+		     email TEXT NOT NULL,
+		     address_line_1 TEXT NOT NULL,
+                     postcode TEXT NOT NULL,
+                     town TEXT NOT NULL,
+                     itemsOrdered TEXT NOT NULL,
+		     created DATETIME NOT NULL,
+                     txn_id TEXT NOT NULL,
+                     user_ip TEXT NOT NULL,";
+	  break;
 
       } // end switch($key)
       $query .= "\n  UNIQUE KEY id (id));";
@@ -244,22 +399,52 @@ function artistography_pluginUninstall() {
     }
 
      /* Delete Cart Page - So it isn't visible while Artistography is disabled */
-    $download_page_id = get_option('wp_artistography_products_cart_page');
-    if ($products_cart_page_id) {
+    $cart_page_id = get_option('wp_artistography_cart_page');
+    if ($cart_page_id) {
        // force delete cart page
-      $result = wp_delete_post( $products_cart_page_id, true );
+      $result = wp_delete_post( $cart_page_id, true );
       if(!$result) {
-        delete_option('wp_artistography_products_cart_page');
+        delete_option('wp_artistography_cart_page');
       }
     }
 
      /* Delete Checkout Page - So it isn't visible while Artistography is disabled */
-    $products_checkout_page_id = get_option('wp_artistography_products_checkout_page');
-    if ($products_checkout_page_id) {
+    $checkout_page_id = get_option('wp_artistography_checkout_page');
+    if ($checkout_page_id) {
        // force delete checkout page
-      $result = wp_delete_post( $products_checkout_page_id, true );
+      $result = wp_delete_post( $checkout_page_id, true );
       if(!$result) {
-        delete_option('wp_artistography_products_checkout_page');
+        delete_option('wp_artistography_checkout_page');
+      }
+    }
+
+     /* Delete Orders Page - So it isn't visible while Artistography is disabled */
+    $orders_page_id = get_option('wp_artistography_orders_page');
+    if ($orders_page_id) {
+       // force delete checkout page
+      $result = wp_delete_post( $orders_page_id, true );
+      if(!$result) {
+        delete_option('wp_artistography_orders_page');
+      }
+    }
+
+     /* Delete Thank You Page - So it isn't visible while Artistography is disabled */
+    $thankyou_page_id = get_option('wp_artistography_thankyou_page');
+    if ($thankyou_page_id) {
+       // force delete checkout page
+      $result = wp_delete_post( $thankyou_page_id, true );
+      if(!$result) {
+        delete_option('wp_artistography_thankyou_page');
+      }
+    }
+
+     /* Delete IPN Page - So it isn't visible while Artistography is disabled */
+    $ipn_page_id = get_option('wp_artistography_ipn_page');
+    if ($ipn_page_id) {
+       // force delete checkout page
+      $result = wp_delete_post( $ipn_page_id, true );
+      if(!$result) {
+        delete_option('wp_artistography_ipn_page');
       }
     }
   }
@@ -267,6 +452,7 @@ function artistography_pluginUninstall() {
   if (!strcmp(get_option('wp_artistography_preserve_database'), NULL)) {
      //Delete any options that's stored
     delete_option('wp_artistography_donate_email');
+    delete_option('wp_artistography_paypal_sandbox');
     delete_option('wp_artistography_preserve_hidden_pages');
     delete_option('wp_artistography_preserve_database');
     delete_option('wp_artistography_email_notify_ftp');
@@ -293,8 +479,11 @@ function artistography_is_current_version() {
 function artistography_exclude_pages ($pages) {
 
 	$excluded_ids =  array( get_option('wp_artistography_download_page'),
-				get_option('wp_artistography_products_cart_page'),
-				get_option('wp_artistography_products_checkout_page') );
+				get_option('wp_artistography_cart_page'),
+				get_option('wp_artistography_checkout_page'),
+				get_option('wp_artistography_thankyou_page'),
+				get_option('wp_artistography_orders_page'),
+				get_option('wp_artistography_ipn_page') );
 	$shaved_pages = array();
 	foreach($pages as $page) {
 		if ( ! in_array($page->ID, $excluded_ids) ) {
@@ -317,6 +506,7 @@ function artistography_init() {
 }
 add_action('init', 'artistography_init');
 
+  define(ADMIN_MENU_ORDERS, __('Orders', $i18n_domain));
   define(ADMIN_MENU_MANAGE_ARTISTS, __('Manage Artists', $i18n_domain));
   define(ADMIN_MENU_MANAGE_MUSIC, __('Music Albums', $i18n_domain));
   define(ADMIN_MENU_MANAGE_DOWNLOADS, __('Downloads', $i18n_domain));
@@ -370,7 +560,8 @@ function artistography_plugin_menu() {
   }
 
   add_menu_page(ADMIN_MENU_STATS, __('Artistography', $i18n_domain), 'manage_options', TOP_LEVEL_HANDLE, 'artistography_plugin_options');
-  add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_ARTISTS), ADMIN_MENU_MANAGE_ARTISTS, 'manage_options', TOP_LEVEL_HANDLE, 'artistography_plugin_options');
+  add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_ORDERS), ADMIN_MENU_ORDERS, 'manage_options', TOP_LEVEL_HANDLE, 'artistography_plugin_options');
+  add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_ARTISTS), ADMIN_MENU_MANAGE_ARTISTS, 'manage_options', SUBMENU_MANAGE_ARTISTS_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_MUSIC), ADMIN_MENU_MANAGE_MUSIC, 'manage_options', SUBMENU_MANAGE_MUSIC_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_DISCOGRAPHY), ADMIN_MENU_MANAGE_DISCOGRAPHY, 'manage_options', SUBMENU_MANAGE_DISCOGRAPHY_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_DOWNLOADS), ADMIN_MENU_MANAGE_DOWNLOADS, 'manage_options', SUBMENU_MANAGE_DOWNLOADS_HANDLE, 'artistography_plugin_options');
@@ -394,6 +585,10 @@ function artistography_plugin_options() {
   switch($title) {
     case sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_OPTIONS):
       require_once('admin/options.php.inc');
+      break;
+
+    case sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_ORDERS):
+      require_once('admin/orders.php.inc');
       break;
 
     case sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_ARTISTS):

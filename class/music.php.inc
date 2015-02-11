@@ -1,7 +1,7 @@
 <?php
 
  // Shortcode helpers
-add_shortcode( 'artistography_display_enabled_albums', 'Music::shortCodeDisplayEnabledAlbums' );
+add_shortcode( 'artistography_display_albums', 'Music::shortCodeDisplayAlbums' );
 add_shortcode( 'artistography_display_album', 'Music::shortCodeDisplayAlbum' );
 add_shortcode( 'artistography_display_album_tracklist', 'Music::shortCodeDisplayAlbumTracklist' );
 add_shortcode( 'artistography_display_album_artist', 'Music::shortCodeDisplayAlbumArtist' );
@@ -17,7 +17,6 @@ class Music
 
      // property declaration
     public $id = NULL;
-    public $enabled = NULL;
 
     public $artist_name = NULL;
     public $album_name = NULL;
@@ -28,9 +27,9 @@ class Music
     public $picture_url = NULL;
     public $store_url = NULL;
 
+    public $price = NULL;
+
     public $download_id = NULL;
-    public $free_download_enabled = NULL;
-    public $featured = NULL;
     public $description = NULL;
 
     public $album_year = NULL;
@@ -70,11 +69,9 @@ class Music
                        $_POST['artist_url'],
                        $_POST['picture_url'],
                        $_POST['store_url'],
+		       $_POST['price']),
                        $_POST['download_id'],
-                       (strcmp($_POST['free_download_enabled'], NULL)) ? TRUE : FALSE,
-                       (strcmp($_POST['featured'], NULL)) ? TRUE : FALSE,
-                       $_POST['description'],
-                       (strcmp($_POST['enabled'], NULL)) ? TRUE : FALSE);
+                       $_POST['description']);
 */
         if ($music->getTotalRows() <= 0) {
             _e("Failure...", $i18n_domain);  // failed
@@ -107,17 +104,18 @@ class Music
         die;
     }
 
-     // [artistography_display_enabled_albums cols="4"]
-    public static function shortCodeDisplayEnabledAlbums( $atts ) {
+     // [artistography_display_albums cols="4"]
+    public static function shortCodeDisplayAlbums( $atts ) {
 	extract( shortcode_atts( array(
 		'cols' => '1',
 		'size' => '175'
 	), $atts ) );
-
+	GLOBAL $download_icon_height, $download_icon_width, $download_icon_url;
+        GLOBAL $add_to_cart_icon_height, $add_to_cart_icon_width, $add_to_cart_icon_url;
         $music = new Music;
         $html = "  <center>\n"
               . "    <table border='0'>\n";
-            $num = $music->loadAllEnabled('album_date DESC')->getTotalRows();
+            $num = $music->loadAll('album_date DESC')->getTotalRows();
         if ($num <= 0) {
             $html .= "    <tr><td colspan='" .esc_attr($cols). "' style='border:none;'>" .__("No Music Available in the Database!", $i18n_domain). "</td></tr>\n";
         } else {
@@ -135,12 +133,8 @@ class Music
                           .  "            <a href='" .$music->artist_url. "'>" .$music->artist_name. "</a><br/>\n"
                           .  "            <a href='" .$music->store_url. "'>" .$music->album_name. "</a><br/>\n"
                           .  "            Released: <a href='" .$music->store_url. "'>" .$music->album_month.".".$music->album_day.".".$music->album_year. "</a><br/>\n"
-                          .  "            <a href='" .$music->store_url. "' target='_blank'><img src='" .$music->picture_url. "' style='border:1px solid black;height:" .$height. ";width:" .$width. ";' /></a><br/>\n";
-                    if ($music->download_id > 0) {
-                        $html .= "            <a href='/download/$music->download_id' target='_blank'><img width='112' height='75' src='/images/download.icon.png' /></a>\n";
-                    } else {
-                        $html .= "            <div style='position:absolute;' width='112' height='75'>&nbsp;</div>\n";
-                    }
+                          .  "            <a href='" .$music->store_url. "' target='_blank'><img src='" .$music->picture_url. "' style='border:1px solid black;height:" .$height. ";width:" .$width. ";' /></a><br/>\n"
+			  .  "[artistography_album_download_link id='$music->id']";
                     $html .= "            </font></center>\n"
                           .  "          </div>\n"
                           .  "        </td>\n";
@@ -159,7 +153,7 @@ class Music
               .  "  </center>\n";
 
         unset($music);
-        return $html;
+        return do_shortcode($html);
     }
 
      // [artistography_display_album id="1"]
@@ -245,23 +239,14 @@ class Music
             $this->description = stripslashes($this->query_result->description);
             $this->store_url = stripslashes($this->query_result->store_url);
 
+	    $this->price = stripslashes($this->query_result->price);
+
             $this->album_date = $this->query_result->album_date;
             $this->album_year = date("Y", strtotime($this->album_date));
             $this->album_month = date("m", strtotime($this->album_date));
             $this->album_day = date("d", strtotime($this->album_date));
 
-            $this->enabled = $this->query_result->enabled;
-
-//            if ($this->enabled AND
-//                ($this->album_year > date("Y") OR
-//                ($this->album_year >= date("Y") AND $this->album_month > date("m")) OR
-//                ($this->album_year >= date("Y") AND $this->album_month >= date("m") AND $this->album_day > date("d"))) ) {
-//                $this->enabled = false;
-//            }
-
             $this->download_id = $this->query_result->download_id;
-            $this->free_download_enabled = $this->query_result->free_download_enabled;
-            $this->featured = $this->query_result->featured;
 
             if($this->artist_id != 0) {
                 $this->artist->loadById($this->artist_id);
@@ -345,36 +330,6 @@ class Music
         return $this->loadCurrNodeValues();
     }
 
-    public function &loadAllEnabled ($order_by = 'id') {
-        GLOBAL $wpdb, $i18n_domain;
-
-        $this->query = "SELECT *
-                        FROM " .self::$musicTable. "
-                        WHERE enabled = true
-                        ORDER BY $order_by";
-        $this->setTotalRows($wpdb->query($this->query));
-
-        if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
-
-        $this->setCurrNode(0); // set to first node
-        return $this->loadCurrNodeValues();
-    }
-
-    public function &loadAllDisabled ($order_by = 'id') {
-        GLOBAL $wpdb, $i18n_domain;
-
-        $this->query = "SELECT *
-                        FROM " .self::$musicTable. "
-                        WHERE enabled = false
-                        ORDER BY $order_by";
-        $this->setTotalRows($wpdb->query($this->query));
-
-        if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
-
-        $this->setCurrNode(0); // set to first node
-        return $this->loadCurrNodeValues();
-    }
-
     public function incrementPageViewsById ($id) {
         GLOBAL $wpdb, $i18n_domain;
 
@@ -407,7 +362,7 @@ class Music
     }
 
      // update music album entry
-    public function updateById ($music_id, $artist_id, $artist_name, $album_name, $album_date, $artist_url, $picture_url, $store_url, $download_id, $free_download_enabled, $featured, $description, $enabled) {
+    public function updateById ($music_id, $artist_id, $artist_name, $album_name, $album_date, $artist_url, $picture_url, $store_url, $price, $download_id, $description) {
         GLOBAL $wpdb, $i18n_domain, $current_user;
 
         get_currentuserinfo();
@@ -422,14 +377,12 @@ class Music
                  artist_url = %s,
                  picture_url = %s,
                  store_url = %s,
+                 price = %s,
                  download_id = %u,
-                 free_download_enabled = %b,
-                 featured = %b,
                  description = %s,
-                 enabled = %b,
                  last_updated_by_id = %u
              WHERE id = %u",
-             $artist_id, $artist_name, $album_name, $album_date, $artist_url, $picture_url, $store_url, $download_id, $free_download_enabled, $featured, $description, $enabled, $current_user->ID, $music_id);
+             $artist_id, $artist_name, $album_name, $album_date, $artist_url, $picture_url, $store_url, $price, $download_id, $description, $current_user->ID, $music_id);
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === FALSE) {
@@ -440,16 +393,16 @@ class Music
         }
     }
 
-    public function insert ($artist_id, $artist_name, $album_name, $album_date, $artist_url, $picture_url, $store_url, $download_id, $free_download_enabled, $featured, $description, $enabled) {
+    public function insert ($artist_id, $artist_name, $album_name, $album_date, $artist_url, $picture_url, $store_url, $price, $download_id, $description) {
         GLOBAL $wpdb, $i18n_domain, $current_user;
 
         get_currentuserinfo();
 
         $this->query = $wpdb->prepare(
                        "INSERT INTO " .(string)self::$musicTable. "
-                        (create_date, update_date, poster_id, last_updated_by_id, artist_id, artist_name, album_name, album_date, artist_url, picture_url, store_url, download_id, free_download_enabled, featured, description, enabled)
-                        VALUES (now(), now(), %u, %u, %u, %s, %s, %s, %s, %s, %s, %u, %b, %b, %s, %b)",
-                        $current_user->ID, $current_user->ID, $artist_id, $artist_name, $album_name, $album_date, $artist_url, $picture_url, $store_url, $download_id, $free_download_enabled, $featured, $description, $enabled);
+                        (create_date, update_date, poster_id, last_updated_by_id, artist_id, artist_name, album_name, album_date, artist_url, picture_url, store_url, price, download_id, description)
+                        VALUES (now(), now(), %u, %u, %u, %s, %s, %s, %s, %s, %s, %s, %u, %b, %b, %s, %b)",
+                        $current_user->ID, $current_user->ID, $artist_id, $artist_name, $album_name, $album_date, $artist_url, $picture_url, $store_url, $price, $download_id, $description);
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === 0 OR $this->getTotalRows() === FALSE) {
@@ -460,7 +413,7 @@ class Music
         }
     }
 
-    public function display_manage_music_form ($music_id = 0, $init_artist = '', $init_album = '', $init_day = 0, $init_month = 0, $init_year = 0, $init_picture_url = '/', $init_artist_url = '/artists/', $init_store_url = '/products/', $init_download_id = 0, $init_free_download = 1, $init_featured = 1, $init_description = '', $init_enabled = 1, $new = 1) {
+    public function display_manage_music_form ($music_id = 0, $init_artist = '', $init_album = '', $init_day = 0, $init_month = 0, $init_year = 0, $init_picture_url = '/', $init_artist_url = '/artists/', $init_store_url = '/products/', $init_price = '0.00', $init_download_id = 0, $init_description = '', $new = 1) {
         GLOBAL $wpdb, $TABLE_NAME, $i18n_domain;
 
         if ($init_day == 0) $init_day = (int)date("d");
@@ -502,7 +455,8 @@ class Music
 
         echo "<tr><td style='text-align:right;'>" .__("Album Art (Front) Hot Link (URL)", $i18n_domain). ":</td><td><input style='width:$text_width;' type='textbox' name='picture_url' value=\"$init_picture_url\" /></td></tr>
               <tr><td style='text-align:right;'>" .__("Store URL", $i18n_domain). ":</td><td><input style='width:$text_width;' type='textbox' name='store_url' value=\"$init_store_url\" /></td></tr>
-              <tr><td style='text-align:right;'>" .__("Artist URL", $i18n_domain). ":</td><td><input style='width:$text_width;' type='textbox' name='artist_url' value=\"$init_artist_url\" /></td></tr>\n";
+              <tr><td style='text-align:right;'>" .__("Artist URL", $i18n_domain). ":</td><td><input style='width:$text_width;' type='textbox' name='artist_url' value=\"$init_artist_url\" /></td></tr>\n
+	      <tr><td style='text-align:right;'>" .__("Price", $i18n_domain), ":</td><td><input style='width;$text_wiidth:' type='textbox' name='price' value=\"$init_price\" /></td></tr>\n";
 
         echo "<tr><td style='text-align:right;'>" .__("Download ID", $i18n_domain). ":</td>
                 <td>
@@ -538,15 +492,6 @@ class Music
         echo "    </select>
                 </td>
               </tr>
-            <tr><td style='text-align:right;'>" .__("Free Download", $i18n_domain). ":</td><td><input style='width:$text_width' type='checkbox' name='free_download_enabled' ";
-        if ($init_free_download) { echo 'checked'; }
-        echo " /></td></tr>
-              <tr><td style='text-align:right;'>" .__("Featured", $i18n_domain). ":</td><td><input style='width:$text_width' type='checkbox' name='featured' ";
-        if ($init_featured) { echo 'checked'; }
-        echo " /></td></tr>
-              <tr><td style='text-align:right;'>" .__("Enabled", $i18n_domain). ":</td><td><input style='width:$text_width' type='checkbox' name='enabled' ";
-        if ($init_enabled) { echo 'checked'; }
-        echo " /></td></tr>
               <tr><td style='text-align:right;'>" .__("Description", $i18n_domain). ":</td><td><textarea name='description' style='width:100%;height:40em;'>" .stripslashes($init_description). "</textarea></td></tr>
               <tr><td colspan='2'></td></tr>\n";
         if ($new) {
