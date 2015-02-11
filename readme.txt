@@ -3,7 +3,7 @@ Contributors: MistahWrite
 Tags: artistography, artist, discography
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stabe tag: 0.1.7
+Stabe tag: 0.1.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -46,10 +46,11 @@ Uses for FTP and file browsing capability:
 [artistography_album_art id=1]
      Displays album photo for album with database id=1
 
-[artistography_display_enabled_albums]
-     Displays "enabled" albums in a table with associated download hyperlink (if linked to a download)
+[artistography_display_albums]
+     Displays albums in a table with associated download hyperlink (if linked to a download)
           Optional paramters:
                cols=(default 4)
+
 [artistography_display_album]
      
 [artistography_display_album_tracklist id=1]
@@ -58,6 +59,20 @@ Uses for FTP and file browsing capability:
      Displays artist name of album with album database id=1
 
 == Changelog ==
+
+=0.1.9=
+*Added price to albums and removed enable state, featured state, and free downloads enabled state
+*Added IPN, Orders, and Thank You pages for ordering and hid them
+*Updated Cart, Checkout, Orders, and Thank you for ordering pages to have no comments/pingbacks
+*Added session_start() to main plugin file to resume $_SESSION
+*Added "Add to Cart" images to music instead of Download image link when price is not free
+*Got Cart/Checkout working
+*Added Orders Admin menu
+*Completed Instant Payment Notifications (IPN) code
+
+=0.1.8=
+*Add Sale class
+*Working on Cart/Checkout system
 
 =0.1.7=
 *Created cart and checkout page and hid them
