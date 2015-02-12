@@ -14,6 +14,7 @@ echo "<table>
 		<th>Address</th>
 		<th>Products purchased</th>
 		<th>User IP</th>
+		<th>User ID</th>
 	</thead>
 	<tbody>";
 	if ($orders->getTotalRows() > 0) {
@@ -33,12 +34,13 @@ echo "<table>
 		echo "			</ol>";
 		echo	"	</td>
 				<td>$orders->user_ip</td>
+				<td>$orders->user_id</td>
 			</tr>";
 		$orders->getNodeNext();
 		$i++;
 		} while($i<$orders->getTotalRows());
 	} else {
-		echo "<tr><td colspan='8'>There are no orders yet.</td></tr>";
+		echo "<tr><td colspan='9'>There are no orders yet.</td></tr>";
 	}
 echo "	</tbody>
 </table>";

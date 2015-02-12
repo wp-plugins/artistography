@@ -322,10 +322,11 @@ class Orders
                 GLOBAL $i18n_domain, $TABLE_NAME;
                 $html = "";
 
+		$header = "";
 		$req = 'cmd=_notify-validate';
 		foreach($_POST as $key => $value) {
 			$value = urlencode(stripslashes($value));
-			$req .= "&key=$value";
+			$req .= "&$key=$value";
 		}
 		$header .= "POST /cgi-bin/webscr HTTP/1.0\r\n";
 		$header .= "Content-Type: application/x-www-form-urlencoded\r\n";
