@@ -153,38 +153,64 @@ class Discography
 		'id' => '0'
 	), $atts ) );
 
-        GLOBAL $i18n_domain, $artistography_plugin_dir;
-        GLOBAL $download_icon_url, $download_icon_width, $download_icon_height;
-        GLOBAL $add_to_cart_icon_url, $add_to_cart_icon_width, $add_to_cart_icon_height;
+        GLOBAL $i18n_domain;
 
         $id = esc_attr($id);
 
         $album = new Music;
+	$orders = new Orders;
+
         $html = "";
         $album->loadById($id);
 
+	 /* Is it even linked right now? */
 	if ($album->download_id > 0) {
-        	if ($album->price == "0.00") {
-               	  $html .= "       <center><a href='$siteurl/artistography_download/$album->download_id'>"
-                        .  "        <img width='$download_icon_width' height='$download_icon_height' src='$download_icon_url' style='border:none;' /></a></center>";
-                } else {
-                  $html .= "<font style='font-size:14pt'>Price: " .CURRENCY. "$album->price</font><br/>\n"
-                        .  " <form method='post' action='" .SITEURL."/artistography_cart'>"
-                        .  "    <input type='hidden' name='artistography_qty' value='1' />\n"
-                        .  "    <input type='hidden' name='artistography_action' value='add' />\n"
-                        .  "    <input type='hidden' name='artistography_product_id' value='$album->id' />\n"
-                        .  "    <input type='submit' value=''
-                             style=\"border: none;
-                                     width: " .$add_to_cart_icon_width. "px; height: " .$add_to_cart_icon_height. "px;
-                                     background:url($add_to_cart_icon_url) no-repeat;
-				     background-size: " .$add_to_cart_icon_width ."px " .$add_to_cart_icon_height ."px;\"";
+		if ($album->price == "0.00") {
+			$html .= self::show_download($album->download_id);
+		} else {
+			if (is_user_logged_in()) {
+                        	$orders->loadByUserId(wp_get_current_user()->ID);
+                        	$order_processed = $orders->locateOrderMusicDownloadId($id);
+                        	if($order_processed) {
+					$html .= self::show_download($album->download_id);
+				} else {
+					$html .= self::show_add_to_cart($id, $album->price);
+                		}
+			} else {
+				$html .= self::show_add_to_cart($id, $album->price);
+        		}
                 }
-        }
+	} else {
+		/* TODO: show transparent 1x1 image stretched to size of download image for spacing */
+	}
 
         unset($album);
         return $html;
     }
 
+    public function show_download($download_id) {
+	GLOBAL $download_icon_url, $download_icon_width, $download_icon_height;
+
+	$html .= "<center><a href='" .get_permalink(get_option('wp_artistography_download_page')). "$download_id'>"
+	      .  "<img width='$download_icon_width' height='$download_icon_height' src='$download_icon_url' style='border:none;' /></a></center>";
+	return $html;
+    }
+
+    public function show_add_to_cart($album_id, $price) {
+	GLOBAL $add_to_cart_icon_url, $add_to_cart_icon_width, $add_to_cart_icon_height;
+
+        $html .= "<font style='font-size:14pt'>Price: " .CURRENCY. "$price</font><br/>\n
+                  <form method='post' action=\"" .get_permalink(get_option('wp_artistography_cart_page'))."\">
+                     <input type='hidden' name='artistography_qty' value='1' />\n
+                     <input type='hidden' name='artistography_action' value='add' />\n
+                     <input type='hidden' name='artistography_product_id' value='album_download_$album_id' />\n
+                     <input type='submit' value=''
+                         style=\"border: none;
+                                 width: " .$add_to_cart_icon_width. "px; height: " .$add_to_cart_icon_height. "px;
+                                 background:url($add_to_cart_icon_url) no-repeat;
+                                 background-size: " .$add_to_cart_icon_width ."px " .$add_to_cart_icon_height ."px;\" /></form>";
+	return $html;
+    }
 
      // [artistography_display_artist_page id="4" gid="1"]
     public static function shortCodeDisplayArtistPage( $atts, $content=null, $code="") {
@@ -205,7 +231,7 @@ class Discography
 
         if ($artist->loadById($id)->getTotalRows() > 0) {
             $artist->incrementPageViewsById($id);
-            $discography->loadEnabledByArtistId($id);
+            $discography->loadMusicByArtistId($id);
             $num = $discography->getTotalRows();
             $video_postslist = $artist->getVideoPosts();
             $related_postslist = $artist->getRelatedPosts();
@@ -459,7 +485,7 @@ class Discography
         return $this->loadCurrNodeValues();
     }
 
-    public function &loadEnabledByArtistId ($artist_id, $order_by = 'album_date DESC') {
+    public function &loadMusicByArtistId ($artist_id, $order_by = 'album_date DESC') {
         GLOBAL $wpdb, $i18n_domain;
 
         $this->query = $wpdb->prepare("SELECT *
@@ -467,7 +493,6 @@ class Discography
                   RIGHT JOIN  " .self::$musicTable. " mt
                           ON  dt.album_id = mt.id
                        WHERE  dt.artist_id = %u
-                         AND  mt.enabled = true
                     ORDER BY  $order_by",
                         $artist_id);
         $this->setTotalRows($wpdb->query($this->query));
