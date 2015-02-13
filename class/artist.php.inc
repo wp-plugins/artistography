@@ -187,7 +187,7 @@ class Artist
                 $html .= "      <tr>\n";
                 for ( $j = 0; $j < $cols && ((($cols * ($i)) + ($j+1)) <= $num); $j++ ) {
                     $artist->loadByNode($i * $cols + $j);
-                    $artist_albums = $discography->loadEnabledByArtistId($artist->id)->getTotalRows();
+                    $artist_albums = $discography->loadMusicByArtistId($artist->id)->getTotalRows();
                     $video_posts = count($artist->getVideoPosts());
                     $related_posts = count($artist->getRelatedPosts());
 

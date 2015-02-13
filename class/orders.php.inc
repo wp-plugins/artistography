@@ -184,7 +184,7 @@ class Orders
         return $this->loadCurrNodeValues();
     }
 
-	public function locateOrderMusicId($music_id) {
+	public function locateOrderMusicDownloadId($music_id) {
 		GLOBAL $wpdb, $i18n_domain;
 
 		$Music = new Music;
@@ -198,7 +198,7 @@ class Orders
                 	do {
                 		$products = unserialize($this->itemsOrdered);
                 		for($j = 0; $j < count($products); $j++) {
-					$product_id = explode(' - ', $products[$j])[0];
+					$product_id = str_replace('album_download_', '', explode(' - ', $products[$j])[0]);
                         		if (strcmp($music_id, $product_id) == 0) {
 						$found = true;
 					}
@@ -269,7 +269,7 @@ class Orders
 				$i = 1;
 				foreach($_SESSION['artistography_cart'] as $product => $qty) {
 				  $album->loadById($product);
-				  $html .= "<input type='hidden' name='item_name_$i' value='$album->id - $album->artist_name - $album->album_name' />";
+				  $html .= "<input type='hidden' name='item_name_$i' value='album_download_$album->id - $album->artist_name - $album->album_name' />";
 				  $html .= "<input type='hidden' name='quantity_$i' value='$qty' />";
 				  $html .= "<input type='hidden' name='amount_$i' value='$album->price' />";
 				  $i++;
@@ -282,9 +282,9 @@ class Orders
 				$html .= "<input type='hidden' name='currency_code' value='USD' />\n";
                                 $html .= "<input type='hidden' name='lc' value='US' />\n";
                                 $html .= "<input type='hidden' name='rm' value='2' />\n";
-                                $html .= "<input type='hidden' name='return' value='" .SITEURL. "/artistography_thankyou' />\n";
-                                $html .= "<input type='hidden' name='cancel_return' value='" .SITEURL. "/artistography_cart' />\n";
-                                $html .= "<input type='hidden' name='notify_url' value='" .SITEURL. "/artistography_ipn' />\n";
+                                $html .= "<input type='hidden' name='return' value='" .get_permalink(get_option('wp_artistography_thankyou_page')). "' />\n";
+                                $html .= "<input type='hidden' name='cancel_return' value='" .get_permalink(get_option('wp_artistography_cart_page')). "' />\n";
+                                $html .= "<input type='hidden' name='notify_url' value='" .get_permalink(get_option('wp_artistography_ipn_page')). "' />\n";
 
                 		$html .= "  <div align='right'><input type='submit' value=''
 						style='border:none;
