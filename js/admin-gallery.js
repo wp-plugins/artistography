@@ -9,28 +9,97 @@ $(document).ready(function() {
                 tb_show('', 'media-upload.php?type=image&TB_iframe=true');
                 return false;
         });
-
         window.send_to_editor = function(html) {
                 imgurl = jQuery('img',html).attr('src');
                 jQuery('#picture_url').val(imgurl);
                 tb_remove();
         }
 
+// Uploading files
+var file_frame;
+var wp_media_post_id = wp.media.model.settings.post.id; // Store the old id
+var set_to_post_id = 10; // Set this
+
+  jQuery('#upload_images_button').live('click', function( event ){
+
+    event.preventDefault();
+
+    // If the media frame already exists, reopen it.
+    if ( file_frame ) {
+      // Set the post ID to what we want
+      file_frame.uploader.uploader.param( 'post_id', set_to_post_id );
+      // Open frame
+      file_frame.open();
+      return;
+    } else {
+      // Set the wp.media post id so the uploader grabs the ID we want when initialised
+      wp.media.model.settings.post.id = set_to_post_id;
+    }
+
+    // Create the media frame.
+    file_frame = wp.media.frames.file_frame = wp.media({
+      title: jQuery( this ).data( 'uploader_title' ),
+      button: {
+        text: jQuery( this ).data( 'uploader_button_text' ),
+      },
+      multiple: true  // Set to true to allow multiple files to be selected
+    });
+
+    // When an image is selected, run a callback.
+    file_frame.on( 'select', function() {
+      // We set multiple to false so only get one image from the uploader
+      attachment = file_frame.state().get('selection').toJSON();
+//      attachment = file_frame.state().get('selection').first().toJSON();
+
+      jQuery('#gallery').val('');
+      // Do something with attachment.id and/or attachment.url here
+      for(i = 0; i < attachment.length; i++) {
+        jQuery('#gallery').val(jQuery('#gallery').val() + attachment[i].id);
+	if ((i+1) < attachment.length) {
+          jQuery('#gallery').val(jQuery('#gallery').val() + ', ');
+        } 
+      }
+      // Restore the main post ID
+      wp.media.model.settings.post.id = wp_media_post_id;
+    });
+
+    // Finally, open the modal
+    file_frame.open();
+  });
+  
+  // Restore the main ID when the add media button is pressed
+  jQuery('a.add_media').on('click', function() {
+    wp.media.model.settings.post.id = wp_media_post_id;
+  });
+
+/*
+        jQuery('#upload_images_button').click(function() {
+                formfield = jQuery('#gallery').attr('name');
+                tb_show('', 'media-upload.php?type=image&TB_iframe=true');
+                return false;
+        });
+        window.send_to_editor = function(html) {
+                imgurl = jQuery('img',html).attr('src');
+                jQuery('#gallery').val(imgurl);
+                tb_remove();
+        }
+*/
   if ( $( "#galleryTable" ).length != 0 ) {
 
-      function addGallery(name, artist_url, artist_picture_url, artist_description) {
+      function addGallery(name, the_artist_id, gallery_ids, cover_picture_url, description) {
           var data_add = {
                   action: 'Create_Gallery',
-                  artist_name: name,
-                  url: artist_url,
-                  picture_url: cover_picture_url,
-                  artist_descr: description
-          };
 
+		  artist_id: the_artist_id,
+		  gallery_name: name,
+                  gallery: gallery_ids,
+                  picture_url: cover_picture_url,
+                  gallery_descr: description
+          };
           // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
           $.post(ajaxurl, data_add, function(response) {
               if($.isNumeric(response)) {
-                  // artist was just added successfully
+                  // gallery was just added successfully
                 return response; // TODO: make the id of newly added artist
               } else {
                   alert('Got this from the server: ' + response);
@@ -38,14 +107,16 @@ $(document).ready(function() {
           });
       }
 
-      function updateArtist(update_artist_id, name, artist_url, artist_picture_url, artist_description) {
+      function updateGallery(update_gallery_id, update_artist_id, name, gallery_ids, artist_picture_url, gallery_description) {
           var data_update = {
               action: 'Update_Artist',
+
+	      gallery_id: update_gallery_id,
               artist_id: update_artist_id,
               artist_name: name,
-              url: artist_url,
-              picture_url: artist_picture_url,
-              artist_descr: artist_description
+              gallery: gallery_ids,
+              picture_url: gallery_picture_url,
+              gallery_descr: gallery_description
           };
 
           $.post(ajaxurl, data_update, function(response) {
@@ -56,30 +127,30 @@ $(document).ready(function() {
           });
       }
 
-      function editArtist(edit_artist_id) {
+      function editGallery(edit_gallery_id) {
           var data_edit = {
-                  action: 'Edit_Artist',
-                  artist_id: edit_artist_id
+                  action: 'Edit_Gallery',
+                  gallery_id: edit_gallery_id
           };
 
           $.post(ajaxurl, data_edit, function(response) {
               var res = response.split("##$$##");
-              $( "#url" ).value = res[2];
               
               $( "#dialog-form" ).dialog( "open" );
               $( "#id" ).val(res[0]);
-              $( "#name" ).val(res[1]);
-              $( "#url" ).val(res[3]);
-              $( "#picture_url" ).val(res[2]);
-              $( "#artist_descr" ).val(res[4]);
+              $( "#artist_id" ).val(res[1]);
+              $( "#name" ).val(res[2]);
+              $( "#picture_url" ).val(res[3]);
+	      $( "#gallery" ).val(res[4]);
+              $( "#gallery_descr" ).val(res[5]);
 
           });
       }
 
-      function delArtist(del_artist_id) {
+      function delGallery(del_gallery_id) {
           var data_delete = {
-                  action: 'Delete_Artist',
-                  artist_id: del_artist_id
+                  action: 'Delete_Gallery',
+                  gallery_id: del_gallery_id
           };
 
           // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
@@ -104,7 +175,7 @@ $(document).ready(function() {
           }
       }).click(function() {
           var id = $( this ).attr('id').replace('edit_', '');
-          editArtist(id);
+          editGallery(id);
       });
 
       $( ".delete_button" ).button({
@@ -114,10 +185,10 @@ $(document).ready(function() {
           }
       }).click(function() {
            // show alert to verify whether we are really wanting to delete this album
-          if ( confirm('Are you sure you want to delete that artist?  Also deletes all references to this artist in the Discography.') ) {
+          if ( confirm('Are you sure you want to delete that gallery?') ) {
               var id = $( this ).attr('id').replace('delete_', '');
 
-              delArtist(id);
+              delGallery(id);
           }
       });
 
@@ -205,10 +276,11 @@ $(document).ready(function() {
 
     var id = $( "#id" ),
      name = $( "#name" ),
-     url = $( "#url" ),
+     artist_id = $( "#artist_id" ),
      picture_url = $( "#picture_url" ),
-     artist_descr = $( "#artist_descr" ),
-     allFields = $( [] ).add( id ).add( name ).add( url ).add( picture_url ).add( artist_descr ),
+     gallery = $( "#gallery" ),
+     gallery_descr = $( "#gallery_descr" ),
+     allFields = $( [] ).add( id ).add( name ).add( artist_id ).add( picture_url ).add( gallery ).add( gallery_descr ),
      tips = $( ".validateTips" );
 
     function updateTips( t ) {
@@ -245,16 +317,15 @@ $(document).ready(function() {
           bValid = bValid && checkLength( name, "name", 3, 100 );
 
           if ( id.val() === '' && bValid ) {
-            id = addArtist(name.val(), url.val(), picture_url.val(), artist_descr.val());
-            $( "#artistsTable tbody" ).append( "<tr>" + "<td align='center'>" + id + "</td><td align='center'><a href='" + url.val() + "' target='_blank'><img src='" + picture_url.val() + "' height='75' width='75' /></a></td><td align='center'><a href='" + url.val() + "' target='_blank'>" + name.val() + "</a></td><td align='center'>0</td><td align'center'>Pending Creation...</td></tr>" );
+            id = addGallery(name.val(), artist_id.val(), gallery.val(), picture_url.val(), gallery_descr.val());
+            $( "#galleryTable tbody" ).append( "<tr>" + "<td align='center'>" + id + "</td><td align='center'><img src='" + picture_url.val() + "' height='75' width='75' /></td><td align='center'>" + name.val() + "</td><td align='center'>0</td><td align'center'>Pending Creation...</td></tr>" );
 
             zebraRows('tbody tr:odd td', 'odd');
-            $( this ).dialog( "close" );
           } else {
-            result = updateArtist(id.val(), name.val(), url.val(), picture_url.val(), artist_descr.val());
-            $( this ).dialog( 'close' );
+            result = updateGallery(id.val(), name.val(), artist_id.val(), gallery.val(), picture_url.val(), gallery_descr.val());
             location.reload();
           }
+	  $( this ).dialog( 'close' );
         },
         Cancel: function() {
           $( this ).dialog( "close" );

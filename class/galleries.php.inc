@@ -3,10 +3,10 @@
 add_filter( 'the_posts', 'Gallery::conditionally_add_scripts_and_styles'); // the_posts gets triggered before wp_head
 
  // AJAX Administration
-add_action('wp_ajax_Create_Gallery', 'Artist::callback_Create_Gallery');
-add_action('wp_ajax_Update_Gallery', 'Artist::callback_Update_Gallery');
-add_action('wp_ajax_Edit_Gallery', 'Artist::callback_Edit_Gallery');
-add_action('wp_ajax_Delete_Gallery', 'Artist::callback_Delete_Gallery');
+add_action('wp_ajax_Create_Gallery', 'Gallery::callback_Create_Gallery');
+add_action('wp_ajax_Update_Gallery', 'Gallery::callback_Update_Gallery');
+add_action('wp_ajax_Edit_Gallery', 'Gallery::callback_Edit_Gallery');
+add_action('wp_ajax_Delete_Gallery', 'Gallery::callback_Delete_Gallery');
 
 class Gallery
 {
@@ -48,14 +48,13 @@ class Gallery
 
         $gallery = new Gallery;
 
-        $gallery_id = stripslashes($_POST['gallery_id']);
         $artist_id = stripslashes($_POST['artist_id']);
         $gallery_name = stripslashes($_POST['gallery_name']);
-        $gallery = stripslashes($_POST['gallery']);
+        $gallery_ids = stripslashes($_POST['gallery']);
         $picture_url = stripslashes($_POST['picture_url']);
         $gallery_descr = stripslashes($_POST['gallery_descr']);
 
-        $result = $gallery->insert($artist_id, $gallery_name, $gallery, $picture_url, $gallery_descr);
+        $result = $gallery->insert($artist_id, $gallery_name, $gallery_ids, $picture_url, $gallery_descr);
         if(is_numeric($result)) {
           echo $result;
         } else {
@@ -74,11 +73,11 @@ class Gallery
 	$gallery_id = stripslashes($_POST['gallery_id']);
         $artist_id = stripslashes($_POST['artist_id']);
         $gallery_name = stripslashes($_POST['gallery_name']);
-        $gallery = stripslashes($_POST['gallery']);
+        $gallery_ids = stripslashes($_POST['gallery']);
         $picture_url = stripslashes($_POST['picture_url']);
         $gallery_descr = stripslashes($_POST['gallery_descr']);
 
-        if($gallery->updateById ($gallery_id, $artist_id, $gallery_name, $gallery, $picture_url, $gallery_descr) ) {
+        if($gallery->updateById ($gallery_id, $artist_id, $gallery_name, $gallery_ids, $picture_url, $gallery_descr) ) {
           echo '1'; //success
         } else {
           echo sprintf(__("Failed: Unable to Update Artist id: %u", $i18n_domain), $artist_id);
@@ -175,7 +174,7 @@ class Gallery
             $this->name = $this->query_result->name;
 	    $this->artist_id = $this->query_result->artist_id;
             $this->gallery = $this->query_result->gallery;
-            $this->cover_picture_url = $this->query_result->cover_picture_url;
+            $this->cover_picture_url = $this->query_result->cover_picture;
             $this->description = $this->query_result->description;
         } else {
             $this->query_result = 
@@ -244,7 +243,19 @@ class Gallery
         $this->setCurrNode(0); // set to first node
         return $this->loadCurrNodeValues();
     }
+    public function &loadByArtistId ($id) {
+        GLOBAL $wpdb, $i18n_domain;
 
+        $this->query = $wpdb->prepare("SELECT *
+                        FROM " .self::$galleryTable. "
+                        WHERE artist_id = %u", $id);
+        $this->setTotalRows($wpdb->query($this->query));
+
+        if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
+
+        $this->setCurrNode(0); // set to first node
+        return $this->loadCurrNodeValues();
+    }
     public function &loadAll ($order_by = 'id') {
         GLOBAL $wpdb, $i18n_domain;
 
@@ -304,7 +315,7 @@ class Gallery
 		      artist_id = %u,
                       name = %s,
                       gallery = %s,
-                      cover_picture_url = %s,
+                      cover_picture = %s,
                       description = %s,
                       last_updated_by_id = %u
                   WHERE id = %s",
@@ -327,8 +338,8 @@ class Gallery
 
         $this->query = $wpdb->prepare(
                        "INSERT INTO " .self::$galleryTable. "
-                        (create_date, update_date, poster_id, last_updated_by_id, artist_id, name, gallery, cover_picture_url, description)
-                        VALUES (now(), now(), %u, %u, %s, %s, %s, %s)",
+                        (create_date, update_date, poster_id, last_updated_by_id, artist_id, name, gallery, cover_picture, description)
+                        VALUES (now(), now(), %u, %u, %u, %s, %s, %s, %s)",
                         $current_user->ID, $current_user->ID, $artist_id, $name, $gallery, $picture_url, $gallery_descr);
         $this->setTotalRows($wpdb->query($this->query));
 

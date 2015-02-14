@@ -1,5 +1,7 @@
 <?php
+/* http://mikejolley.com/2012/12/using-the-new-wordpress-3-5-media-uploader-in-plugins/ */
 $gallery = new Gallery;
+$artist = new Artist;
 
 echo "<div class='aform'><div id='dialog-form' title='";
 echo __("Gallery", $i18n_domain);
@@ -12,13 +14,20 @@ echo "' style='display:none;'>\n"
    . "		<label for='name'>" .__("Name", $i18n_domain). "</label>\n"
    . "		<input type='text' name='name' id='name' class='text ui-widget-content ui-corner-all' />\n"
    . "          <label for='artist_id'>" .__("Artist", $i18n_domain). "</label>\n"
-   . "          <input type='text' name='artist_name' id='artist_name' readonly class='text ui-widget-content ui-corner-all' />\n"
-   . "          <input type='hidden' name='artist_id' id='artist_id' />\n"
+   . "          <select name='artist_id' id='artist_id' class='text ui-widget-content ui-corner-all' />\n";
+for($i = 0; $i < $artist->getTotalRows(); $i++) {
+	echo "            <option value='$artist->id'>$artist->name</option>\n";
+	$artist->getNodeNext();
+}
+echo "          </select>\n"
    . "		<label for='picture_url'>" .__("Cover Picture URL", $i18n_domain). "</label>\n"
    . "		<table class='text ui-widget-content ui-corner-all'><tr class='ui-widget-content ui-corner-all'><td class='ui-widget-content ui-corner-all'><input type='text' name='picture_url' id='picture_url' class='ui-widget-content ui-corner-all' />\n"
    . "          <td class='ui-widget-content ui-corner-all'><input id='upload_image_button' type='button' value='Upload Image' class='ui-widget-content ui-corner-all' /></td></tr></table>\n"
-   . "		<label for='url'>" .__("Gallery", $i18n_domain). "</label>\n"
-   . "		<input type='text' name='gallery' id='galleryl' class='text ui-widget-content ui-corner-all' />\n"
+
+   . "          <label for='gallery'>" .__("Gallery", $i18n_domain). "</label>\n"
+   . "          <table class='text ui-widget-content ui-corner-all'><tr class='ui-widget-content ui-corner-all'><td class='ui-widget-content ui-corner-all'><input type='text' name='gallery' id='gallery' class='ui-widget-content ui-corner-all' />\n"
+   . "          <td class='ui-widget-content ui-corner-all'><input id='upload_images_button' type='button' value='Upload Images' class='ui-widget-content ui-corner-all' /></td></tr></table>\n"
+
    . "		<label for='gallery_descr'>" .__("Description", $i18n_domain). "</label>\n"
    . "          <textarea name='gallery_descr' id='gallery_descr' style='width:100%' rows='10' class='text ui-widget-content ui-corner-all'/></textarea>\n"
    . "	</fieldset>\n"
@@ -58,8 +67,8 @@ if ($gallery->loadAll('name ASC')->getTotalRows() === 0) {
         echo "	        <tr>\n"
            . "	            <td align='center' height='$pic_size'>" .$gallery->id. "</td>\n"
            . "	            <td align='center'>\n"
-           . "<a href='" .stripslashes($gallery->picture_url)
-           . "'><img width='$pic_size' height='$pic_size' src='" .stripslashes($gallery->picture_url). "' /></a>"
+           . "<a href='" .stripslashes($gallery->cover_picture_url)
+           . "'><img width='$pic_size' height='$pic_size' src='" .stripslashes($gallery->cover_picture_url). "' /></a>"
            . "              </td><td align='center'>\n"
            . "                  " .stripslashes($gallery->name)
            . "              </td><td align='center'>\n"
@@ -68,11 +77,11 @@ if ($gallery->loadAll('name ASC')->getTotalRows() === 0) {
 
          /* Edit Button */
         echo '<div style="float:left;">'
-           . "  <button class='edit_button' id='edit_gallery_$gallery->id'>" .__('Edit', $i18n_domain). "</button>"
+           . "  <button class='edit_button' id='edit_$gallery->id'>" .__('Edit', $i18n_domain). "</button>"
            . '</div>';
          /* Delete Button */
         echo '<div style="float:left;">'
-           . "  <button class='delete_button' id='delete_gallery_$gallery->id'>" .__('Delete', $i18n_domain). "</button>"
+           . "  <button class='delete_button' id='delete_$gallery->id'>" .__('Delete', $i18n_domain). "</button>"
            . '</div>'
            . "</td></tr>";
     }

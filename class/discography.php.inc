@@ -11,9 +11,8 @@ add_action('wp_ajax_Disconnect_Artist_from_Album', 'Discography::callback_Discon
 
 class Discography
 {
-    protected static $artistTable = NULL;  // TABLE NAME of ARTIST TABLE
     protected static $musicTable = NULL;  // TABLE NAME of MUSIC ALBUM TABLE
-    protected static $discographyTable = NULL;  // TABLE NAME of MUSIC ALBUM TABLE
+    protected static $discographyTable = NULL;  // TABLE NAME of DISCOGRAPHY TABLE
 
      // property declaration
     public $id = NULL;
@@ -48,8 +47,7 @@ class Discography
     public function __construct() {
         GLOBAL $wpdb, $TABLE_NAME;
 
-        self::$artistTable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTISTS];
-        self::$musicTable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_MUSIC_ALBUMS];
+	self::$musicTable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_MUSIC_ALBUMS];
         self::$discographyTable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_ALBUM_LINKER];
 
         $this->loadAll();
@@ -227,6 +225,8 @@ class Discography
         $discography = new Discography;
         $artist = new Artist;
         $album = new Music;
+	$gallery = new Gallery;
+
         $html = "";
 
         if ($artist->loadById($id)->getTotalRows() > 0) {
@@ -234,6 +234,7 @@ class Discography
             $discography->loadMusicByArtistId($id);
             $num = $discography->getTotalRows();
             $video_postslist = $artist->getVideoPosts();
+	    $gallery->loadByArtistId($id);
             $related_postslist = $artist->getRelatedPosts();
 
             $html .= "<div id='tabs' style='display:none'>\n"
@@ -241,6 +242,10 @@ class Discography
                   .  "    <li><a href='#tabs-1'>About</a></li>\n";
             if ($num > 0) {
                 $html .= "    <li><a href='#tabs-2'>Music (" .$num. ")</a></li>\n";
+            }
+
+            if ($gallery->getTotalRows() > 0) {
+                $html .= "    <li><a href='#tabs-5'>Image Galleries (" .$gallery->getTotalRows(). ")</a></li>\n";
             }
 
             if ( !empty($video_postslist) ) {
@@ -251,9 +256,6 @@ class Discography
                 $html .= "    <li><a href='#tabs-4'>Related Posts (" .count($related_postslist). ")</a></li>\n";
             }
 
-            if ($gid != 0) {
-//                $html .= "    <li><a href='#tabs-5'>Images</a></li>\n";
-            }
             $html .= "  </ul>\n"
                   .  "  <div id='tabs-1'>\n";
              /*** DISPLAY ARTIST ABOUT TAB ***/
@@ -311,6 +313,21 @@ class Discography
                       .  "</div>";
             }
 
+             /*** DISPLAY IMAGE GALLERIES TAB ***/
+            if ($gallery->getTotalRows() > 0) {
+                $html .= "  <div id='tabs-5'>\n";
+                $html .= "    <div id='accordion4'>\n";
+                for($i = 0; $i < $gallery->getTotalRows(); $i++) {
+                        $html .= "<h3><a href='#'><table><tr><td><img src='$gallery->cover_picture_url' width='100' height='100' /></td><td><u><b>$gallery->name</b></u><br/>$gallery->description</td></tr></table></a></h3>";
+                        $html .= "<div><p>";
+                        $html .= do_shortcode('[gallery columns="4" ids="' .$gallery->gallery. '"]');
+                        $html .= "</p></div>";
+                        $gallery->getNodeNext();
+                }
+                $html .= "    </div>\n";
+                $html .= "  </div>\n";
+            }
+
              /*** DISPLAY VIDEOS TAB ***/
             if ( !empty($video_postslist) ) {
                 $html .= "  <div id='tabs-3'>\n"
@@ -352,12 +369,6 @@ class Discography
                 $html .= "    </div>\n"
                       .  "  </div>\n";
             }
-
-            if ($gid != 0) {
-                $html .= "  <div id='tabs-5'>\n";
-//                $html .= do_shortcode('[gallery id=' .$gid. ']');
-                $html .= "  </div>\n";
-            }
             $html .= "</div>\n";
         } else if ($id == '0') {
 	    $html .= __('Error: Artist ID specified in Artistography shortcode not found in database.  First artist is always id=1 not id=0.', $i18n_domain);
@@ -366,6 +377,7 @@ class Discography
             $html .= __('Error: Artist ID specified in Artistography shortcode not found in database.', $i18n_domain);
         }
 
+	unset($gallery);
         unset($discography);
         unset($album);
         unset($artist);
