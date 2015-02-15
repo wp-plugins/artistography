@@ -184,7 +184,7 @@ class Orders
         return $this->loadCurrNodeValues();
     }
 
-	public function locateOrderMusicId($music_id) {
+	public function locateOrderMusicDownloadId($music_id) {
 		GLOBAL $wpdb, $i18n_domain;
 
 		$Music = new Music;
@@ -198,7 +198,7 @@ class Orders
                 	do {
                 		$products = unserialize($this->itemsOrdered);
                 		for($j = 0; $j < count($products); $j++) {
-					$product_id = explode(' - ', $products[$j])[0];
+					$product_id = str_replace('album_download_', '', explode(' - ', $products[$j])[0]);
                         		if (strcmp($music_id, $product_id) == 0) {
 						$found = true;
 					}
@@ -268,8 +268,12 @@ class Orders
 				}
 				$i = 1;
 				foreach($_SESSION['artistography_cart'] as $product => $qty) {
-				  $album->loadById($product);
-				  $html .= "<input type='hidden' name='item_name_$i' value='$album->id - $album->artist_name - $album->album_name' />";
+		                  if(strpos($product, 'album_download_') !== FALSE) {
+                     		    $album_download = true;
+                     		    $product_id = str_replace('album_download_', '', $product);
+                    		  }
+				  $album->loadById($product_id);
+				  $html .= "<input type='hidden' name='item_name_$i' value='album_download_$album->id - $album->artist_name - $album->album_name' />";
 				  $html .= "<input type='hidden' name='quantity_$i' value='$qty' />";
 				  $html .= "<input type='hidden' name='amount_$i' value='$album->price' />";
 				  $i++;
@@ -278,13 +282,13 @@ class Orders
 					  <input type='hidden' name='upload' value='1' />
 					  <input type='hidden' name='business' value='" .get_option('wp_artistography_donate_email'). "' />";
 
-				$html .= "<input type='hidden' name='custom' value='user_id=" .get_current_user_id(). "' />";
+				$html .= "<input type='hidden' name='custom' value='user_id_" .get_current_user_id(). "' />";
 				$html .= "<input type='hidden' name='currency_code' value='USD' />\n";
                                 $html .= "<input type='hidden' name='lc' value='US' />\n";
                                 $html .= "<input type='hidden' name='rm' value='2' />\n";
-                                $html .= "<input type='hidden' name='return' value='" .SITEURL. "/artistography_thankyou' />\n";
-                                $html .= "<input type='hidden' name='cancel_return' value='" .SITEURL. "/artistography_cart' />\n";
-                                $html .= "<input type='hidden' name='notify_url' value='" .SITEURL. "/artistography_ipn' />\n";
+                                $html .= "<input type='hidden' name='return' value='" .get_permalink(get_option('wp_artistography_thankyou_page')). "' />\n";
+                                $html .= "<input type='hidden' name='cancel_return' value='" .get_permalink(get_option('wp_artistography_cart_page')). "' />\n";
+                                $html .= "<input type='hidden' name='notify_url' value='" .get_permalink(get_option('wp_artistography_ipn_page')). "' />\n";
 
                 		$html .= "  <div align='right'><input type='submit' value=''
 						style='border:none;
@@ -316,88 +320,162 @@ class Orders
                 return $html;
         }
 
-         // IPN Guide: https://www.paypalobjects.com/webstatic/en_US/developer/docs/pdf/ipnguide.pdf
-         //http://code.tutsplus.com/tutorials/wordpress-and-paypal-an-introduction--wp-25074
-        public static function shortCodeIPN( $atts, $content=null, $code="" ) {
+	 // https://github.com/paypal/ipn-code-samples/blob/master/paypal_ipn.php
+	public static function shortCodeIPN( $atts, $content=null, $code="" ) {
                 GLOBAL $i18n_domain, $TABLE_NAME;
                 $html = "";
-
 		$header = "";
+
+		// Read POST data
+		// // reading posted data directly from $_POST causes serialization
+		// // issues with array data in POST. Reading raw POST data from input stream instead.
+		 $raw_post_data = file_get_contents('php://input');
+		 $raw_post_array = explode('&', $raw_post_data);
+		 $myPost = array();
+		 foreach ($raw_post_array as $keyval) {
+			$keyval = explode ('=', $keyval);
+		 		if (count($keyval) == 2)
+		 				$myPost[$keyval[0]] = urldecode($keyval[1]);
+		}
+
+		// read the post from PayPal system and add 'cmd'
 		$req = 'cmd=_notify-validate';
-		foreach($_POST as $key => $value) {
-			$value = urlencode(stripslashes($value));
+		if(function_exists('get_magic_quotes_gpc')) {
+		 	$get_magic_quotes_exists = true;
+		}
+		foreach ($myPost as $key => $value) {
+			if($get_magic_quotes_exists == true && get_magic_quotes_gpc() == 1) {
+				$value = urlencode(stripslashes($value));
+			} else {
+				$value = urlencode($value);
+			}
 			$req .= "&$key=$value";
 		}
-		$header .= "POST /cgi-bin/webscr HTTP/1.0\r\n";
-		$header .= "Content-Type: application/x-www-form-urlencoded\r\n";
-		$header .= "Content-Length: " .strlen($req). "\r\n\r\n";
-		$fp = fsockopen('ssl://www.sandbox.paypal.com', 443, $errno, $errstr, 30);
-
-		if (!$fp) {
-			// http error
+		// Post IPN data back to PayPal to validate the IPN data is genuine
+		// Without this step anyone can fake IPN data
+		if(true == get_option('wp_artistography_paypal_sandbox')) {
+			$paypal_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
 		} else {
-			fputs ($fp, $header . $req);
-			while(!feof($fp)) {
-				$res = fgets($fp, 1024);
+			$paypal_url = 'https://www.paypal.com/cgi-bin/webscr';
+		}
 
-				$fh = fopen('results.txt', 'w');
-					fwrite($fh, $res);
-					fclose($fh);
+		$ch = curl_init($paypal_url);
+		if ($ch == FALSE) {
+				return FALSE;
+		}
+		curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+		curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
+		if(DEBUG == true) {
+				curl_setopt($ch, CURLOPT_HEADER, 1);
+					curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
+		}
+		// CONFIG: Optional proxy configuration
+		//curl_setopt($ch, CURLOPT_PROXY, $proxy);
+		//curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 1);
+		// Set TCP timeout to 30 seconds
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Connection: Close'));
 
-				if (strcmp($res, "VERIFIED") == 0) {
-					$firstName	= $_POST['first_name'];
-					$lastName	= $_POST['last_name'];
-					$payerEmail	= $_POST['payer_email'];
-					$addressStreet	= $_POST['address_street'];
-					$addressZip	= $_POST['address_zip'];
-					$addressCity	= $_POST['address_city'];
-					$productsBought	= $_POST[''];
-					$txnID		= $_POST['txn_id'];
+		// CONFIG: Please download 'cacert.pem' from "http://curl.haxx.se/docs/caextract.html" and set the directory path
+		// of the certificate as shown below. Ensure the file is readable by the webserver.
+		// This is mandatory for some environments.
+		$cert = __DIR__ . "./cacert.pem";
+		curl_setopt($ch, CURLOPT_CAINFO, $cert);
 
-        	                        $this->custom = array();
-	                                parse_str($txn_id->custom, $this->custom);
-					$userID = $this->custom['user_id'];
+		$res = curl_exec($ch);
+		if (curl_errno($ch) != 0) // cURL error
+		{
+			if(DEBUG == true) {	
+				error_log(date('[Y-m-d H:i e] '). "Can't connect to PayPal to validate IPN message: " . curl_error($ch) . PHP_EOL, 3, LOG_FILE);
+			}
+			curl_close($ch);
+			exit;
+		} else {
+			// Log the entire HTTP response if debug is switched on.
+			if(DEBUG == true) {
+				error_log(date('[Y-m-d H:i e] '). "HTTP request of validation request:". curl_getinfo($ch, CURLINFO_HEADER_OUT) ." for IPN payload: $req" . PHP_EOL, 3, LOG_FILE);
+				error_log(date('[Y-m-d H:i e] '). "HTTP response of validation request: $res" . PHP_EOL, 3, LOG_FILE);
+			}
+			curl_close($ch);
+		}
 
-					 //Used to store quickly items bought
-					$i = 1;
-					foreach($_POST as $key => $value) {
-						if($key == 'item_name'.$i) {
-							$products_bought[] = $value;
-							$i++;
-						}
-					}
-					$products = serialize($products_bought);
+		// Inspect IPN validation result and act accordingly
+		// Split response headers and payload, a better way for strcmp
+		$tokens = explode("\r\n\r\n", trim($res));
+		$res = trim(end($tokens));
+		if (strcmp ($res, "VERIFIED") == 0) {
+			// check whether the payment_status is Completed
+			// check that txn_id has not been previously processed
+			// check that receiver_email is your PayPal email
+			// check that payment_amount/payment_currency are correct
+			// process payment and mark item as paid
+			$firstName		= $_POST['first_name'];
+			$lastName		= $_POST['last_name'];
+			$payerEmail		= $_POST['payer_email'];
+			$addressStreet		= $_POST['address_street'];
+			$addressZip		= $_POST['address_zip'];
+			$addressCity		= $_POST['address_city'];
+			$productsBought		= $_POST[''];
+			$txnID			= $_POST['txn_id'];
 
-					$wpdb->insert(self::$ordersTable,
-					array(	'forename'		=> $firstName,
-						'surname'		=> $lastName,
-						'email'			=> $payerEmail,
-						'address_line_1'	=> $addressStreet,
-						'postcode'		=> $addressZip,
-						'town'			=> $addressCity,
-						'itemsOrdered'		=> $products,
-						'created'		=> current_time('mysql'),
-						'txn_id'		=> $txnID,
-						'user_ip'		=> $_SERVER['REMOTE_ADDR'],
-						'user_id'		=> $userID
-					),
-					array(	'%s',			// FORENAME
-						'%s',			// SURNAME
-						'%s',			// EMAIL
-						'%s',			// ADDRESS 1
-						'%s',			// PCODE
-						'%s',			// TOWN
-						'%s',			// ORDERED
-						'%s',			// STATUS
-						'%s',			// CREATED
-						'%s',			// USER IP
-						'%s'			// WORDPRESS USER ID
-					));
-				} else if (strcmp($res, "INVALID") == 0) {
-					// You may prefer to store the transaction even if fail
-				} /* end if */
-			} /* end while */
-			fclose($fp);
+			$paymentStatus		= $_POST['payment_status'];
+			$paymentAmount		= $_POST['payment_amount'];
+			$paymentCurrency	= $_POST['mc_currency'];
+			$receiverEmail		= $_POST['receiver_email'];
+			$itemName		= $_POST['item_name'];
+			$itemNumber		= $_POST['item_number'];
+
+        	        $this->custom = array();
+	                parse_str($txn_id->custom, $this->custom);
+			$userID = str_replace('user_id_', '', $this->custom);
+
+			//Used to store quickly items bought
+			$i = 1;
+			foreach($_POST as $key => $value) {
+				if($key == 'item_name'.$i) {
+					$products_bought[] = $value;
+					$i++;
+				}
+			}
+			$products = serialize($products_bought);
+
+			$wpdb->insert(self::$ordersTable,
+			array(	'forename'		=> $firstName,
+				'surname'		=> $lastName,
+				'email'			=> $payerEmail,
+				'address_line_1'	=> $addressStreet,
+				'postcode'		=> $addressZip,
+				'town'			=> $addressCity,
+				'itemsOrdered'		=> $products,
+				'created'		=> current_time('mysql'),
+				'txn_id'		=> $txnID,
+				'user_ip'		=> $_SERVER['REMOTE_ADDR'],
+				'user_id'		=> $userID
+			),
+			array(	'%s',			// FORENAME
+				'%s',			// SURNAME
+				'%s',			// EMAIL
+				'%s',			// ADDRESS 1
+				'%s',			// PCODE
+				'%s',			// TOWN
+				'%s',			// ORDERED
+				'%s',			// STATUS
+				'%s',			// CREATED
+				'%s',			// USER IP
+				'%s'			// WORDPRESS USER ID
+			));
+		} else if (strcmp($res, "INVALID") == 0) {
+			// You may prefer to store the transaction even if fail
+			// log for manual investigation
+			// Add business logic here which deals with invalid IPN messages
+			if(DEBUG == true) {
+				error_log(date('[Y-m-d H:i e] '), "Invalid IPN: $req" . PHP_EOL, 3, LOG_FILE);
+			}
 		} /* end if */
 
                 return $html;
@@ -408,12 +486,17 @@ class Orders
 
                 $order = new Orders;
                 $album = new Music;
+
                 $total = (float)"0.00";
 
 		 /*** Display Cart Contents ***/
                 if(!empty($_SESSION['artistography_cart'])) {
                   foreach($_SESSION['artistography_cart'] as $product => $qty) {
-                    $album->loadById($product);
+		    if(strpos($product, 'album_download_') !== FALSE) {
+			$album_download = true;
+			$product_id = str_replace('album_download_', '', $product);
+		    }
+                    $album->loadById($product_id);
                     $total += ($qty * (float)($album->price));
                     $html = "<center><table>
                              <tr>
@@ -458,7 +541,11 @@ class Orders
                  /*** Display Cart Contents ***/
                 if(!empty($_SESSION['artistography_cart'])) {
                   foreach($_SESSION['artistography_cart'] as $product => $qty) {
-                    $album->loadById($product);
+                    if(strpos($product, 'album_download_') !== FALSE) {
+                        $album_download = true;
+                        $product_id = str_replace('album_download_', '', $product);
+                    }
+                    $album->loadById($product_id);
                     $total += ($qty * (float)($album->price));
                     $html = "<center><table>
                              <tr>
