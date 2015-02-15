@@ -415,7 +415,11 @@ class Orders
 		 /*** Display Cart Contents ***/
                 if(!empty($_SESSION['artistography_cart'])) {
                   foreach($_SESSION['artistography_cart'] as $product => $qty) {
-                    $album->loadById($product);
+		    if($product contains 'album_download_') {
+			$album_download = true;
+			$product_id = str_replace('album_download_', '', $product);
+		    }
+                    $album->loadById($product_id);
                     $total += ($qty * (float)($album->price));
                     $html = "<center><table>
                              <tr>
