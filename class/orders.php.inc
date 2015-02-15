@@ -415,7 +415,7 @@ class Orders
 		 /*** Display Cart Contents ***/
                 if(!empty($_SESSION['artistography_cart'])) {
                   foreach($_SESSION['artistography_cart'] as $product => $qty) {
-		    if($product contains 'album_download_') {
+		    if(strpos($product, 'album_download_') !== FALSE) {
 			$album_download = true;
 			$product_id = str_replace('album_download_', '', $product);
 		    }
