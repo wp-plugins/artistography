@@ -384,7 +384,7 @@ class Orders
 		// CONFIG: Please download 'cacert.pem' from "http://curl.haxx.se/docs/caextract.html" and set the directory path
 		// of the certificate as shown below. Ensure the file is readable by the webserver.
 		// This is mandatory for some environments.
-		$cert = __DIR__ . "./cacert.pem";
+		$cert = __DIR__ . "/cacert.pem";
 		curl_setopt($ch, CURLOPT_CAINFO, $cert);
 
 		$res = curl_exec($ch);
@@ -437,7 +437,7 @@ class Orders
 			//Used to store quickly items bought
 			$i = 1;
 			foreach($_POST as $key => $value) {
-				if($key == 'item_name'.$i) {
+				if($key == 'item_name_'.$i) {
 					$products_bought[] = $value;
 					$i++;
 				}
