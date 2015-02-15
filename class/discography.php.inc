@@ -132,15 +132,12 @@ class Discography
 
         $id = esc_attr($id);
 
-        $discography = new Discography;
-        $artist = new Artist;
         $album = new Music;
+	$album->loadById($id);
         $html = "";
 
-        $html = "[caption id=\"attachment_557\" align=\"alignleft\" width=\"300\" caption=\"Dr. Oscify Breathe Easy Soon\"]<a href=\"http://www.sprucegooserecords.com/wp-content/uploads/2011/05/DrOscify-Breathe-Easy-Soon.jpg\"><img class=\"size-medium wp-image-557\" title=\"Dr. Oscify Breathe Easy Soon\" src=\"http://www.sprucegooserecords.com/wp-content/uploads/2011/05/DrOscify-Breathe-Easy-Soon-300x300.jpg\" alt=\"\" width=\"300\" height=\"300\" /></a>[/caption]\n";
+        $html = "[caption align=\"alignleft\" width=\"300\" caption=\"$album->artist_name - $album->album_name\"]<a href=\"$album->picture_url\"><img class=\"size-medium\" title=\"$album->artist_name - $album->album_name\" src=\"$album->picture_url\" alt=\"\" width=\"300\" height=\"300\" /></a>[/caption]\n";
 
-        unset($discography);
-        unset($artist);
         unset($album);
         return do_shortcode($html);
     }
@@ -151,7 +148,7 @@ class Discography
 		'id' => '0'
 	), $atts ) );
 
-        GLOBAL $i18n_domain;
+        GLOBAL $i18n_domain, $transparent_pixel_url, $download_icon_width, $download_icon_height;
 
         $id = esc_attr($id);
 
@@ -179,7 +176,7 @@ class Discography
         		}
                 }
 	} else {
-		/* TODO: show transparent 1x1 image stretched to size of download image for spacing */
+		$html .= "<img style='border:0px' src='$transparent_pixel_url' width='$download_icon_width' height='$download_icon_height' />";
 	}
 
         unset($album);
@@ -190,8 +187,8 @@ class Discography
     public function show_download($download_id) {
 	GLOBAL $download_icon_url, $download_icon_width, $download_icon_height;
 
-	$html .= "<center><a href='" .get_permalink(get_option('wp_artistography_download_page')). "$download_id'>"
-	      .  "<img width='$download_icon_width' height='$download_icon_height' src='$download_icon_url' style='border:none;' /></a></center>";
+	$html .= "<center><a href='" .get_permalink(get_option('wp_artistography_download_page')). "$download_id'>
+	      	  <img width='$download_icon_width' height='$download_icon_height' src='$download_icon_url' style='border:none;' /></a></center>";
 	return $html;
     }
 
@@ -207,7 +204,7 @@ class Discography
                          style=\"border: none;
                                  width: " .$add_to_cart_icon_width. "px; height: " .$add_to_cart_icon_height. "px;
                                  background:url($add_to_cart_icon_url) no-repeat;
-                                 background-size: " .$add_to_cart_icon_width ."px " .$add_to_cart_icon_height ."px;\" /></form>";
+                                 background-size: " .$add_to_cart_icon_width ."px " .$add_to_cart_icon_height ."px;\" /></form><br/><br/><br/><br/>";
 	return $html;
     }
 
@@ -260,7 +257,7 @@ class Discography
             $html .= "  </ul>\n"
                   .  "  <div id='tabs-1'>\n";
              /*** DISPLAY ARTIST ABOUT TAB ***/
-            $html .= "    <p><table width='100%' border='1'><tr><td><img src='" .stripslashes($artist->picture_url)
+            $html .= "    <p><table width='100%'><tr><td><img src='" .stripslashes($artist->picture_url)
                   .  "' height='225' width='225' align='left' style='margin-right:1.0em;overflow:auto;' />\n";
             if(empty($content)) {
                 $html .= stripslashes($artist->description). "\n";

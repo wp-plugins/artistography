@@ -341,6 +341,7 @@ class Orders
 				$res = fgets($fp, 1024);
 
 				$fh = fopen('results.txt', 'w');
+					fwrite($fh, $req);
 					fwrite($fh, $res);
 					fclose($fh);
 

@@ -113,22 +113,19 @@ class Music
 	GLOBAL $download_icon_height, $download_icon_width, $download_icon_url;
         GLOBAL $add_to_cart_icon_height, $add_to_cart_icon_width, $add_to_cart_icon_url;
         $music = new Music;
-        $html = "  <center>\n"
-              . "    <table style='border:0px'>\n";
+        $html = "  <center>\n";
             $num = $music->loadAll('album_date DESC')->getTotalRows();
         if ($num <= 0) {
-            $html .= "    <tr><td style='border:0px' colspan='" .esc_attr($cols). "'>" .__("No Music Available in the Database!", $i18n_domain). "</td></tr>\n";
+            $html .= __("No Music Available in the Database!", $i18n_domain);
         } else {
             $rows = ((int)($num / esc_attr($cols)) < (float)($num / esc_attr($cols))) ? (int)($num / esc_attr($cols)) + 1 : (int)($num / esc_attr($cols));
             $width = esc_attr($size). "px";
             $height = esc_attr($size). "px";
 
             for ($i = 0; $i < $rows; $i++) {
-                $html .= "      <tr style='border:0px'>\n";
                 for ($j = 0; $j < $cols AND ((($cols * ($i)) + ($j+1)) <= $num); $j++) {
                     $music->loadByNode(($i * $cols) + $j);
-                    $html .= "        <td style='border:0px;'>\n"
-                          .  "          <div style='border:0px;'>\n"
+                    $html .= "          <div style='float:left;'>\n"
                           .  "            <center><font style='font-size:8pt'>\n"
                           .  "            <a href='" .$music->artist_url. "'>" .$music->artist_name. "</a><br/>\n"
                           .  "            <a href='" .$music->store_url. "'>" .$music->album_name. "</a><br/>\n"
@@ -136,21 +133,18 @@ class Music
                           .  "            <a href='" .$music->store_url. "' target='_blank'><img src='" .$music->picture_url. "' style='border:1px solid black;height:" .$height. ";width:" .$width. ";' /></a><br/>\n"
 			  .  "[artistography_album_download_link id='$music->id']";
                     $html .= "            </font></center>\n"
-                          .  "          </div>\n"
-                          .  "        </td>\n";
+                          .  "          </div>\n";
                 }
 
                 for ($j; $j < $cols; $j++) {
-                    $html .= "<td style='border:0px;'>&nbsp;</td>\n";
+                    $html .= "&nbsp;\n";
                 }
-                $html .= "      </tr>\n";
                 if ($i < ($rows-1)) {
-                    $html .= "<tr><td style='border:0px;' colspan='" .esc_attr($cols). "'><hr style='width:100%;'></td></tr>\n";
+                    $html .= "<hr style='width:100%;'>\n";
                 }
             }
         }
-        $html .= "    </table>\n"
-              .  "  </center>\n";
+        $html .= "  </center>\n";
 
         unset($music);
         return do_shortcode($html);
