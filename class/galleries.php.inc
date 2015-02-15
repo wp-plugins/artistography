@@ -58,7 +58,7 @@ class Gallery
         if(is_numeric($result)) {
           echo $result;
         } else {
-          echo sprinf(__("Failed: %s", $i18n_domain), $result);  // failed
+          echo sprintf(__("Failed: %s", $i18n_domain), $result);  // failed
         }
 
         unset($gallery);

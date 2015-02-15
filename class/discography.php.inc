@@ -345,16 +345,16 @@ class Discography
                         }
 			$html .= "</div>";
 		} else if (strcmp('Colorbox', get_option('wp_artistography_gallery_style')) == 0) {
-                        $html .= "<div style='max-height:300px;overflow:auto;'>";
+                        $html .= "<div style='min-height:30px;overflow:auto;'>";
                         for($i = 0; $i < $gallery->getTotalRows(); $i++) {
                                 $pics = explode(', ', $gallery->gallery);
                                 $num_pics = count($pics);
-                                $html .= "<center><div style='padding: 5px;float:left;display:block;'><a title=\"$gallery->description\" class='colorbox' rel='gallery-$gallery->id' href='" .wp_get_attachment_url( $pics[0] ). "'><img src='$gallery->cover_picture_url' width='$size' height='$size' /><br/>\n";
+                                $html .= "<center><div style='padding: 5px;float:left;display:block;'><a title='" .htmlspecialchars($gallery->description). "' class='colorbox' rel='gallery-$gallery->id' href='" .wp_get_attachment_url( $pics[0] ). "'><img src='$gallery->cover_picture_url' width='$size' height='$size' /><br/>\n";
                                 $html .= "<u><b>$gallery->name</b></u><br/>\n";
                                 $html .= "$num_pics Pictures</a></div></center>\n";
                                 $html .= "<div style='display:block;visibility:hidden;'>";
                                 for($j=1; $j < $num_pics; $j++) {
-                                        $html .= "<a href='" .wp_get_attachment_url( $pics[$j] ). "' title=\"$gallery->description\" class='colorbox' rel='gallery-$gallery->id' />";
+                                        $html .= "<a href='" .wp_get_attachment_url( $pics[$j] ). "' title='" .htmlspecialchars($gallery->description). "' class='colorbox' rel='gallery-$gallery->id'></a>";
                                 }
                                 $html .= "</div>";
                                 $gallery->getNodeNext();
@@ -371,13 +371,10 @@ class Discography
                       .  "    <div id='accordion2'>\n";
                 foreach ($video_postslist as $post) {
                     $comment_array = get_approved_comments($post->ID);
-                    $comment_counter = 0;
-                    foreach($comment_array as $comment){
-                        $comment_counter += 1;
-                    }
+                    $comment_counter = count($comment_array);
                     $html .= "    <h3><a href='#'>$post->post_title</a></h3>\n"
                           .  "    <div><table><tr><td>" .do_shortcode($post->post_content). "</td></tr>"
-                          .  "    <tr><td><hr width='100%' /></td></tr>"
+                          .  "    <tr><td><hr width='90%' /></td></tr>"
                           .  "    <tr><td><a href='"
                           .  get_permalink($post->ID). "' target='_blank'>Permalink</a> | <a href='"
                           .  get_permalink($post->ID). "' target='_blank'>Comments (" .$comment_counter. ")</a></td></tr>"
