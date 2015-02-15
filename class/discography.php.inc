@@ -183,6 +183,7 @@ class Discography
 	}
 
         unset($album);
+	unset($orders);
         return $html;
     }
 
@@ -313,18 +314,54 @@ class Discography
                       .  "</div>";
             }
 
+	$size='120';
              /*** DISPLAY IMAGE GALLERIES TAB ***/
             if ($gallery->getTotalRows() > 0) {
                 $html .= "  <div id='tabs-5'>\n";
-                $html .= "    <div id='accordion4'>\n";
-                for($i = 0; $i < $gallery->getTotalRows(); $i++) {
-                        $html .= "<h3><a href='#'><table><tr><td><img src='$gallery->cover_picture_url' width='100' height='100' /></td><td><u><b>$gallery->name</b></u><br/>$gallery->description</td></tr></table></a></h3>";
-                        $html .= "<div><p>";
-                        $html .= do_shortcode('[gallery columns="4" ids="' .$gallery->gallery. '"]');
-                        $html .= "</p></div>";
-                        $gallery->getNodeNext();
+		if (strcmp('Accordion', get_option('wp_artistography_gallery_style')) == 0) {
+                	$html .= "    <div id='accordion4'>\n";
+                	for($i = 0; $i < $gallery->getTotalRows(); $i++) {
+                        	$html .= "<h3><a href='#'><table><tr><td><img src='$gallery->cover_picture_url' width='100' height='100' /></td><td><u><b>$gallery->name</b></u><br/>$gallery->description</td></tr></table></a></h3>";
+                        	$html .= "<div><p>";
+                        	$html .= do_shortcode('[gallery columns="4" ids="' .$gallery->gallery. '"]');
+                        	$html .= "</p></div>";
+                        	$gallery->getNodeNext();
+                	}
+                	$html .= "    </div>\n";
+		} else if (strcmp('Thickbox', get_option('wp_artistography_gallery_style')) == 0) {
+			$html .= "<div style='max-height:300px;overflow:auto;'>";
+			for($i = 0; $i < $gallery->getTotalRows(); $i++) {
+				$pics = explode(', ', $gallery->gallery);
+				$num_pics = count($pics);
+                                $html .= "<center><div style='padding: 5px; float:left;display:block;'><a title=\"$gallery->description\" class='thickbox' rel='gallery-$gallery->id' href='" .wp_get_attachment_url( $pics[0] ). "'><img src='$gallery->cover_picture_url' width='$size' height='$size' /><br/>\n";
+				$html .= "<u><b>$gallery->name</b></u><br/>\n";
+				$html .= "$num_pics Pictures</a></div></center>\n";
+				$html .= "<div style='display:block;visibility:hidden;'>";
+				for($j=1; $j < $num_pics; $j++) {
+					$html .= "<a href='" .wp_get_attachment_url( $pics[$j] ). "' title=\"$gallery->description\" class='thickbox' rel='gallery-$gallery->id' />";
+				}
+				$html .= "</div>";
+                                $gallery->getNodeNext();
+                        }
+			$html .= "</div>";
+		} else if (strcmp('Colorbox', get_option('wp_artistography_gallery_style')) == 0) {
+                        $html .= "<div style='max-height:300px;overflow:auto;'>";
+                        for($i = 0; $i < $gallery->getTotalRows(); $i++) {
+                                $pics = explode(', ', $gallery->gallery);
+                                $num_pics = count($pics);
+                                $html .= "<center><div style='padding: 5px;float:left;display:block;'><a title=\"$gallery->description\" class='colorbox' rel='gallery-$gallery->id' href='" .wp_get_attachment_url( $pics[0] ). "'><img src='$gallery->cover_picture_url' width='$size' height='$size' /><br/>\n";
+                                $html .= "<u><b>$gallery->name</b></u><br/>\n";
+                                $html .= "$num_pics Pictures</a></div></center>\n";
+                                $html .= "<div style='display:block;visibility:hidden;'>";
+                                for($j=1; $j < $num_pics; $j++) {
+                                        $html .= "<a href='" .wp_get_attachment_url( $pics[$j] ). "' title=\"$gallery->description\" class='colorbox' rel='gallery-$gallery->id' />";
+                                }
+                                $html .= "</div>";
+                                $gallery->getNodeNext();
+                        }
+                        $html .= "</div>";
                 }
-                $html .= "    </div>\n";
+
                 $html .= "  </div>\n";
             }
 

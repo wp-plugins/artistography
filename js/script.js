@@ -18,6 +18,8 @@ $(document).ready(function() {
     if ( $( "#accordion3" ).length != 0 ) $( "#accordion3" ).accordion({ autoHeight: false});
     if ( $( "#accordion4" ).length != 0 ) $( "#accordion4" ).accordion({ autoHeight: false});
 
+    $(".colorbox").colorbox({scalePhotos:true, maxWidth: '90%', maxHeight: '90%', slideshow:true});
+
     $('.artist_table').slideDown();
 
     //Custom settings

@@ -408,6 +408,7 @@ class Orders
 
                 $order = new Orders;
                 $album = new Music;
+
                 $total = (float)"0.00";
 
 		 /*** Display Cart Contents ***/

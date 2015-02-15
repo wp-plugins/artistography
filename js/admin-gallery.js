@@ -306,9 +306,9 @@ var set_to_post_id = 10; // Set this
       autoOpen: false,
       show: "implode",
       hide: "explode",
-      height: 450,
+      height: 550,
       width: 350,
-      modal: true,
+      modal: false,
       buttons: {
         "Save": function() {
           var result = false, bValid = true;

@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.2.1-alpha4
+ * Version: 0.2.1-alpha5
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -14,7 +14,7 @@ define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true); 
 define('WP_DEBUG_DISPLAY', true);
 
-define('ARTISTOGRAPHY_VERSION', '0.2.1-alpha4');
+define('ARTISTOGRAPHY_VERSION', '0.2.1-alpha5');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -106,6 +106,7 @@ function artistography_pluginInstall() {
   add_option('wp_artistography_ftp_pass', '');
   add_option('wp_artistography_ftp_path', '');
   add_option('wp_artistography_version', ARTISTOGRAPHY_VERSION, NULL, true);
+  add_option('wp_artistography_gallery_style', 'Colorbox');
 
    /* Create Download Page */
   if (!get_option('wp_artistography_download_page')) {
@@ -478,6 +479,7 @@ function artistography_pluginUninstall() {
     delete_option('wp_artistography_ftp_user');
     delete_option('wp_artistography_ftp_pass');
     delete_option('wp_artistography_ftp_path');
+    delete_option('wp_artistography_gallery_style');
     delete_option('wp_artistography_version');
 
     foreach ($TABLE_NAME as $key => $value) {
@@ -546,11 +548,12 @@ add_action('init', 'artistography_init');
 function artistography_enqueue_admin_style_and_scripts() {
     GLOBAL $artistography_plugin_dir;
 
-    wp_enqueue_script('media-upload');
-    wp_enqueue_script('jquery');
-
-    wp_enqueue_script('thickbox');
+    wp_enqueue_media();
     wp_enqueue_style('thickbox');
+    wp_enqueue_script('media-upload');
+    wp_enqueue_script('thickbox');
+
+    wp_enqueue_script('jquery');
 
     wp_enqueue_style( 'jquery-ui', $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.css', array(), '1.11.2', 'all');
     wp_enqueue_style( 'jquery-ui', $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.theme.css', array(), '1.11.2', 'all');
@@ -580,6 +583,14 @@ function artistography_enqueue_admin_style_and_scripts() {
 
 function artistography_enqueue_style_and_scripts() {
     GLOBAL $artistography_plugin_dir;
+
+    if(strcmp("Lightbox", get_option('wp_artistography_gallery_style')) == 0) {
+    	wp_enqueue_style('thickbox');
+    	wp_enqueue_script('thickbox');
+    } else if (strcmp("Colorbox", get_option('wp_artistography_gallery_style')) == 0) {
+	wp_enqueue_style( 'colorbox', $artistography_plugin_dir . '/js/colorbox-master/example5/colorbox.css', array(), '1.0.0', 'all');
+	wp_enqueue_script( 'colorbox',  $artistography_plugin_dir . '/js/colorbox-master/jquery.colorbox.js', array( 'jquery' ), '1.0.0');
+    }
 
     wp_enqueue_script('jquery');
 
