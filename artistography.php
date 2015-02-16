@@ -100,6 +100,7 @@ function artistography_pluginInstall() {
   $version = get_option('wp_artistography_version', false);
 
    /*** Store any options ***/
+  add_option('wp_artistography_business_name', 'My Business Name');
   add_option('wp_artistography_donate_email', 'mistahwrite@gmail.com');
   add_option('wp_artistography_paypal_sandbox', true);
   add_option('wp_artistography_preserve_hidden_pages', true);
@@ -483,6 +484,7 @@ function artistography_pluginUninstall() {
 
   if (!strcmp(get_option('wp_artistography_preserve_database'), NULL)) {
      //Delete any options that's stored
+    delete_option('wp_artistography_business_name'); 
     delete_option('wp_artistography_donate_email');
     delete_option('wp_artistography_paypal_sandbox');
     delete_option('wp_artistography_preserve_hidden_pages');

@@ -281,7 +281,8 @@ class Orders
 				}
 				$html .= "<input type='hidden' name='cmd' value='_cart' />
 					  <input type='hidden' name='upload' value='1' />
-					  <input type='hidden' name='business' value='" .get_option('wp_artistography_donate_email'). "' />";
+					  <input type='hidden' name='receiver_email' value='" .get_option('wp_artistography_donate_email'). "' />
+					  <input type='hidden' name='business' value='" .get_option('wp_artistography_business_name'). "' />";
 
 				$html .= "<input type='hidden' name='custom' value='user_id_" .get_current_user_id(). "' />";
 				$html .= "<input type='hidden' name='currency_code' value='USD' />\n";
