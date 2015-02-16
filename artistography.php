@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.2.8-alpha6
+ * Version: 0.2.8-alpha7
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -16,7 +16,7 @@ define('WP_DEBUG_DISPLAY', true);
 
 define('LOG_FILE', "./ipn.log");
 
-define('ARTISTOGRAPHY_VERSION', '0.2.8-alpha6');
+define('ARTISTOGRAPHY_VERSION', '0.2.8-alpha7');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -334,6 +334,11 @@ function artistography_pluginInstall() {
   if (version_compare($version, "0.2.8-alpha6", '<')) {
 	delete_option('wp_artistography_business_name');
   }
+  if (version_compare($version, "0.2.8-alpha7", '<')) {
+	$thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_ORDERS];
+	$query = "DROP TABLE $thetable";
+	$wpdb->query($query);
+  }
   update_option('wp_artistography_version', ARTISTOGRAPHY_VERSION);
 
     // Create Data Tables If They Don't Already Exist
@@ -394,20 +399,41 @@ function artistography_pluginInstall() {
           break;
 
 	case TABLE_ARTIST_ORDERS:
-	  $query .= "forename TEXT NOT NULL,
+	$query .= "  payer_id TEXT NOT NULL,
+		     address_status TEXT,
+		     payer_status TEXT,
+		     forename TEXT NOT NULL,
 		     surname TEXT NOT NULL,
 		     email TEXT NOT NULL,
 		     address_line_1 TEXT NOT NULL,
                      postcode TEXT NOT NULL,
-                     town TEXT NOT NULL,
-                     itemsOrdered TEXT,
+		     town TEXT NOT NULL,
+		     state TEXT NOT NULL,
+		     country_code TEXT NOT NULL,
+		     contact_phone TEXT,
+		     itemsOrdered TEXT,
+		     itemsNumberOrdered TEXT,
+		     quantityOrdered TEXT,
 		     created DATETIME NOT NULL,
-                     txn_id TEXT NOT NULL,
+		     txn_id TEXT NOT NULL,
+		     txn_type TEXT,
+		     verify_sign TEXT,
 		     payment_status TEXT NOT NULL,
 		     payment_amount TEXT,
 		     payment_currency TEXT,
 		     item_name TEXT,
 		     item_number TEXT,
+		     quantity TEXT,
+		     shipping TEXT,
+		     tax TEXT,
+		     mc_fee TEXT,
+		     mc_gross TEXT,
+		     mc_handling TEXT,
+		     mc_shipping TEXT,
+		     memo TEXT,
+		     pending_reason TEXT,
+		     refund_reason_code TEXT,
+		     refund_receipt_id TEXT,
 		     user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,";
 	  break;
 

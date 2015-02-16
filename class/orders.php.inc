@@ -13,21 +13,43 @@ class Orders
 
 	public $id = NULL;
 
+	public $payer_id = NULL;
+	public $address_status = NULL;
+	public $payer_status = NULL;
 	public $forename = NULL;
         public $surname = NULL;
         public $email = NULL;
         public $address_line_1 = NULL;
         public $postcode = NULL;
         public $town = NULL;
-        public $itemsOrdered = NULL;
+	public $state = NULL;
+	public $country_code = NULL;
+	public $contact_phone = NULL;
+	public $itemsOrdered = NULL;
+	public $itemsNumberOrdered = NULL;
+	public $quantityOrdered = NULL;
         public $created = NULL;
-        public $txn_id = NULL;
+	public $txn_id = NULL;
+	public $txn_type = NULL;
+	public $parent_txn_id = NULL;
+	public $verify_sign = NULL;
 	public $custom = NULL;
         public $payment_status = NULL;
         public $payment_amount = NULL;
         public $payment_currency = NULL;
         public $item_name = NULL;
-        public $item_number = NULL;
+	public $item_number = NULL;
+	public $quantity = NULL;
+	public $shipping = NULL;
+	public $mc_fee = NULL;
+	public $mc_gross = NULL;
+	public $mc_shipping = NULL;
+	public $tax = NULL;
+	public $refund_reason_code = NULL;
+	public $refund_receipt_id = NULL;
+	public $memo = NULL;
+	public $pending_reason = NULL;
+
 	public $user_id = NULL;
 
 	 // this class interfaces with the database
@@ -69,9 +91,10 @@ class Orders
 			$this->forename = $this->query_result->forename;
 			$this->surname = $this->query_result->surname;
 			$this->email = $this->query_result->email;
-			$this->album_line_1 = $this->query_result->address_line_1;
+			$this->address_line_1 = $this->query_result->address_line_1;
 			$this->postcode = $this->query_result->postcode;
 			$this->town = $this->query_result->town;
+			$this->state = $this->query_result->state;
 
 			$this->itemsOrdered = $this->query_result->itemsOrdered;
 			$this->created = $this->query_result->created;
@@ -82,11 +105,55 @@ class Orders
 			$this->payment_currency = $this->query_result->payment_currency;
 			$this->item_name = $this->query_result->item_name;
 		        $this->item_number = $this->query_result->item_number;
+
+			$this->payer_id = $this->query_result->payer_id;
+			$this->address_status = $this->query_result->address_status;
+		        $this->payer_status = $this->query_result->payer_status;
+		        $this->state = $this->query_result->state;
+		        $this->country_code = $this->query_result->country_code;
+		        $this->contact_phone = $this->query_result->contact_phone;
+		        $this->itemsNumberOrdered = $this->query_result->items_numbered_ordered;
+		        $this->quantityOrdered = $this->query_result->quantity_ordered;
+		        $this->txn_type = $this->query_result->txn_type;
+		        $this->parent_txn_id = $this->query_result->parent_txn_id;
+		        $this->verify_sign = $this->query_result->verify_sign;
+		        $this->quantity = $this->query_result->quantity;
+		        $this->shipping = $this->query_result->shipping;
+		        $this->mc_fee = $this->query_result->mc_fee;
+		        $this->mc_gross =$this->query_result->mc_gross;
+	                $this->mc_shipping = $this->query_result->mc_shipping;
+                        $this->tax = $this->query_result->tax;
+                        $this->refund_reason_code = $this->query_result->refund_reason_code;
+		        $this->refund_receipt_id = $this->query_result->refund_receipt_id;
+		        $this->memo = $this->query_result->memo;
+	                $this->pending_reason = $this->query_result->pending_reason;
 		} else {
 			$this->query_result =
             
 			$this->album_id =
 			$this->album =
+
+			$this->payer_id =
+			$this->address_status =
+			$this->payer_status =
+			$this->state =
+			$this->country_code =
+			$this->contact_phone =
+			$this->itemsNumberOrdered =
+			$this->quantityOrdered =
+			$this->txn_type =
+			$this->parent_txn_id =
+			$this->verify_sign =
+			$this->quantity =
+		        $this->shipping =
+		        $this->mc_fee =
+		        $this->mc_gross =
+	        	$this->mc_shipping =
+	        	$this->tax =
+	       		$this->refund_reason_code =
+		        $this->refund_receipt_id =
+	        	$this->memo =
+		        $this->pending_reason =
 
 			$this->id =
 			$this->forename =          
@@ -430,15 +497,24 @@ class Orders
 			// check that receiver_email is your PayPal email
 			// check that payment_amount/payment_currency are correct
 			// process payment and mark item as paid
+			$addressStatus		= $_POST['address_status'];
+			$payerStatus		= $_POST['payer_status'];
 			$firstName		= $_POST['first_name'];
 			$lastName		= $_POST['last_name'];
 			$payerEmail		= $_POST['payer_email'];
+			$payerID		= $_POST['payer_id'];
+			$addressStatus		= $_POST['address_status'];
 			$addressStreet		= $_POST['address_street'];
 			$addressZip		= $_POST['address_zip'];
 			$addressCity		= $_POST['address_city'];
+			$addressState		= $_POST['address_state'];
+			$countryCode		= $_POST['country_code'];
+			$contactPhone		= $_POST['contact_phone'];
 			$productsBought		= $_POST[''];
+			$verifySign		= $_POST['verify_sign'];
+			$txnType		= $_POST['txn_type'];
 			$txnID			= $_POST['txn_id'];
-
+			$parentTxnId		= $_POST['parent_txn_id'];
 			$custom			= $_POST['custom'];
 
 			$paymentStatus		= $_POST['payment_status'];
@@ -447,34 +523,83 @@ class Orders
 			$receiverEmail		= $_POST['receiver_email'];
 			$itemName		= $_POST['item_name'];
 			$itemNumber		= $_POST['item_number'];
+			$quantity		= $_POST['quantity'];
+			$shipping		= $_POST['shipping'];
+			$tax			= $_POST['tax'];
+			$mcFee			= $_POST['mc_fee'];
+			$mcGross		= $_POST['mc_gross'];
+			$mcHandling		= $_POST['mc_handling'];
+			$mcShipping		= $_POST['mc_shipping'];
+			$memo			= $_POST['memo'];
+			$pendingReason		= $_POST['pending_reason'];
+			$refundReasonCode	= $_POST['reason_code'];
+			$refundReceiptID	= $_POST['receipt_id'];
 
 			$userID = str_replace('user_id_', '', $custom);
 
 			//Used to store quickly items bought
 			$i = 1;
 			foreach($_POST as $key => $value) {
-				if($key == 'item_name_'.$i) {
+				if($key == 'item_name'.$i) {
 					$products_bought[] = $value;
 					$i++;
 				}
 			}
+			$i = 1;
+			foreach($_POST as $key => $value) {
+				if ($key == 'item_number'.$i) {
+					$products_number_bought[] = $value;
+					$i++;
+				}
+			}
+			$i = 1;
+			foreach($_POST as $key => $value) {
+				if ($key == 'quantity'.$i) {
+					$quantity_bought[] = $value;
+					$i++;
+				}
+			}
 			$products = serialize($products_bought);
+			$products_number = serialize($products_number_bought);
+			$quantity = serialize($quantity_bought);
 
 			$wpdb->insert($orders->getOrdersTableName(),
-			array(	'forename'		=> $firstName,
+			array(	'address_status'	=> $addressStatus,
+				'payer_status'		=> $payerStatus,
+				'forename'		=> $firstName,
 				'surname'		=> $lastName,
 				'email'			=> $payerEmail,
+				'payer_id'		=> $payerID,
 				'address_line_1'	=> $addressStreet,
 				'postcode'		=> $addressZip,
 				'town'			=> $addressCity,
+				'state'			=> $addressState,
+				'country_code'		=> $countryCode,
+				'contact_phone'		=> $contactPhone,
 				'itemsOrdered'		=> $products,
+				'itemsNumberOrdered'	=> $products_number,
+				'quantityOrdered'	=> $quantity,
 				'created'		=> current_time('mysql'),
+				'parent_txn_id'		=> $parentTxnId,
+				'txn_type'		=> $txnType,
 				'txn_id'		=> $txnID,
+				'verify_sign'		=> $verifySign,
 				'payment_status'	=> $paymentStatus,
 				'payment_amount'	=> $paymentAmount,
 				'payment_currency'	=> $paymentCurrency,
 				'item_name'		=> $itemName,
 				'item_number'		=> $itemNumber,
+				'quantity'		=> $quantity,
+				'shipping'		=> $shipping,
+				'tax'			=> $tax,
+				'mc_fee'		=> $mcFee,
+				'mc_gross'		=> $mcGross,
+				'mc_handling'		=> $mcHandling,
+				'mc_shipping'		=> $mcShipping,
+				'memo'			=> $memo,
+				'pending_reason'	=> $pendingReason,
+				'refund_reason_code'	=> $refundReasonCode,
+				'refund_receipt_id'	=> $refundReceiptID,
 				'user_id'		=> $userID
 			),
 			array(	'%s',			// FORENAME
@@ -483,6 +608,7 @@ class Orders
 				'%s',			// ADDRESS 1
 				'%s',			// PCODE
 				'%s',			// TOWN
+				'%s',			// STATE
 				'%s',			// ORDERED
 				'%s',			// CREATED
 				'%s',			// TXN ID
@@ -491,6 +617,27 @@ class Orders
 				'%s',			// PAYMENT CURRENCY
 				'%s',			// ITEM NAME
 				'%s',			// ITEM NUMBER
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
 				'%s'			// WORDPRESS USER ID
 			));
                         if(DEBUG == true) {
