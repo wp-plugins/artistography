@@ -3,7 +3,7 @@ Contributors: MistahWrite
 Tags: artistography, artist, discography
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stabe tag: 0.2.1-alpha2
+Stabe tag: 0.2.8-alpha2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,6 +59,36 @@ Uses for FTP and file browsing capability:
      Displays artist name of album with album database id=1
 
 == Changelog ==
+
+=0.2.8-alpha2=
+*Changed database for orders and tweaked to get it working
+
+=0.2.7=
+*Using curl for PayPal IPN and reading raw POST data instead
+
+=0.2.6=
+*Updated small bugs in cart
+
+=0.2.3=
+*Changed jQuery for Artist picture hover to fadeIn fadeOut and added Image Gallerie to stats
+*Working on PayPAl IPN
+
+=0.2.2=
+*Still working on Gallery manager
+
+=0.2.1-alpha5=
+*Working on Gallery Manager
+*Added Lightbox/Colorbox Gallery Styles
+
+=0.2.1-alpha4=
+*Got Gallery Manager working
+
+=0.2.1-alpha3=
+*Setup add to cart/download link shower to display download link if logged in user paid for it already
+*Pass IPN URL permalink to PayPal
+*Add artist photos from media library
+*Added Image Galleries tab/code
+*Added specific script adder to use separate .js files per admin page
 
 =0.2.1-alpha2=
 *Fixed bug in IPN handler
