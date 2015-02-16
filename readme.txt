@@ -3,7 +3,7 @@ Contributors: MistahWrite
 Tags: artistography, artist, discography
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stabe tag: 0.2.8-alpha2
+Stabe tag: 0.2.8-alpha3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,8 +60,12 @@ Uses for FTP and file browsing capability:
 
 == Changelog ==
 
+=0.2.8-alpha3=
+*Updated Orders admin panel
+
 =0.2.8-alpha2=
 *Changed database for orders and tweaked to get it working
+*Added Business Name option
 
 =0.2.7=
 *Using curl for PayPal IPN and reading raw POST data instead
