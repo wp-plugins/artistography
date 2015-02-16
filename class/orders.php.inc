@@ -23,7 +23,11 @@ class Orders
         public $created = NULL;
         public $txn_id = NULL;
 	public $custom = NULL;
-        public $user_ip = NULL;
+        public $payment_status = NULL;
+        public $payment_amount = NULL;
+        public $payment_currency = NULL;
+        public $item_name = NULL;
+        public $item_number = NULL;
 	public $user_id = NULL;
 
 	 // this class interfaces with the database
@@ -73,7 +77,11 @@ class Orders
 			$this->created = $this->query_result->created;
 			$this->txn_id = $this->query_result->txn_id;
 			$this->user_id = $this->query_result->user_id;
-			$this->user_ip = $this->query_result->user_ip;
+			$this->payment_status = $this->query_result->payment_status;
+			$this->payment_amount = $this->query_result->payment_amount;
+			$this->payment_currency = $this->query_result->payment_currency;
+			$this->item_name = $this->query_result->item_name;
+		        $this->item_number = $this->query_result->item_number;
 		} else {
 			$this->query_result =
             
@@ -448,7 +456,7 @@ class Orders
 			}
 			$products = serialize($products_bought);
 
-			$wpdb->insert($orders->ordersTable,
+			$wpdb->insert($orders->getOrdersTableName(),
 			array(	'forename'		=> $firstName,
 				'surname'		=> $lastName,
 				'email'			=> $payerEmail,
