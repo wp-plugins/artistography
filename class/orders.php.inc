@@ -37,6 +37,7 @@ class Orders
 	protected function setCurrNode ($node)  {    $this->query_curr_node = $node;    }
 
 	 // get funcs (public)
+	public function getOrdersTableName () {return self::$ordersTable; }
 	public function getTotalRows ()   {    return $this->query_total_rows;    }
 	public function getCurrNode ()    {    return $this->query_curr_node;    }
 	public function getQueryResult () {    return $this->query_result;    }
@@ -322,9 +323,11 @@ class Orders
 
 	 // https://github.com/paypal/ipn-code-samples/blob/master/paypal_ipn.php
 	public static function shortCodeIPN( $atts, $content=null, $code="" ) {
-                GLOBAL $i18n_domain, $TABLE_NAME;
+                GLOBAL $wpdb, $i18n_domain, $TABLE_NAME;
                 $html = "";
 		$header = "";
+
+		$orders = new Orders;
 
 		// Read POST data
 		// // reading posted data directly from $_POST causes serialization
@@ -423,6 +426,8 @@ class Orders
 			$productsBought		= $_POST[''];
 			$txnID			= $_POST['txn_id'];
 
+			$custom			= $_POST['custom'];
+
 			$paymentStatus		= $_POST['payment_status'];
 			$paymentAmount		= $_POST['payment_amount'];
 			$paymentCurrency	= $_POST['mc_currency'];
@@ -430,9 +435,7 @@ class Orders
 			$itemName		= $_POST['item_name'];
 			$itemNumber		= $_POST['item_number'];
 
-        	        $this->custom = array();
-	                parse_str($txn_id->custom, $this->custom);
-			$userID = str_replace('user_id_', '', $this->custom);
+			$userID = str_replace('user_id_', '', $custom);
 
 			//Used to store quickly items bought
 			$i = 1;
@@ -444,7 +447,7 @@ class Orders
 			}
 			$products = serialize($products_bought);
 
-			$wpdb->insert(self::$ordersTable,
+			$wpdb->insert($orders->ordersTable,
 			array(	'forename'		=> $firstName,
 				'surname'		=> $lastName,
 				'email'			=> $payerEmail,
@@ -454,7 +457,11 @@ class Orders
 				'itemsOrdered'		=> $products,
 				'created'		=> current_time('mysql'),
 				'txn_id'		=> $txnID,
-				'user_ip'		=> $_SERVER['REMOTE_ADDR'],
+				'payment_status'	=> $paymentStatus,
+				'payment_amount'	=> $paymentAmount,
+				'payment_currency'	=> $paymentCurrency,
+				'item_name'		=> $itemName,
+				'item_number'		=> $itemNumber,
 				'user_id'		=> $userID
 			),
 			array(	'%s',			// FORENAME
@@ -464,11 +471,18 @@ class Orders
 				'%s',			// PCODE
 				'%s',			// TOWN
 				'%s',			// ORDERED
-				'%s',			// STATUS
 				'%s',			// CREATED
-				'%s',			// USER IP
+				'%s',			// TXN ID
+				'%s',			// PAYMENT STATUS
+				'%s',			// PAYMENT AMOUNT
+				'%s',			// PAYMENT CURRENCY
+				'%s',			// ITEM NAME
+				'%s',			// ITEM NUMBER
 				'%s'			// WORDPRESS USER ID
 			));
+                        if(DEBUG == true) {
+				error_log(date('[Y-m-d H:i e] '), "Insert IPN: $wpdb->last_result" . PHP_EOL, 3, LOG_FILE);
+			}
 		} else if (strcmp($res, "INVALID") == 0) {
 			// You may prefer to store the transaction even if fail
 			// log for manual investigation
