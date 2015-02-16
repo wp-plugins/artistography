@@ -13,7 +13,11 @@ echo "<table>
 		<th>Email</th>
 		<th>Address</th>
 		<th>Products purchased</th>
-		<th>User IP</th>
+		<th>Payment Status</th>
+		<th>Amount</th>
+		<th>Currency</th>
+		<th>Item Name</th>
+		<th>Item Number</th>
 		<th>User ID</th>
 	</thead>
 	<tbody>";
@@ -33,7 +37,11 @@ echo "<table>
 		}
 		echo "			</ol>";
 		echo	"	</td>
-				<td>$orders->user_ip</td>
+				<td>$orders->payment_status</td>
+				<td>$orders->payment_amount</td>
+				<td>$orders->payment_currency</td>
+				<td>$orders->item_name</td>
+				<td>$orders->item_number</td>
 				<td>$orders->user_id</td>
 			</tr>";
 		$orders->getNodeNext();
