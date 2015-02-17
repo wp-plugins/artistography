@@ -4,12 +4,12 @@ add_shortcode( 'artistography_show_checkout', 'Orders::shortCodeShowCheckout' );
 add_shortcode( 'artistography_show_thankyou', 'Orders::shortCodeShowThankyou' );
 add_shortcode( 'artistography_show_orders', 'Orders::shortCodeShowOrders' );
 add_shortcode( 'artistography_ipn', 'Orders::shortCodeIPN' );
+
+//AJAX Administration
+add_action('wp_ajax_View_Order', 'Orders::callback_View_Order');
 class Orders
 {
 	protected static $ordersTable = NULL;  // TABLE NAME of MUSIC ALBUM TABLE
-
-	public $album_id = NULL;
-	public $album = NULL;
 
 	public $id = NULL;
 
@@ -67,6 +67,56 @@ class Orders
 	public function getTotalRows ()   {    return $this->query_total_rows;    }
 	public function getCurrNode ()    {    return $this->query_curr_node;    }
 	public function getQueryResult () {    return $this->query_result;    }
+
+	public static function callback_View_Order(){
+		GLOBAL $i18n_domain;
+
+		$orders = new Orders;
+
+		if($orders->loadById($_POST['order_id'])->getTotalRows() > 0) {
+			echo $orders->id
+				."##$$##". stripslashes($orders->forename)
+				    ." ".  stripslashes($orders->surname)
+		                ."##$$##". stripslashes($orders->email)
+				."##$$##". stripslashes($orders->address_line_1)
+				."##$$##". stripslashes($orders->town)
+			        ."##$$##". stripslashes($orders->state)
+				."##$$##". stripslashes($orders->country_code)
+				."##$$##". stripslashes($orders->contact_phone)
+				."##$$##". stripslashes($orders->payer_id)
+				."##$$##". stripslashes($orders->address_status)
+				."##$$##". stripslashes($orders->payer_status)
+				."##$$##". stripslashes($orders->itemsNumberOrdered)
+				."##$$##". stripslashes($orders->quantityOrdered)
+				."##$$##". stripslashes($orders->txn_type)
+			        ."##$$##". stripslashes($orders->parent_txn_id)
+				."##$$##". stripslashes($orders->verify_sign)
+			        ."##$$##". stripslashes($orders->quantity)
+				."##$$##". stripslashes($orders->shipping)
+				."##$$##". stripslashes($orders->mc_fee)
+				."##$$##". stripslashes($orders->mc_gross)
+				."##$$##". stripslashes($orders->mc_shipping)
+				."##$$##". stripslashes($orders->tax)
+				."##$$##". stripslashes($orders->refund_reason_code)
+				."##$$##". stripslashes($orders->refund_receipt_id)
+				."##$$##". stripslashes($orders->memo)
+			 	."##$$##". stripslashes($orders->pending_reason)
+		                ."##$$##". stripslashes($orders->postcode)
+                      		."##$$##". unserialize(stripslashes($orders->itemsOrdered))
+                       		."##$$##". stripslashes($orders->created)
+                       		."##$$##". stripslashes($orders->txn_id)
+                       		."##$$##". stripslashes($orders->custom)
+               			."##$$##". stripslashes($orders->payment_status)
+               			."##$$##". stripslashes($orders->payment_amount)
+               			."##$$##". stripslashes($orders->payment_currency)
+               			."##$$##". stripslashes($orders->item_name)
+               			."##$$##". stripslashes($orders->item_number)
+               			."##$$##". stripslashes($orders->user_id);
+		}
+
+		unset($artist);
+		die;
+	}
 
 	public function __construct() {
 		GLOBAL $wpdb, $TABLE_NAME;
@@ -130,9 +180,6 @@ class Orders
 		} else {
 			$this->query_result =
             
-			$this->album_id =
-			$this->album =
-
 			$this->payer_id =
 			$this->address_status =
 			$this->payer_status =
@@ -277,16 +324,18 @@ class Orders
 		
         	if ($this->getTotalRows() > 0) {
                 	do {
-                		$products = unserialize($this->itemsOrdered);
-                		for($j = 0; $j < count($products); $j++) {
-					$product_id = str_replace('album_download_', '', explode(' - ', $products[$j])[0]);
-                        		if (strcmp($music_id, $product_id) == 0) {
-						$found = true;
-					}
-                		}
-                		$orders->getNodeNext();
+				$products = unserialize($this->itemsOrdered);
+				if(strcmp("Completed", $this->payment_status) == 0) {
+                			for($j = 0; $j < count($products); $j++) {
+						$product_id = str_replace('album_download_', '', explode(' - ', $products[$j])[0]);
+                        			if (strcmp($music_id, $product_id) == 0) {
+							$found = true;
+						}
+                			}
+				}
+                		$this->getNodeNext();
                 		$i++;
-        	        } while($i<$orders->getTotalRows());
+        	        } while($i<$this->getTotalRows());
 	        } else {
 			$found = false;
 		}

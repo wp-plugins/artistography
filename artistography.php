@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.2.8-alpha8
+ * Version: 0.2.8-alpha9
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -16,7 +16,7 @@ define('WP_DEBUG_DISPLAY', true);
 
 define('LOG_FILE', "./ipn.log");
 
-define('ARTISTOGRAPHY_VERSION', '0.2.8-alpha8');
+define('ARTISTOGRAPHY_VERSION', '0.2.8-alpha9');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -334,7 +334,7 @@ function artistography_pluginInstall() {
   if (version_compare($version, "0.2.8-alpha6", '<')) {
 	delete_option('wp_artistography_business_name');
   }
-  if (version_compare($version, "0.2.8-alpha7", '<')) {
+  if (version_compare($version, "0.2.8-alpha9", '<')) {
 	$thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_ORDERS];
 	$query = "DROP TABLE $thetable";
 	$wpdb->query($query);
@@ -608,17 +608,21 @@ function artistography_enqueue_admin_style_and_scripts() {
     switch($_GET['page']) {
 	case SUBMENU_MANAGE_ARTISTS_HANDLE:
 		$admin_script = 'admin-artist.js';
-	break;
+		break;
 	case SUBMENU_MANAGE_MUSIC_HANDLE:
 		$admin_script = 'admin-music.js';
-	break;
+		break;
 	case SUBMENU_MANAGE_DISCOGRAPHY_HANDLE:
 		$admin_script = 'admin-discography.js';
-	break;
+		break;
 	case SUBMENU_MANAGE_GALLERIES_HANDLE:
 		wp_enqueue_media();
 		$admin_script = 'admin-gallery.js';
-	break;
+		break;
+	case TOP_LEVEL_HANDLE:
+	case SUBMENU_MANAGE_ORDERS_HANDLE:
+		$admin_script = 'admin-orders.js';
+		break;
 	default:
     		$admin_script = 'admin.js';
     }
