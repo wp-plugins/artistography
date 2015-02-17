@@ -132,7 +132,7 @@ echo "  <div style='float:left;'><h1>" .__('Processed Orders', $i18n_domain). ":
 		$i++;
 		} while($i<$orders->getTotalRows());
 	} else {
-		echo "<tr><td colspan='8'>There are no orders yet.</td></tr>";
+		echo "<tr><td colspan='9'>There are no orders yet.</td></tr>";
 	}
 echo "	</tbody>
 </table>";
