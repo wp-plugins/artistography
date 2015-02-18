@@ -107,7 +107,7 @@ var set_to_post_id = 10; // Set this
           });
       }
 
-      function updateGallery(update_gallery_id, update_artist_id, name, gallery_ids, gallery_picture_url, gallery_description) {
+      function updateGallery(update_gallery_id, name, update_artist_id, gallery_ids, gallery_picture_url, gallery_description) {
           var data_update = {
               action: 'Update_Gallery',
 
