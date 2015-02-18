@@ -8,6 +8,8 @@ add_shortcode( 'artistography_display_album_artist', 'Music::shortCodeDisplayAlb
 
  // AJAX Administration
 add_action('wp_ajax_Create_Album', 'Music::callback_Create_Album');
+add_action('wp_ajax_Update_Album', 'Music::callback_Update_Album');
+add_action('wp_ajax_Edit_Album', 'Music::callback_Edit_Album');
 add_action('wp_ajax_Delete_Album', 'Music::callback_Delete_Album');
 
 class Music
@@ -21,7 +23,6 @@ class Music
     public $album_name = NULL;
 
     public $artist = NULL;
-    public $artist_id = NULL;
     public $artist_url = NULL;
     public $picture_url = NULL;
     public $store_url = NULL;
@@ -62,17 +63,16 @@ class Music
         GLOBAL $i18n_domain;
 
         $music = new Music;
-/*        $music->insert($_POST['artist_id'],
-                       $_POST['artist_name'],
+        $music->insert($_POST['artist_name'],
                        $_POST['album_name'],
                        $music->formatDateTime($_POST['album_day'], $_POST['album_month'], $_POST['album_year']),
                        $_POST['artist_url'],
                        $_POST['picture_url'],
                        $_POST['store_url'],
-		       $_POST['price']),
+		       $_POST['price'],
                        $_POST['download_id'],
                        $_POST['description']);
-*/
+
         if ($music->getTotalRows() <= 0) {
             _e("Failure...", $i18n_domain);  // failed
         } else {
@@ -80,6 +80,58 @@ class Music
         }
 
         unset($music);
+        die;
+    }
+
+    public static function callback_Update_Album(){
+        GLOBAL $i18n_domain;
+
+        $album = new Music;
+
+        $music_id = stripslashes($_POST['album_id']);
+	$artist_name = stripslashes($_POST['artist_name']);
+        $album_name = stripslashes($_POST['album_name']);
+	$album_date = $album->formatDateTime($_POST['album_day'], $_POST['album_month'], $_POST['album_year']);
+        $artist_url = stripslashes($_POST['artist_url']);
+        $picture_url = stripslashes($_POST['picture_url']);
+	$store_url = stripslashes($_POST['store_url']);
+	$price = stripslashes($_POST['price']);
+	$download_id = stripslashes($_POST['download_id']);
+        $description = stripslashes($_POST['description']);
+
+        if($album->updateById ($music_id, $artist_name, $album_name, $album_date, $artist_url, $picture_url, $store_url, $price, $download_id, $description) ) {
+
+          echo '1'; //success
+        } else {
+          echo sprintf(__("Failed: Unable to Update Artist id: %u", $i18n_domain), $artist_id);
+        }
+
+        unset($album);
+        die;
+    }
+
+    public static function callback_Edit_Album(){
+        GLOBAL $i18n_domain;
+
+        $album = new Music;
+
+        if($album->loadById($_POST['album_id'])->getTotalRows() > 0) {
+
+          echo $album->id
+		."##$$##". stripslashes($album->artist_name)
+		."##$$##". stripslashes($album->album_name)
+		."##$$##". stripslashes($album->album_day)
+		."##$$##". stripslashes($album->album_month)
+		."##$$##". stripslashes($album->album_year)
+		."##$$##". stripslashes($album->artist_url)
+		."##$$##". stripslashes($album->picture_url)
+		."##$$##". stripslashes($album->store_url)
+		."##$$##". stripslashes($album->price)
+		."##$$##". stripslashes($album->download_id)
+		."##$$##". stripslashes($album->description) ."";
+        }
+
+        unset($album);
         die;
     }
 
@@ -226,7 +278,6 @@ class Music
             $this->album_name = stripslashes($this->query_result->album_name);
             $this->artist_name = stripslashes($this->query_result->artist_name);
 
-            $this->artist_id = $this->query_result->artist_id;
             $this->artist_url = stripslashes($this->query_result->artist_url);
             $this->picture_url = stripslashes($this->query_result->picture_url);
             $this->description = stripslashes($this->query_result->description);
@@ -247,9 +298,6 @@ class Music
                 $this->total_downloads = NULL;
 	    }
 
-            if($this->artist_id != 0) {
-                $this->artist->loadById($this->artist_id);
-            }
         }
         return $this;
     }
@@ -375,7 +423,7 @@ class Music
     }
 
      // update music album entry
-    public function updateById ($music_id, $artist_id, $artist_name, $album_name, $album_date, $artist_url, $picture_url, $store_url, $price, $download_id, $description) {
+    public function updateById ($music_id, $artist_name, $album_name, $album_date, $artist_url, $picture_url, $store_url, $price, $download_id, $description) {
         GLOBAL $wpdb, $i18n_domain, $current_user;
 
         get_currentuserinfo();
@@ -383,7 +431,6 @@ class Music
         $this->query = $wpdb->prepare(
             "UPDATE " .self::$musicTable. "
              SET update_date = now(),
-                 artist_id = %u,
                  artist_name = %s,
                  album_name = %s,
                  album_date = %s,
@@ -395,7 +442,7 @@ class Music
                  description = %s,
                  last_updated_by_id = %u
              WHERE id = %u",
-             $artist_id, $artist_name, $album_name, $album_date, $artist_url, $picture_url, $store_url, $price, $download_id, $description, $current_user->ID, $music_id);
+             $artist_name, $album_name, $album_date, $artist_url, $picture_url, $store_url, $price, $download_id, $description, $current_user->ID, $music_id);
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === FALSE) {
@@ -406,16 +453,16 @@ class Music
         }
     }
 
-    public function insert ($artist_id, $artist_name, $album_name, $album_date, $artist_url, $picture_url, $store_url, $price, $download_id, $description) {
+    public function insert ( $artist_name, $album_name, $album_date, $artist_url, $picture_url, $store_url, $price, $download_id, $description) {
         GLOBAL $wpdb, $i18n_domain, $current_user;
 
         get_currentuserinfo();
 
         $this->query = $wpdb->prepare(
                        "INSERT INTO " .self::$musicTable. "
-                        (create_date, update_date, poster_id, last_updated_by_id, artist_id, artist_name, album_name, album_date, artist_url, picture_url, store_url, price, download_id, description)
-                        VALUES (now(), now(), %u, %u, %u, %s, %s, %s, %s, %s, %s, %s, %u, %s)",
-                        $current_user->ID, $current_user->ID, $artist_id, $artist_name, $album_name, $album_date, $artist_url, $picture_url, $store_url, $price, $download_id, $description);
+                        (create_date, update_date, poster_id, last_updated_by_id, artist_name, album_name, album_date, artist_url, picture_url, store_url, price, download_id, description)
+                        VALUES (now(), now(), %u, %u, %s, %s, %s, %s, %s, %s, %s, %u, %s)",
+                        $current_user->ID, $current_user->ID, $artist_name, $album_name, $album_date, $artist_url, $picture_url, $store_url, $price, $download_id, $description);
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === 0 OR $this->getTotalRows() === FALSE) {
@@ -424,95 +471,6 @@ class Music
              // was entered successfully into database
             return true;
         }
-    }
-
-    public function display_manage_music_form ($music_id = 0, $init_artist = '', $init_album = '', $init_day = 0, $init_month = 0, $init_year = 0, $init_picture_url = '/', $init_artist_url = '/artists/', $init_store_url = '/products/', $init_price = '0.00', $init_download_id = 0, $init_description = '', $new = 1) {
-        GLOBAL $wpdb, $TABLE_NAME, $i18n_domain;
-
-        if ($init_day == 0) $init_day = (int)date("d");
-        if ($init_month == 0) $init_month = (int)date("m");
-        if ($init_year == 0) $init_year = (int)date("Y");
-
-        $text_width = "400px";
-
-        if ($new) { $fmusic = 'fmusic'; } else { $fmusic = 'fupdatemusic'; }
-        echo "<form name='$fmusic' action='' method='post'>
-              <table>
-              <input type='hidden' name='music_id' value='$music_id' />
-              <tr><td style='text-align:right;'>Artist:</td><td><input style='width:$text_width;' type='textbox' name='artist_name' value=\"$init_artist\" /></td></tr>
-              <tr><td style='text-align:right;'>Album:</td><td><input style='width:$text_width;' type='textbox' name='album_name' value=\"$init_album\" /></td></tr>
-              <tr><td style='text-align:right;'>Release Date:</td><td>
-              <select name='album_day'>\n";
-
-        for ($day=1; $day <= 31; $day++) {
-            echo "<option value='" .date("d", mktime(date("H"), date("i"), date("s"), $month, $day, date("Y"))). "'";
-            if($day == $init_day) echo " selected";
-            echo ">$day</option>\n";
-        }
-        echo "</select>\n&nbsp;
-              <select name='album_month'>\n";
-        for ($month=1; $month <= 12; $month++) {
-            echo "<option value='" .date("m", mktime(date("H"), date("i"), date("s"), $month, date("j"), date("Y"))). "'";
-            if ($month == $init_month) echo " selected";
-            echo ">" .date("m", mktime(date("H"), date("i"), date("s"), $month, date("j"), date("Y"))) ." - ". date("F", mktime(date("H"), date("i"), date("s"), $month, date("j"), date("Y"))). "</option>\n";
-        }
-        echo "</select>\n&nbsp;
-              <select name='album_year'>\n";
-        for ($year=1+(int)date("Y"); $year >= 1990; $year--) {
-            echo "<option value='" .$year. "'";
-            if($year == $init_year) echo " selected";
-            echo ">" .$year. "</option>\n";
-        }
-        echo "</select>
-              </td></tr>\n";
-
-        echo "<tr><td style='text-align:right;'>" .__("Album Art (Front) Hot Link (URL)", $i18n_domain). ":</td><td><input style='width:$text_width;' type='textbox' name='picture_url' value=\"$init_picture_url\" /></td></tr>
-              <tr><td style='text-align:right;'>" .__("Store URL", $i18n_domain). ":</td><td><input style='width:$text_width;' type='textbox' name='store_url' value=\"$init_store_url\" /></td></tr>
-              <tr><td style='text-align:right;'>" .__("Artist URL", $i18n_domain). ":</td><td><input style='width:$text_width;' type='textbox' name='artist_url' value=\"$init_artist_url\" /></td></tr>\n
-	      <tr><td style='text-align:right;'>" .__("Price", $i18n_domain), ":</td><td><input style='width;$text_wiidth:' type='textbox' name='price' value=\"$init_price\" /></td></tr>\n";
-
-        echo "<tr><td style='text-align:right;'>" .__("Download ID", $i18n_domain). ":</td>
-                <td>
-                  <select name='download_id'>\n";
-
-        $thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_FILE_DOWNLOAD];
-        $query = "SELECT *
-                  FROM $thetable";
-        $num = $wpdb->query($query);
-
-        if($num === FALSE) {
-            wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $query) );
-        } else {
-            for ($i=0, $j=-1; $i <= $num; $i++, $j++) {
-                if ($i > 0) {
-                    $row = $wpdb->get_row($query, ARRAY_A, $j);
-                    if ($i > 0) {
-                        $id = $row['id'];
-                        $file_name = $row['file_name'];
-                        $download_count = $row['download_count'];
-                        $arrayFile = explode("/", $file_name);
-                        $arrayFile = array_reverse($arrayFile);
-                        $file_name = $arrayFile[0];
-                    }
-                }
-                echo "<option value='$i'";
-                if ($i == $init_download_id) echo " selected";
-                echo ">";
-                echo ($i == 0) ? __("Don't Link It Right Now", $i18n_domain) : "$id - $file_name";
-                echo "</option>\n";
-            }
-        }
-        echo "    </select>
-                </td>
-              </tr>
-              <tr><td style='text-align:right;'>" .__("Description", $i18n_domain). ":</td><td><textarea name='description' style='width:100%;height:40em;'>" .stripslashes($init_description). "</textarea></td></tr>
-              <tr><td colspan='2'></td></tr>\n";
-        if ($new) {
-            echo "<tr><td colspan='2' style='text-align:center;'><input type='submit' name='new' value='" .__("Add New Album", $i18n_domain). "' /></td></tr>\n";
-        } else {
-            echo "<tr><td colspan='2' style='text-align:center;'><input type='submit' name='update' value='" .__("Update Album", $i18n_domain). "' /></td></tr>\n";
-        }
-        echo "</table></form>\n";
     }
 }  /* end class Music */
 ?>

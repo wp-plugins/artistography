@@ -107,13 +107,13 @@ var set_to_post_id = 10; // Set this
           });
       }
 
-      function updateGallery(update_gallery_id, update_artist_id, name, gallery_ids, artist_picture_url, gallery_description) {
+      function updateGallery(update_gallery_id, update_artist_id, name, gallery_ids, gallery_picture_url, gallery_description) {
           var data_update = {
-              action: 'Update_Artist',
+              action: 'Update_Gallery',
 
 	      gallery_id: update_gallery_id,
               artist_id: update_artist_id,
-              artist_name: name,
+              gallery_name: name,
               gallery: gallery_ids,
               picture_url: gallery_picture_url,
               gallery_descr: gallery_description
@@ -280,7 +280,12 @@ var set_to_post_id = 10; // Set this
      picture_url = $( "#picture_url" ),
      gallery = $( "#gallery" ),
      gallery_descr = $( "#gallery_descr" ),
-     allFields = $( [] ).add( id ).add( name ).add( artist_id ).add( picture_url ).add( gallery ).add( gallery_descr ),
+     allFields = $( [] ).add( id )
+			.add( name )
+			.add( artist_id )
+			.add( picture_url )
+			.add( gallery )
+			.add( gallery_descr ),
      tips = $( ".validateTips" );
 
     function updateTips( t ) {

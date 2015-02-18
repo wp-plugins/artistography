@@ -87,7 +87,7 @@ class Gallery
         die;
     }
 
-    public static function callback_Edit_Artist(){
+    public static function callback_Edit_Gallery(){
         GLOBAL $i18n_domain;
 
         $gallery = new Gallery;

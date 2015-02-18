@@ -19,7 +19,7 @@ $(document).ready(function() {
 				$( "#street_address" ).val(res[3]);
 				$( "#town" ).val(res[4]);
 				$( "#state" ).val(res[5]);
-				$( "#country_code" ).val(res[6]);
+				$( "#country" ).val(res[6]);
 				$( "#contact_phone" ).val(res[7]);
 				$( "#payer_id" ).val(res[8]);
 				$( "#address_status" ).val(res[9]);
@@ -34,23 +34,23 @@ $(document).ready(function() {
 				$( "#mc_fee" ).val(res[18]);
 				$( "#mc_gross" ).val(res[19]);
 				$( "#mc_shipping" ).val(res[20]);
-				$( "#tax" ).val(res[21]);
-				$( "#refund_reason_code" ).val(res[22]);
-				$( "#refund_receipt_id" ).val(res[23]);
-				$( "#memo" ).val(res[24]);
-				$( "#pending_reason" ).val(res[25]);
-				$( "#postcode" ).val(res[26]);
-				$( "#items_ordered" ).val(res[27]);
-				$( "#created" ).val(res[28]);
-				$( "#txn_id" ).val(res[29]);
-				$( "#custom" ).val(res[30]);
-				$( "#payment_status" ).val(res[31]);
-				$( "#payment_amount" ).val(res[32]);
-				$( "#payment_currency" ).val(res[33]);
-				$( "#item_name" ).val(res[34]);
-				$( "#item_number" ).val(res[35]);
-				$( "#user_id" ).val(res[36]);
-
+				$( "#mc_handling" ).val(res[21]);
+				$( "#tax" ).val(res[22]);
+				$( "#refund_reason" ).val(res[23]);
+				$( "#refund_receipt_id" ).val(res[24]);
+				$( "#memo" ).val(res[25]);
+				$( "#pending_reason" ).val(res[26]);
+				$( "#postcode" ).val(res[27]);
+				$( "#items_ordered" ).val(res[28]);
+				$( "#created" ).val(res[29]);
+				$( "#txn_id" ).val(res[30]);
+				$( "#custom" ).val(res[31]);
+				$( "#payment_status" ).val(res[32]);
+				$( "#payment_amount" ).val(res[33]);
+				$( "#payment_currency" ).val(res[34]);
+				$( "#item_name" ).val(res[35]);
+				$( "#item_number" ).val(res[36]);
+				$( "#user_id" ).val(res[37]);
 			});
 		}
 
@@ -152,7 +152,7 @@ $(document).ready(function() {
 			street_address = $( "#street_address" ),
 			town = $( "#town" ),
 			state = $( "#state" ),
-                        country_code = $( "#country_code" ),
+                        country = $( "#country" ),
                         contact_phone = $( "#contact_phone" ),
                         payer_id = $( "#payer_id" ),
                         address_status = $( "#address_status" ),
@@ -168,7 +168,7 @@ $(document).ready(function() {
                         mc_gross = $( "#mc_gross" ),
                         mc_shipping = $( "#mc_shipping" ),
                         tax = $( "#tax" ),
-                        refund_reason_code = $( "#refund_reason_code" ),
+                        refund_reason_code = $( "#refund_reason" ),
                         refund_receipt_id = $( "#refund_receipt_id" ),
                         memo = $( "#memo" ),
                         pending_reason = $( "#pending_reason" ),
@@ -190,7 +190,7 @@ $(document).ready(function() {
 				.add( street_address )
 				.add( town )
 				.add( state )
-                                .add( country_code )
+                                .add( country )
                                 .add( contact_phone )
                                 .add( payer_id )
                                 .add( address_status )
@@ -239,22 +239,21 @@ $(document).ready(function() {
 				allFields.val( "" ).removeClass( "ui-state-error" );
 			}
 		});
-
-		 //used to apply alternating row styles
-		function zebraRows(selector, className)
-		{
-			$(selector).removeClass(className).addClass(className);
-		}
-
-		 //filter results based on query   
-		function filter(selector, query) {
-			query = $.trim(query); //trim white space
-			query = query.replace(/ /gi, '|'); //add OR for regex query
-
-			$(selector).each(function() {
-				$(this).text().search((new RegExp(query, "i")) < 0) ? $(this).hide().removeClass('visible') : $(this).show().addClass('visible');
-			});
-		}
-
 	}
 });
+
+ //used to apply alternating row styles
+function zebraRows(selector, className)
+{
+	$(selector).removeClass(className).addClass(className);
+}
+
+ //filter results based on query   
+function filter(selector, query) {
+	query = $.trim(query); //trim white space
+	query = query.replace(/ /gi, '|'); //add OR for regex query
+
+	$(selector).each(function() {
+		($(this).text().search(new RegExp(query, "i")) < 0) ? $(this).hide().removeClass('visible') : $(this).show().addClass('visible');
+	});
+}

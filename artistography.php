@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.2.8-alpha9
+ * Version: 0.2.8-alpha10
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -16,7 +16,7 @@ define('WP_DEBUG_DISPLAY', true);
 
 define('LOG_FILE', "./ipn.log");
 
-define('ARTISTOGRAPHY_VERSION', '0.2.8-alpha9');
+define('ARTISTOGRAPHY_VERSION', '0.2.8-alpha10');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -334,9 +334,13 @@ function artistography_pluginInstall() {
   if (version_compare($version, "0.2.8-alpha6", '<')) {
 	delete_option('wp_artistography_business_name');
   }
-  if (version_compare($version, "0.2.8-alpha9", '<')) {
+  if (version_compare($version, "0.2.8-alpha10", '<')) {
 	$thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_ORDERS];
 	$query = "DROP TABLE $thetable";
+	$wpdb->query($query);
+
+	$thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_MUSIC_ALBUMS];
+	$query = "ALTER TABLE $thetable DROP COLUMN artist_id";
 	$wpdb->query($query);
   }
   update_option('wp_artistography_version', ARTISTOGRAPHY_VERSION);
@@ -377,7 +381,6 @@ function artistography_pluginInstall() {
 
         case TABLE_ARTIST_MUSIC_ALBUMS:
           $query .= "page_views INT(10) UNSIGNED DEFAULT '0' NOT NULL,
-                     artist_id INT(10),
                      artist_name TEXT NOT NULL,
                      album_name TEXT NOT NULL,
                      album_date DATETIME NOT NULL,
@@ -414,7 +417,6 @@ function artistography_pluginInstall() {
 		     itemsOrdered TEXT,
 		     itemsNumberOrdered TEXT,
 		     quantityOrdered TEXT,
-		     created DATETIME NOT NULL,
 		     txn_id TEXT NOT NULL,
 		     txn_type TEXT,
 		     parent_txn_id TEXT,

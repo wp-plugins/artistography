@@ -44,6 +44,7 @@ class Orders
 	public $mc_fee = NULL;
 	public $mc_gross = NULL;
 	public $mc_shipping = NULL;
+	public $mc_handling = NULL;
 	public $tax = NULL;
 	public $refund_reason_code = NULL;
 	public $refund_receipt_id = NULL;
@@ -74,7 +75,9 @@ class Orders
 		$orders = new Orders;
 
 		if($orders->loadById($_POST['order_id'])->getTotalRows() > 0) {
-			echo $orders->id
+			$products = unserialize(stripslashes($orders->itemsOrdered));
+
+			$output = $orders->id
 				."##$$##". stripslashes($orders->forename)
 				    ." ".  stripslashes($orders->surname)
 		                ."##$$##". stripslashes($orders->email)
@@ -96,14 +99,18 @@ class Orders
 				."##$$##". stripslashes($orders->mc_fee)
 				."##$$##". stripslashes($orders->mc_gross)
 				."##$$##". stripslashes($orders->mc_shipping)
+				."##$$##". stripslashes($orders->mc_handling)
 				."##$$##". stripslashes($orders->tax)
 				."##$$##". stripslashes($orders->refund_reason_code)
 				."##$$##". stripslashes($orders->refund_receipt_id)
 				."##$$##". stripslashes($orders->memo)
 			 	."##$$##". stripslashes($orders->pending_reason)
 		                ."##$$##". stripslashes($orders->postcode)
-                      		."##$$##". unserialize(stripslashes($orders->itemsOrdered))
-                       		."##$$##". stripslashes($orders->created)
+                      		."##$$##";
+				for($j = 0; $j < count($products); $j++) {
+                        		$output .= ($j+1) .$products[$j]. "\r\n";
+                		}
+                      $output .= "##$$##". stripslashes($orders->created)
                        		."##$$##". stripslashes($orders->txn_id)
                        		."##$$##". stripslashes($orders->custom)
                			."##$$##". stripslashes($orders->payment_status)
@@ -112,6 +119,7 @@ class Orders
                			."##$$##". stripslashes($orders->item_name)
                			."##$$##". stripslashes($orders->item_number)
                			."##$$##". stripslashes($orders->user_id);
+			echo $output;
 		}
 
 		unset($artist);
@@ -147,7 +155,7 @@ class Orders
 			$this->state = $this->query_result->state;
 
 			$this->itemsOrdered = $this->query_result->itemsOrdered;
-			$this->created = $this->query_result->created;
+			$this->created = $this->query_result->create_date;
 			$this->txn_id = $this->query_result->txn_id;
 			$this->user_id = $this->query_result->user_id;
 			$this->payment_status = $this->query_result->payment_status;
@@ -162,8 +170,8 @@ class Orders
 		        $this->state = $this->query_result->state;
 		        $this->country_code = $this->query_result->country_code;
 		        $this->contact_phone = $this->query_result->contact_phone;
-		        $this->itemsNumberOrdered = $this->query_result->items_numbered_ordered;
-		        $this->quantityOrdered = $this->query_result->quantity_ordered;
+		        $this->itemsNumberOrdered = $this->query_result->itemsNumberOrdered;
+		        $this->quantityOrdered = $this->query_result->quantityOrdered;
 		        $this->txn_type = $this->query_result->txn_type;
 		        $this->parent_txn_id = $this->query_result->parent_txn_id;
 		        $this->verify_sign = $this->query_result->verify_sign;
@@ -172,6 +180,7 @@ class Orders
 		        $this->mc_fee = $this->query_result->mc_fee;
 		        $this->mc_gross =$this->query_result->mc_gross;
 	                $this->mc_shipping = $this->query_result->mc_shipping;
+			$this->mc_handling = $this->query_result->mc_handling;
                         $this->tax = $this->query_result->tax;
                         $this->refund_reason_code = $this->query_result->refund_reason_code;
 		        $this->refund_receipt_id = $this->query_result->refund_receipt_id;
@@ -196,6 +205,7 @@ class Orders
 		        $this->mc_fee =
 		        $this->mc_gross =
 	        	$this->mc_shipping =
+			$this->mc_handling = 
 	        	$this->tax =
 	       		$this->refund_reason_code =
 		        $this->refund_receipt_id =
@@ -211,7 +221,7 @@ class Orders
 			$this->town =       
 
 			$this->itemsOrdered =
-			$this->created =
+			$this->create_date =
 			$this->txn_id =
 			$this->custom =
 
@@ -628,7 +638,7 @@ class Orders
 				'itemsOrdered'		=> $products,
 				'itemsNumberOrdered'	=> $products_number,
 				'quantityOrdered'	=> $quantity,
-				'created'		=> current_time('mysql'),
+				'create_date'		=> current_time('mysql'),
 				'parent_txn_id'		=> $parentTxnId,
 				'txn_type'		=> $txnType,
 				'txn_id'		=> $txnID,

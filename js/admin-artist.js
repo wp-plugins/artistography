@@ -64,7 +64,6 @@ $(document).ready(function() {
 
           $.post(ajaxurl, data_edit, function(response) {
               var res = response.split("##$$##");
-              $( "#url" ).value = res[2];
               
               $( "#dialog-form" ).dialog( "open" );
               $( "#id" ).val(res[0]);

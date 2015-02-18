@@ -1,7 +1,5 @@
 var $ = jQuery.noConflict();
 
-var default_droppable_message = "<br/>Drag an artist to an album to associate them.<br/><br/>";
-
 $(document).ready(function() {
 
 	jQuery('#upload_image_button').click(function() {
@@ -17,35 +15,78 @@ $(document).ready(function() {
 	}
 
 	if ( $( "#musicTable" ).length != 0 ) {
-		function addAlbum() {
+		function addAlbum(artist_name, album_name, album_day, album_month, album_year, artist_url, picture_url, store_url, price, download_id, description) {
 			var data_add = {
-				action: 'Create_Album'
+				action: 'Create_Album',
+                        	artist_name: artist_name,
+                        	album_name: album_name,
+                        	album_day: album_day,
+                        	album_month: album_month,
+                        	album_year: album_year,
+                        	artist_url: artist_url,
+                        	picture_url: picture_url,
+                        	store_url: store_url,
+                        	price: price,
+                        	download_id: download_id,
+                        	description: description
 			};
 
-			 // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
 			$.post(ajaxurl, data_add, function(response) {
 				if(response === '1') {
-//					if ($.trim($('#album_id_' + add_album_id).html()).length == default_droppable_message.length) {
-//						$('#album_id_' + add_album_id).html('');
-//					}
-//					$('#artist_id_' + add_artist_id).clone(true)
-//						.attr('id', 'album_id_' + add_album_id + '-artist_id_' + add_artist_id)
-//						.appendTo('#album_id_' + add_album_id)
-//						.toggleClass('draggable', false).toggleClass('pseudodraggable')
-//						.append( "<button id='delete_" + add_album_id + "-" + add_artist_id + "'>Delete</button>");
-//					$( "#delete_" + add_album_id + "-" + add_artist_id ).button({
-//						text: false,
-//						icons: {
-//							primary: "ui-icon-trash"
-//						}
-//					}).click(function() {
-//						delArtistAlbum(add_artist_id, add_album_id);
-//					});
 				} else {
 					alert('Got this from the server: ' + response);
 				}
 			});
 		}
+
+		function updateAlbum(music_id, artist_name, album_name, album_day, album_month, album_year, artist_url, picture_url, store_url, price, download_id, description) {
+			var data_update = {
+				action: 'Update_Album',
+				album_id: music_id,
+				artist_name: artist_name,
+				album_name: album_name,
+				album_day: album_day,
+				album_month: album_month,
+				album_year: album_year,
+				artist_url: artist_url,
+				picture_url: picture_url,
+				store_url: store_url,
+				price: price,
+				download_id: download_id,
+				description: description
+			};
+
+			$.post(ajaxurl, data_update, function(response) {
+				if(response === '1') {
+				} else {
+					alert('Got this from the server: ' + response);
+				}
+			});
+		}
+
+		function editAlbum(edit_album_id) {
+			var data_edit = {
+				action: 'Edit_Album',
+				album_id: edit_album_id
+			};
+
+			$.post(ajaxurl, data_edit, function(response) {
+				var res = response.split("##$$##");
+					$( "#dialog-form" ).dialog( "open" );
+					$( "#id" ).val(res[0]);
+					$( "#artist_name" ).val(res[1]);
+					$( "#album_name" ).val(res[2]);
+					$( "#album_day" ).val(Number(res[3]));
+					$( "#album_month" ).val(Number(res[4]));
+					$( "#album_year" ).val(Number(res[5]));
+					$( "#artist_url" ).val(res[6]);
+					$( "#picture_url" ).val(res[7]);
+					$( "#store_url" ).val(res[8]);
+					$( "#price" ).val(res[9]);
+					$( "#download_id" ).val(res[10]);
+					$( "#description" ).val(res[11]);
+				});
+			}
 
 		function delAlbum(del_album_id) {
 			var data_delete = {
@@ -68,6 +109,16 @@ $(document).ready(function() {
 			});
 		}
 
+		$( ".edit_button" ).button({
+			text: true,
+			icons: {
+				primary: "ui-icon-pencil"
+			}
+		}).click(function() {
+			var id = $( this ).attr('id').replace('edit_', '');
+			editAlbum(id);
+		});
+
 		$( ".delete_button" ).button({
 			text: true,
 			icons: {
@@ -75,7 +126,7 @@ $(document).ready(function() {
 			}
 		}).click(function() {
 			 // show alert to verify whether we are really wanting to delete this album
-			if ( confirm('Are you sure you want to delete that artist?  Also deletes all references to this album in the Discography.') ) {
+			if ( confirm('Are you sure you want to delete that album?  Also deletes all references to this album in the Discography.') ) {
 				var id = $( this ).attr('id').replace('delete_', '');
 
 				delAlbum(id);
@@ -161,119 +212,34 @@ $(document).ready(function() {
 
 	} /* end if ( $( "#musicTable" ).length != 0 ) */
 
-	if ( $( "#accordion1" ).length != 0 ) $( "#accordion1" ).accordion({ autoHeight: false});
-	if ( $( "#accordion2" ).length != 0 ) $( "#accordion2" ).accordion({ autoHeight: false});
-	if ( $( "#accordion3" ).length != 0 ) $( "#accordion3" ).accordion({ autoHeight: false});
-
-	if ( $( ".draggable" ).length != 0 && $( ".droppable" ).length != 0) {
-
-		function showDroppableMessage(message) {
-			$('.droppable').each(function() {
-				if ( $.trim($(this).text()).length <= 0 ) {
-					$(this).html(message);
-				}
-			});
-		}
-
-		function delArtistAlbum(del_artist_id, del_album_id) {
-			var data_delete = {
-				action: 'Disconnect_Artist_from_Album',
-				artist_id: del_artist_id,
-				album_id: del_album_id
-			};
-
-			 // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
-			$.post(ajaxurl, data_delete, function(response) {
-				if(response === '1') {
-					$('#album_id_' + del_album_id + '-artist_id_' + del_artist_id).hide('explode', '1000').remove();
-					showDroppableMessage(default_droppable_message);
-				} else {
-					alert('Got this from the server: ' + response);
-				}
-			});
-		}
-
-		function addArtistAlbum(add_artist_id, add_album_id) {
-			var data_add = {
-				action: 'Connect_Artist_to_Album',
-				artist_id: add_artist_id,
-				album_id: add_album_id
-			};
-
-			 // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
-			$.post(ajaxurl, data_add, function(response) {
-				//alert('Got this from the server: ' + response);
-				if(response === '1') {
-					showDroppableMessage('');
-					if ($.trim($('#album_id_' + add_album_id).html()).length == default_droppable_message.length) {
-						$('#album_id_' + add_album_id).html('');
-					}
-					$('#artist_id_' + add_artist_id).clone(true)
-						.attr('id', 'album_id_' + add_album_id + '-artist_id_' + add_artist_id)
-						.appendTo('#album_id_' + add_album_id)
-						.toggleClass('draggable', false).toggleClass('pseudodraggable')
-						.append( "<button id='delete_" + add_album_id + "-" + add_artist_id + "'>Delete</button>");
-					$( "#delete_" + add_album_id + "-" + add_artist_id ).button({
-						text: true,
-						icons: {
-							primary: "ui-icon-trash"
-						}
-					}).click(function() {
-						delArtistAlbum(add_artist_id, add_album_id);
-					});
-				} else {
-					alert('Got this from the server: ' + response);
-				}
-			});
-		}
-
-		showDroppableMessage(default_droppable_message);
-
-		$(".original_connection").each(function() {
-			$( this ).button({
-				text: true,
-				icons: {
-					primary: "ui-icon-trash"
-				}
-			}).click(function() {
-				var id = $( this ).attr('id')
-					.replace('delete_','')
-					.split('-', 2);
-				var album_id = id[0];
-				var artist_id = id[1];
-				delArtistAlbum(artist_id, album_id);
-			});
-		});
-
-		$(".draggable").draggable({
-			zIndex: 1,
-			revert: true,
-			cursor: 'crosshair',
-			opacity: 0.8,
-			helper: 'clone'
-		});
-
-		$(".droppable").droppable({
-			activeClass: "ui-state-hover",
-			hoverClass: "ui-state-active",
-			drop: function(event, ui) {
-				var artist_id = ui.draggable.attr('id');
-				var album_id = $(this).attr('id');
-				addArtistAlbum(artist_id.replace('artist_id_', ''), album_id.replace('album_id_', ''));
-			}
-		});
-	}
-
 	if ( $( "#dialog-form" ).length != 0) {
 		 // a workaround for a flaw in the demo system (http://dev.jqueryui.com/ticket/4375), ignore!
 		$( "#dialog:ui-dialog" ).dialog( "destroy" );
 
 		var id = $( "#id" ),
-			name = $( "#name" ),
-			url = $( "#url" ),
+			artist_name = $( "#artist_name" ),
+			album_name = $( "#album_name" ),
+			album_day = $( "#album_day" ),
+			album_month = $( "#album_month" ),
+			album_year = $( "#album_year" ),
+			artist_url = $( "#artist_url" ),
 			picture_url = $( "#picture_url" ),
-			artist_descr = $( "#artist_descr" ),
-			allFields = $( [] ).add( id ).add( name ).add( url ).add( picture_url ).add( artist_descr ),
+			store_url = $( "#store_url" ),
+			price = $( "#price" ),
+			download_id = $( "#download_id" ),
+			description = $( "#description" ),
+			allFields = $( [] ).add( id )
+					.add( artist_name )
+					.add( album_name )
+					.add( album_day )
+					.add( album_month )
+					.add( album_year )
+					.add( artist_url )
+					.add( picture_url )
+					.add( store_url )
+					.add( price )
+					.add( download_id )
+					.add( description ),
 			tips = $( ".validateTips" );
 
 		function updateTips( t ) {
@@ -307,16 +273,16 @@ $(document).ready(function() {
 					var result = false, bValid = true;
 					allFields.removeClass( "ui-state-error" );
 
-					bValid = bValid && checkLength( name, "name", 3, 100 );
+					bValid = bValid && checkLength( artist_name, "name", 3, 100 );
 
 					if ( id.val() === '' && bValid ) {
-						id = addArtist(name.val(), url.val(), picture_url.val(), artist_descr.val());
-						$( "#artistsTable tbody" ).append( "<tr>" + "<td align='center'>" + id + "</td><td align='center'><a href='" + url.val() + "' target='_blank'><img src='" + picture_url.val() + "' height='75' width='75' /></a></td><td align='center'><a href='" + url.val() + "' target='_blank'>" + name.val() + "</a></td><td align='center'>0</td><td align'center'>Pending Creation...</td></tr>" );
+						id = addAlbum(artist_name.val(), album_name.val(), album_day.val(), album_month.val(), album_year.val(), artist_url.val(), picture_url.val(), store_url.val(), price.val(), download_id.val(), description.val());
+//						$( "#musicTable tbody" ).append( "<tr>" + "<td align='center'>" + id + "</td><td align='center'><a href='" + url.val() + "' target='_blank'><img src='" + picture_url.val() + "' height='75' width='75' /></a></td><td align='center'><a href='" + url.val() + "' target='_blank'>" + name.val() + "</a></td><td align='center'>0</td><td align'center'>Pending Creation...</td></tr>" );
 
 						zebraRows('tbody tr:odd td', 'odd');
 						$( this ).dialog( "close" );
 					} else {
-						result = updateArtist(id.val(), name.val(), url.val(), picture_url.val(), artist_descr.val());
+						result = updateAlbum(id.val(), artist_name.val(), album_name.val(), album_day.val(), album_month.val(), album_year.val(), artist_url.val(), picture_url.val(), store_url.val(), price.val(), download_id.val(), description.val());
 						$( this ).dialog( 'close' );
 						location.reload();
 					}
@@ -330,26 +296,26 @@ $(document).ready(function() {
 			}
 		});
 
-		$( "#create-artist" )
+		$( "#create-album" )
 			.button()
 			.click(function() {
 				$( "#dialog-form" ).dialog( "open" );
 			});
 	}
-
-	 //used to apply alternating row styles
-	function zebraRows(selector, className)
-	{
-		$(selector).removeClass(className).addClass(className);
-	}
-
-	 //filter results based on query   
-	function filter(selector, query) {
-		query = $.trim(query); //trim white space
-		query = query.replace(/ /gi, '|'); //add OR for regex query
-
-		$(selector).each(function() {
-			$(this).text().search(new RegExp(query, "i")) < 0) ? $(this).hide().removeClass('visible') : $(this).show().addClass('visible');
-		});
-	}
 });
+
+ //used to apply alternating row styles
+function zebraRows(selector, className)
+{
+	$(selector).removeClass(className).addClass(className);
+}
+
+ //filter results based on query   
+function filter(selector, query) {
+	query = $.trim(query); //trim white space
+	query = query.replace(/ /gi, '|'); //add OR for regex query
+
+	$(selector).each(function() {
+		($(this).text().search(new RegExp(query, "i")) < 0) ? $(this).hide().removeClass('visible') : $(this).show().addClass('visible');
+	});
+}
