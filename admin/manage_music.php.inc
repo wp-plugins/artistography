@@ -1,109 +1,83 @@
 <?php
 $music = new Music;
+$download = new Download;
 
-if (strcmp($_POST['update'], NULL)) {
-    if ($music->updateById($_POST['music_id'],
-                           $_POST['artist_id'],
-                           $_POST['artist_name'],
-                           $_POST['album_name'],
-                           $music->formatDateTime($_POST['album_day'], $_POST['album_month'], $_POST['album_year']),
-                           $_POST['artist_url'],
-                           $_POST['picture_url'],
-                           $_POST['store_url'],
-			   $_POST['price'],
-                           $_POST['download_id'],
-                           $_POST['description']) ) {
-        _e("The album was successfully updated in the database!<br/>\n", $i18n_domain);
-    } else {
-        _e("A problem occurred while trying to update the album and the update information was lost!<br/>\n", $i18n_domain);
-    }
-}
-else if (strcmp($_POST['edit'], NULL) && strcmp($_POST['edit'], '0')) {
-
-    if (!strcmp($_POST['update'], NULL)) {
-        $music->loadById($_POST['edit']);
-
-        if($music->getTotalRows() > 0) {
-
-            $music->display_manage_music_form ($music->id,
-                                               $music->artist_name,
-                                               $music->album_name,
-                                               $music->album_day, $music->album_month, $music->album_year,
-                                               $music->picture_url,
-                                               $music->artist_url,
-                                               $music->store_url,
-                                               $music->price,
-					       $music->download_id,
-                                               $music->description,
-                                               FALSE );
-        }
-    }
-} else if (strcmp($_POST['new'], NULL) && strcmp($_POST['artist_name'], NULL)) {
-
-    if ($music->insert($_POST['artist_id'],
-                       $_POST['artist_name'],
-                       $_POST['album_name'],
-                       $music->formatDateTime($_POST['album_day'], $_POST['album_month'], $_POST['album_year']),
-                       $_POST['artist_url'],
-                       $_POST['picture_url'],
-                       $_POST['store_url'],
-		       $_POST['price'],
-                       $_POST['download_id'],
-                       $_POST['description']) ) {
-        _e('The album was successfully entered into the database!', $i18n_domain);
-    }
-}
-
-if ($_POST['show']) {
-    $album_show = $_SESSION['album_show'] = true;
-} else {
-    $album_show = $_SESSION['album_show'] = false;
-
-    echo '<center><form method="post" action=""><input type="submit" value="';
-    _e('Create New Album', $i18n_domain);
-    echo '" name="show" /></form></center><br/>';
-}
-
-echo "<div style='visibility:" .((!$album_show) ? "hidden" : "show"). ";" .((!$album_show) ? "height:0;" : ""). "'>";
-    $music->display_manage_music_form();
-echo "</div>";
-
-echo "<div class='aform'><div id='dialog-form' title='" .__('Create New Album', $i18n_domain). "' style='display:none;'>\n"
-   . "	<p class='validateTips'>" .__("All form fields are required.", $i18ndomain). "</p>\n"
-   . "	<form>\n"
-   . "	<fieldset>\n"
-   . "		<label for='name'>Name</label>\n"
-   . "		<input type='text' name='name' id='name' class='text ui-widget-content ui-corner-all' />\n"
-   . "		<label for='name'>" .__("Birthday", $i18ndomain). "</label>\n"
-   . "		<input type='text' name='birthday' id='birthday' class='text ui-widget-content ui-corner-all' />\n"
-   . "		<label for='name'>" .__("Picture URL", $i18ndomain). "</label>\n"
-   . "		<input type='text' name='picture_url' id='picture_url' class='text ui-widget-content ui-corner-all' />\n"
-   . "		<label for='name'>" .__("Artist URL", $i18ndomain). "</label>\n"
-   . "		<input type='text' name='artist_url' id='artist_url' class='text ui-widget-content ui-corner-all' />\n"
-   . "		<label for='name'>" .__("Description", $i18ndomain). "</label>\n"
-   . "		<input type='text' name='description' id='description' class='text ui-widget-content ui-corner-all' />\n"
-   . "	</fieldset>\n"
-   . "	</form>\n"
-   . "</div>\n"
-   . "<div id='music-contain' class='ui-widget'>\n"
-   . "<button id='create-music'>" .__('Create New Album', $i18n_domain). "</button></div>\n"
-   . "	<div style='float:left;'><h1>" .__('Existing Albums', $i18n_domain). ":</h1></div>\n"
-   . "  <div style='float:right;border:1px dotted black; padding:10px;'>"
-   . "    <label for='filter'>" .__('Filter:', $i18n_domain). "</label>"
-   . "    <input type='text' name='filter' value='' id='filter' />"
-   . "  </div>"
-   . "	<table id='musicTable' class='ui-widget ui-widget-content'>\n"
-   . "	    <thead>\n"
-   . "	        <tr class='ui-widget-header '>\n"
-   . "	            <th>" .__("ID", $i18n_domain). "</th>\n"
-   . "	            <th>" .__("Art", $i18n_domain). "</th>\n"
-   . "	            <th>" .__("Album", $i18n_domain). "</th>\n"
-   . "		    <th>" .__("Downloads", $i18n_domain). "</th>\n"
-   . "	            <th>" .__("Price", $i18n_domain). "</th>\n"
-   . "	            <th>" .__("Actions", $i18n_domain). "</th>\n"
-   . "	        </tr>\n"
-   . "	    </thead>\n"
-   . "      <tbody>\n";
+echo "<div class='aform'><div id='dialog-form' title='" .__('Music', $i18n_domain). "' style='display:none;'>
+   	<p class='validateTips'>" .__("All form fields are required.", $i18ndomain). "</p>
+   	<form>
+   	<fieldset>
+		  <input type='hidden' name='id' id='id' />
+   		<label for='name'>Artist Name</label>
+   		  <input type='text' name='artist_name' id='artist_name' class='text ui-widget-content ui-corner-all' />
+                <label for='name'>Album Name</label>
+                  <input type='text' name='album_name' id='album_name' class='text ui-widget-content ui-corner-all' />
+   		<label for='release_date'>" .__("Released", $i18ndomain). "</label>
+   		  <select name='album_day' id='album_day' class='ui-widget-content ui-corner-all'>";
+			for($day=1; $day <= 31; $day++) {
+				echo "<option value='$day'>$day</option>";
+			}
+echo "		  </select>
+		  <select name='album_month' id='album_month' class='ui-widget-content ui-corner-all'>";
+			for($month=1; $month <= 12; $month++) {
+				echo "<option value='$month'>" 
+					.date("m", mktime(date("H"), date("i"), date("s"), $month, date("j"), date("Y"))) 
+					." - "
+					. date("F", mktime(date("H"), date("i"), date("s"), $month, date("j"), date("Y")))
+				   . "</option>";
+			}
+echo "		  </select>
+		  <select name='album_year' id='album_year' class='ui-widget-content ui-corner-all'>";
+			for($year=1+(int)date("Y"); $year >= 1965; $year--) {
+				echo "<option value='$year'>$year</option>";
+			}
+echo "		  </select>
+   		<label for='picture_url'>" .__("Album Art", $i18ndomain). "</label>
+		  <table class='text ui-widget-content ui-corner-all'>
+		    <tr class='ui-widget-content ui-corner-all'>
+		      <td class='ui-widget-content ui-corner-all'>
+   			<input type='text' name='picture_url' id='picture_url' class='text ui-widget-content ui-corner-all' />
+		      </td><td class='ui-widget-content ui-corner-all'>
+			<button id='upload_image_button' class='ui-widget-content ui-corner-all'>Select Image</button>
+		      </td>
+		    </tr>
+		  </table>
+   		<label for='artist_url'>" .__("Artist URL", $i18ndomain). "</label>
+   		  <input type='text' name='artist_url' id='artist_url' class='text ui-widget-content ui-corner-all' />
+		<label for='store_url'>" .__("Store URL", $i18ndomain). "</label>
+		  <input type='text' name='store_url' id='store_url' class='text ui-widget-content ui-corner-all' />
+		<label for='price'>" .__("Price", $i18ndomain). "</label>
+		  <input type='text' name='price' id='price' class='text ui-widget-content ui-corner-all' />
+		<label for='download_id'>" .__("Link to Download", $i18ndomain). "</label>
+		  <select name='download_id' id='download_id' class='ui-widget-content ui-corner-all'>
+			<option value='0'>Unlinked</option>";
+			for ($i = 0; $i < $download->getTotalRows(); $i++) {
+				echo "<option value='$download->id'>$download->id - $download->file_name</option>";
+			}
+echo "		  </select>
+   		<label for='name'>" .__("Description", $i18ndomain). "</label>
+   		  <textarea name='description' id='description' class='text ui-widget-content ui-corner-all'></textarea>
+   	</fieldset>
+   	</form>
+   </div>
+   <div id='music-contain' class='ui-widget'>
+   <button id='create-album'>" .__('Create New Album', $i18n_domain). "</button></div>
+   	<div style='float:left;'><h1>" .__('Existing Albums', $i18n_domain). ":</h1></div>
+     <div style='float:right;border:1px dotted black; padding:10px;'>
+       <label for='filter'>" .__('Filter:', $i18n_domain). "</label>
+       <input type='text' name='filter' value='' id='filter' />
+     </div>
+   	<table id='musicTable' class='ui-widget ui-widget-content'>
+   	    <thead>
+   	        <tr class='ui-widget-header '>
+   	            <th>#</th>
+   	            <th>" .__("Art", $i18n_domain). "</th>
+   	            <th>" .__("Album", $i18n_domain). "</th>
+   		    <th>" .__("Downloads", $i18n_domain). "</th>
+   	            <th>" .__("Price", $i18n_domain). "</th>
+   	            <th>" .__("Actions", $i18n_domain). "</th>
+   	        </tr>
+   	    </thead>
+         <tbody>\n";
 
 if ($music->loadAll('id DESC')->getTotalRows() === 0) {
     echo '<tr><td colspan="7">';
@@ -131,15 +105,14 @@ if ($music->loadAll('id DESC')->getTotalRows() === 0) {
           <td>";
 
          /* Edit Button */
-        echo '<div style="float:left;"><form method="post" action=""><input type="hidden" value="'
-           . stripslashes($music->id). '" name="edit" /><input type="submit" value="';
-        _e('Edit', $i18n_domain);
-        echo '" name="do_edit" /></form></div>';
+        echo "<div style='float:left;'>
+		<button class='edit_button' id='edit_$music->id'>" .__('Edit', $i18n_domain). "</button>
+              </div>";
 
          /* Delete Button */
-        echo '<div style="float:left;">'
-           . "  <button class='delete_button' id='delete_$music->id'>" .__('Delete', $i18n_domain). "</button>"
-           . '</div>';
+        echo "<div style='float:left;'>
+                <button class='delete_button' id='delete_$music->id'>" .__('Delete', $i18n_domain). "</button>
+              </div>";
 
         echo "</td>
         </tr>\n";
