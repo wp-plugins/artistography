@@ -130,6 +130,8 @@ class Artist
 
     public static function conditionally_add_scripts_and_styles($posts){
         GLOBAL $artistography_plugin_dir;
+	 // scripts are already being loaded on every page
+	if (true == get_option('wp_artistography_ajax_loader')) return $posts;
         if (empty($posts)) return $posts;
  
         $shortcode_found = false; // use this flag to see if styles and scripts need to be enqueued
