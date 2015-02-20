@@ -1,6 +1,7 @@
 <?php
  // Shortcode helpers
 add_filter( 'the_posts', 'Artist::conditionally_add_scripts_and_styles'); // the_posts gets triggered before wp_head
+
 add_shortcode( 'artistography_artist_name', 'Artist::shortCodeArtistName' );
 add_shortcode( 'artistography_display_artists', 'Artist::shortCodeDisplayArtists' );
 add_shortcode( 'artistography_display_artist', 'Artist::shortCodeDisplayArtist' );
@@ -133,10 +134,13 @@ class Artist
  
         $shortcode_found = false; // use this flag to see if styles and scripts need to be enqueued
         foreach ($posts as $the_post) {
-            if (FALSE !== stripos($the_post->post_content, '[artistography_display_artists')) {
-                $shortcode_found = true; // bingo!
-                break;
-            }
+            if ( stripos($the_post->post_content, '[artistography_display_artists') !== FALSE ) {
+                	$shortcode_found = true; // bingo!
+                	break;
+        	} else if ( stripos($the_post->post_content, '[artistography_display_artist') !== FALSE ) {
+			$shortcode_found = true; // bingo!
+			break;
+		}
         }
 
         if ($shortcode_found) {

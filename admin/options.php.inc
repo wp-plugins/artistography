@@ -11,6 +11,7 @@ if (strcmp($_POST['save'], NULL)) {
   update_option('wp_artistography_ftp_pass', $_POST['ftp_pass']);
   update_option('wp_artistography_ftp_path', $_POST['ftp_path']);
   update_option('wp_artistography_gallery_style', $_POST['gallery_style']);
+  update_option('wp_artistography_ajax_loader', ((strcmp($_POST['ajax_loader'], NULL)) ? true : false));
   echo "Options saved.<br/>\n";
 }
 
@@ -20,6 +21,7 @@ echo "<u><h3>" .__("General", $i18n_domain). "</h3></u>";
     echo __("PayPal Payments and Donations Email", $i18n_domain) .": <input type='textbox' name='donate_email' id='donate_email' value='". get_option('wp_artistography_donate_email') ."' /><br/>";
     echo "<input type='checkbox' name='paypal_sandbox' id='paypal_sandbox' " .((strcmp(get_option('wp_artistography_paypal_sandbox'), NULL)) ? "checked='checked'" : ''). " />" .__("Use PayPal Sandbox for Testing Store", $i18n_domain). "<br/>";
     echo "<input type='checkbox' name='email_notify_ftp' id='email_notify_ftp' " .((strcmp(get_option('wp_artistography_email_notify_ftp'), NULL)) ? "checked='checked'" : ''). " />" .__("Email Notifications (to Admin email) on FTP Uploader Page Load", $i18n_domain). "<br/>";
+    echo "<input type='checkbox' name='ajax_loader' id='ajax_loader' " .((strcmp(get_option('wp_artistography_ajax_loader'), NULL)) ? "checked='checked'" : ''). " />" .__("AJAX Page Loader (such as AJAXify or Advanced AJAX Page Loader)", $i18n_domain). "<br/>";
 
 	$gallery_style = get_option('wp_artistography_gallery_style');;
 	echo __("Image Gallery Style", $i18n_domain) .": <select name='gallery_style'>\n";
@@ -37,7 +39,7 @@ echo "<u><h3>" .__("General", $i18n_domain). "</h3></u>";
     echo "<u><h3>" .__("Backend", $i18n_domain). "</h3></u>";
     echo "<input type='checkbox' name='preserve_hidden_pages' id='preserve_hidden_pages' " .((strcmp(get_option('wp_artistography_preserve_hidden_pages'), NULL)) ? "checked='checked'" : ''). " />" .__("Preserve Hidden Pages (Do Not Uncheck unless you're going to delete the plugin)", $i18n_domain). "<br/>";
     echo "<input type='checkbox' name='preserve_database' id='preserve_database' " .((strcmp(get_option('wp_artistography_preserve_database'), NULL)) ? "checked='checked'" : ''). " />" .__("Preserve Database (DO NOT UNCHECK: will delete ALL artistography data between Updates or After Plugin Deactivation/Deletion)", $i18n_domain). "<br/>";
-
+    echo "<br/><br/>";
     echo "<input type='submit' name='save' id='save' value='" .__("Save", $i18n_domain). "' />";
 echo '</form>';
 echo '</p>';

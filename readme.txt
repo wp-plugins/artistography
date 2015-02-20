@@ -60,6 +60,9 @@ Uses for FTP and file browsing capability:
 
 == Changelog ==
 
+=0.3.1-alpha=
+*Added AJAX Loader Option in case using Advanced AJAX Page Loader, Wordpress AJAXIFY or the like to include scripts/styles on all pages so they are there if needed
+
 =0.3.0=
 *Randomize soundmanager2 playlist order
 *Added stylesheet for soundmanager2

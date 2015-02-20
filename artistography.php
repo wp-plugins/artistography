@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of artist's media (videos, music, pictures) and organize them into a portfolio on your blog/website with PayPal functionality.
- * Version: 0.3.0
+ * Version: 0.3.1-alpha
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -16,7 +16,7 @@ define('WP_DEBUG_DISPLAY', true);
 
 define('LOG_FILE', "./ipn.log");
 
-define('ARTISTOGRAPHY_VERSION', '0.3.0');
+define('ARTISTOGRAPHY_VERSION', '0.3.1-alpha');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -117,6 +117,7 @@ function artistography_pluginInstall() {
   add_option('wp_artistography_ftp_path', '');
   add_option('wp_artistography_version', ARTISTOGRAPHY_VERSION, NULL, true);
   add_option('wp_artistography_gallery_style', 'Colorbox');
+  add_option('wp_artistography_ajax_loader', false);
 
    /* Create Download Page */
   if (!get_option('wp_artistography_download_page')) {
@@ -550,6 +551,7 @@ function artistography_pluginUninstall() {
     delete_option('wp_artistography_ftp_pass');
     delete_option('wp_artistography_ftp_path');
     delete_option('wp_artistography_gallery_style');
+    delete_option('wp_artistography_ajax_loader');
     delete_option('wp_artistography_version');
 
     foreach ($TABLE_NAME as $key => $value) {
@@ -698,6 +700,11 @@ function artistography_init() {
 
   if(!artistography_is_current_version()) artistography_pluginInstall();
 
+  if(true == get_option('wp_artistography_ajax_loader')) {
+     // we want to load the scripts/styles on all pages because we may need it later
+    add_action( 'wp_enqueue_scripts', 'artistography_enqueue_style_and_scripts', 0);
+  }
+
   load_plugin_textdomain( $i18n_domain, false, $artistography_plugin_dir );
 }
 add_action('init', 'artistography_init');
@@ -791,6 +798,7 @@ function artistography_enqueue_style_and_scripts() {
 	wp_enqueue_style( 'artistography', $artistography_plugin_dir . '/css/style.css', array(), ARTISTOGRAPHY_VERSION, 'all');
 	wp_enqueue_script( 'artistography',  $artistography_plugin_dir . '/js/script.js', array( 'jquery-ui' ), ARTISTOGRAPHY_VERSION);
 }
+
 
 function artistography_enqueue_sm_style_and_scripts() {
 	GLOBAL $artistography_plugin_dir;
