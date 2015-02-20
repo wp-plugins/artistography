@@ -3,7 +3,7 @@ Contributors: MistahWrite
 Tags: artistography, artist, discography, media, music, videos, images, pictures, gallery, galleries, songs, albums, eCommerce, e-Commerce, PayPal, soundmanager2, playlist, cart, download manager, ftp, zupload, encode explorer, store, checkout 
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stabe tag: 0.3.0
+Stabe tag: 0.3.1-alpha2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,6 +59,8 @@ Uses for FTP and file browsing capability:
      Displays artist name of album with album database id=1
 
 == Changelog ==
+=0.3.1-alpha2=
+*Added thickbox
 
 =0.3.1-alpha=
 *Added AJAX Loader Option in case using Advanced AJAX Page Loader, Wordpress AJAXIFY or the like to include scripts/styles on all pages so they are there if needed

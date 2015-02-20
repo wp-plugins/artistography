@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of artist's media (videos, music, pictures) and organize them into a portfolio on your blog/website with PayPal functionality.
- * Version: 0.3.1-alpha
+ * Version: 0.3.1-alpha2
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -16,7 +16,7 @@ define('WP_DEBUG_DISPLAY', true);
 
 define('LOG_FILE', "./ipn.log");
 
-define('ARTISTOGRAPHY_VERSION', '0.3.1-alpha');
+define('ARTISTOGRAPHY_VERSION', '0.3.1-alpha2');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -704,6 +704,8 @@ function artistography_init() {
      // we want to load the scripts/styles on all pages because we may need it later
     add_action( 'wp_enqueue_scripts', 'artistography_enqueue_style_and_scripts', 0);
   }
+
+  add_thickbox();
 
   load_plugin_textdomain( $i18n_domain, false, $artistography_plugin_dir );
 }
