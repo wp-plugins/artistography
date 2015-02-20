@@ -10,15 +10,23 @@ if (strcmp($_POST['save'], NULL)) {
   update_option('wp_artistography_ftp_user', $_POST['ftp_user']);
   update_option('wp_artistography_ftp_pass', $_POST['ftp_pass']);
   update_option('wp_artistography_ftp_path', $_POST['ftp_path']);
+  update_option('wp_artistography_gallery_style', $_POST['gallery_style']);
   echo "Options saved.<br/>\n";
 }
 
 echo '<p>';
 echo "<form method='post' action=''>";
-    echo "<u><h3>" .__("General", $i18n_domain). "</h3></u>";
+echo "<u><h3>" .__("General", $i18n_domain). "</h3></u>";
     echo __("PayPal Payments and Donations Email", $i18n_domain) .": <input type='textbox' name='donate_email' id='donate_email' value='". get_option('wp_artistography_donate_email') ."' /><br/>";
     echo "<input type='checkbox' name='paypal_sandbox' id='paypal_sandbox' " .((strcmp(get_option('wp_artistography_paypal_sandbox'), NULL)) ? "checked='checked'" : ''). " />" .__("Use PayPal Sandbox for Testing Store", $i18n_domain). "<br/>";
     echo "<input type='checkbox' name='email_notify_ftp' id='email_notify_ftp' " .((strcmp(get_option('wp_artistography_email_notify_ftp'), NULL)) ? "checked='checked'" : ''). " />" .__("Email Notifications (to Admin email) on FTP Uploader Page Load", $i18n_domain). "<br/>";
+
+	$gallery_style = get_option('wp_artistography_gallery_style');;
+	echo __("Image Gallery Style", $i18n_domain) .": <select name='gallery_style'>\n";
+	echo "<option value='Accordion' " .((strcmp($gallery_style, 'Accordion') == 0) ? 'selected' : ''). ">Accordion</option>\n";
+	echo "<option value='Thickbox' " .((strcmp($gallery_style, 'Thickbox') == 0) ? 'selected' : ''). ">Thickbox</option>\n";
+	echo "<option value='Colorbox' " .((strcmp($gallery_style, 'Colorbox') == 0) ? 'selected' : ''). ">Colorbox</option>\n";
+	echo "</select><br/>\n";
 
     echo "<u><h3>" .__("FTP Uploader", $i18n_domain). "</h3></u>";
     echo __("FTP Host", $i18n_domain) .": <input type='textbox' name='ftp_host' id='ftp_host' value='". get_option('wp_artistography_ftp_host') ."' /><br/>";
