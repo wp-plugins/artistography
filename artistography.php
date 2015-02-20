@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of artist's media (videos, music, pictures) and organize them into a portfolio on your blog/website with PayPal functionality.
- * Version: 0.3.0-alpha4
+ * Version: 0.3.0-alpha5
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -16,7 +16,7 @@ define('WP_DEBUG_DISPLAY', true);
 
 define('LOG_FILE', "./ipn.log");
 
-define('ARTISTOGRAPHY_VERSION', '0.3.0-alpha4');
+define('ARTISTOGRAPHY_VERSION', '0.3.0-alpha5');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -677,7 +677,8 @@ function my_soundmanager2_footer_hook() {
   <div class="sm2-playlist-wrapper">
     <ul class="sm2-playlist-bd">';
 		for($i = 0; $i < $songs->getTotalRows(); $i++) {
-			echo "<li><a href='$songs->url'><b>" .$artist->loadById($songs->artist_id)->name. "</b> - $songs->name<span class='label'>Explicit</span></a></li>";
+			echo "<li><a href='$songs->url'><b>" .$artist->loadById($songs->artist_id)->name. "</b> - $songs->name" .(($songs->explicit) ? "<span class='label'>Explicit</span>" : ''). "</a></li>";
+
 			$songs->getNodeNext();
 		}
 		echo '    </ul>
