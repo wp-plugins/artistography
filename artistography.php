@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.3.0-alpha2
+ * Version: 0.3.0-alpha3
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -16,7 +16,7 @@ define('WP_DEBUG_DISPLAY', true);
 
 define('LOG_FILE', "./ipn.log");
 
-define('ARTISTOGRAPHY_VERSION', '0.3.0-alpha2');
+define('ARTISTOGRAPHY_VERSION', '0.3.0-alpha3');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -578,6 +578,7 @@ function artistography_exclude_pages ($pages) {
 
 function my_soundmanager2_footer_hook() {
 	$songs = new Song;
+	$artist = new Artist;
 
 	if ($songs->loadByPrice('0.00')->getTotalRows() > 0) {
 		echo '
@@ -669,7 +670,7 @@ function my_soundmanager2_footer_hook() {
   <div class="sm2-playlist-wrapper">
     <ul class="sm2-playlist-bd">';
 		for($i = 0; $i < $songs->getTotalRows(); $i++) {
-			echo "<li><a href='$songs->url'><b>" .$artist->loadById($songs->artist_id)->name. "</b> - $song->name<span class='label'>Explicit</span></a></li>";
+			echo "<li><a href='$songs->url'><b>" .$artist->loadById($songs->artist_id)->name. "</b> - $songs->name<span class='label'>Explicit</span></a></li>";
 			$songs->getNodeNext();
 		}
 		echo '    </ul>
