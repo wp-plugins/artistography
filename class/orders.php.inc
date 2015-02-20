@@ -294,12 +294,13 @@ class Orders
         return $this->loadCurrNodeValues();
     }
 
-    public function &loadByUserId ($id) {
+    public function &loadByUserId ($id, $order_by = 'id') {
         GLOBAL $wpdb, $i18n_domain;
 
         $this->query = $wpdb->prepare("SELECT *
                         FROM " .self::$ordersTable. "
-                        WHERE user_id = %u", $id);
+                        WHERE user_id = %u
+			ORDER BY $order_by", $id);
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );

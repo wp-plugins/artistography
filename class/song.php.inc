@@ -263,12 +263,13 @@ class Song
         return $this;
     }
 
-    public function &loadById ($id) {
+    public function &loadById ($id, $order_by = 'id') {
         GLOBAL $wpdb, $i18n_domain;
 
         $this->query = $wpdb->prepare("SELECT *
                         FROM " .self::$songTable. "
-                        WHERE id = %u", $id);
+                        WHERE id = %u
+			ORDER BY $order_by", $id);
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
@@ -277,12 +278,13 @@ class Song
         return $this->loadCurrNodeValues();
     }
 
-    public function &loadByPrice ($price) {
+    public function &loadByPrice ($price, $order_by = 'id') {
         GLOBAL $wpdb, $i18n_domain;
 
         $this->query = $wpdb->prepare("SELECT *
                         FROM " .self::$songTable. "
-                        WHERE price = %u", $price);
+                        WHERE price = %u
+			ORDER BY $order_by", $price);
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );

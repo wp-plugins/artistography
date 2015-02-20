@@ -347,12 +347,13 @@ class Music
         return $this;
     }
 
-    public function &loadById ($id) {
+    public function &loadById ($id, $order_by = 'id') {
         GLOBAL $wpdb, $i18n_domain;
 
         $this->query = $wpdb->prepare("SELECT *
                         FROM " .self::$musicTable. "
-                        WHERE id = %u", $id);
+                        WHERE id = %u
+			ORDER BY $order_by", $id);
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
@@ -361,12 +362,13 @@ class Music
         return $this->loadCurrNodeValues();
     }
 
-    public function &loadByDownloadId ($id) {
+    public function &loadByDownloadId ($download_id, $order_by = 'id') {
         GLOBAL $wpdb, $i18n_domain;
 
         $this->query = $wpdb->prepare("SELECT *
                         FROM " .self::$musicTable. "
-                        WHERE download_id = %u", $id);
+                        WHERE download_id = %u
+			ORDER BY $order_by", $download_id);
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
