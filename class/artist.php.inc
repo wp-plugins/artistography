@@ -1,6 +1,7 @@
 <?php
  // Shortcode helpers
 add_filter( 'the_posts', 'Artist::conditionally_add_scripts_and_styles'); // the_posts gets triggered before wp_head
+
 add_shortcode( 'artistography_artist_name', 'Artist::shortCodeArtistName' );
 add_shortcode( 'artistography_display_artists', 'Artist::shortCodeDisplayArtists' );
 add_shortcode( 'artistography_display_artist', 'Artist::shortCodeDisplayArtist' );
@@ -60,7 +61,7 @@ class Artist
         if(is_numeric($result)) {
           echo $result;
         } else {
-          echo sprinf(__("Failed: %s", $i18n_domain), $result);  // failed
+          echo sprintf(__("Failed: %s", $i18n_domain), $result);  // failed
         }
 
         unset($artist);
@@ -133,10 +134,13 @@ class Artist
  
         $shortcode_found = false; // use this flag to see if styles and scripts need to be enqueued
         foreach ($posts as $the_post) {
-            if (FALSE !== stripos($the_post->post_content, '[artistography_display_enabled_artists')) {
-                $shortcode_found = true; // bingo!
-                break;
-            }
+            if ( stripos($the_post->post_content, '[artistography_display_artists') !== FALSE ) {
+                	$shortcode_found = true; // bingo!
+                	break;
+        	} else if ( stripos($the_post->post_content, '[artistography_display_artist') !== FALSE ) {
+			$shortcode_found = true; // bingo!
+			break;
+		}
         }
 
         if ($shortcode_found) {
@@ -162,12 +166,14 @@ class Artist
      // [artistography_display_artists cols="4" size="75"]
     public static function shortCodeDisplayArtists( $atts ) {
 	extract( shortcode_atts( array(
-		'cols' => '2',
-                'size' => '126'
+		'cols' => '3',
+                'size' => '190'
 	), $atts ) );
 
         $artist = new Artist;
         $discography = new Discography;
+	$gallery = new Gallery;
+
         $artist->loadAll('name');
         $num = $artist->getTotalRows();
         $html = "";
@@ -176,29 +182,29 @@ class Artist
         $rows = ((int)($num / $cols) < (float)($num / $cols)) ? (int)($num / $cols) + 1 : (int)($num / $cols);
         $height = esc_attr($size) .'px'; $width = esc_attr($size) .'px';
 
-        $html .= "<center><div class='artist_table' style='display;'>"
-              .  "<table border='0'>";
+        $html .= "<center><div class='artist_table' style='display;'>";
         if ($num == 0) {
-            $html .= "<tr>"
-                  .  "  <td colspan='$cols' style='border:none;'>" .__('No Artists Available in the Database!', $i18n_domain). '</td>'
-                  .  "</tr>";
+            $html .= __('No Artists Available in the Database!', $i18n_domain);
         } else {
             for ( $i = 0; $i < $rows; $i++ ) {
-                $html .= "      <tr>\n";
                 for ( $j = 0; $j < $cols && ((($cols * ($i)) + ($j+1)) <= $num); $j++ ) {
                     $artist->loadByNode($i * $cols + $j);
-                    $artist_albums = $discography->loadEnabledByArtistId($artist->id)->getTotalRows();
+                    $artist_albums = $discography->loadMusicByArtistId($artist->id)->getTotalRows();
+		    $galleries = $gallery->loadByArtistId($artist->id)->getTotalRows();
                     $video_posts = count($artist->getVideoPosts());
                     $related_posts = count($artist->getRelatedPosts());
 
-                    $html .= "    <td style='border:0;'>"
-                          .  "      <div height='" .esc_attr($size). "'>"
+                    $html .= "    <div style='float:left' height='" .esc_attr($size). "'>"
+			  .  "	    <a href='" .$artist->url. "'>"
                           .  "        <div class='qitem' style='height:$height;width:$width'>"
-                          .  "            <a href='" .$artist->url. "'><img src='" .$artist->picture_url. "' alt='" .$artist->name. "' title='' height='$height' width='$width' style='border:1px solid black;' /></a>"
+                          .  "            <img src='" .$artist->picture_url. "' alt='" .$artist->name. "' title='' height='$height' width='$width' style='border:1px solid black;' />"
                           .  "            <span class='caption' height='100%' width='100%'><h2>" .$artist->name. "</h2><p style='font-size:1.0em;'>";
                     if ($artist_albums > 0) {
                         $html .= sprintf(_n("%d Album", "%d Albums", $artist_albums), $artist_albums) . "<br/>\n";
                     }
+		    if ($galleries > 0) {
+			$html .= sprintf(_n("%d Image Gallery", "%d Image Galleries", $galleries), $galleries) . "<br/>\n";
+		    }
                     if ($video_posts > 0) {
                         $html .= sprintf(_n("%d Video", "%d Videos", $video_posts), $video_posts) . "<br/>\n";
                     }
@@ -206,18 +212,17 @@ class Artist
                         $html .= sprintf(_n("%d Related Post", "%d Related Posts", $related_posts), $related_posts) . "<br/>\n";
                     }
                     $html .= "            </p></span>"
-                          .  "        </div>"
-                          .  "      </div>"
-                          .  "    </td>";
+                          .  "          </div>"
+			  .  "        </a>"
+                          .  "      </div>";
                 }
                 for($j; $j < $cols; $j++) {
-                    $html .= "<td>&nbsp;</td>\n";
+                    $html .= "&nbsp;\n";
                 }
-                $html .= "  </tr>\n";
-                if ($i < ($rows-1)) { $html .= "<tr><td colspan='$cols'><hr style='width:100%;'></td></tr>\n"; }
+                if ($i < ($rows-1)) { $html .= "<hr style='width:100%;'>\n"; }
             }
         }
-        $html .= "</table></div></center>";
+        $html .= "</div></center>";
         unset($artist);
         unset($discography);
         return $html;

@@ -1,17 +1,17 @@
 === Artistography ===
 Contributors: MistahWrite
-Tags: artistography, artist, discography
+Tags: artistography, artist, discography, media, music, videos, images, pictures, gallery, galleries, songs, albums, eCommerce, e-Commerce, PayPal, soundmanager2, playlist, cart, download manager, ftp, zupload, encode explorer, store, checkout 
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stabe tag: 0.2.1-alpha2
+Stabe tag: 0.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Artistography allows you to have a discography on a record label of artists with inter-linked featurings and collaborations among them, or outside artists.
+Organizes a portfolio of music, videos, and images on your blog/website with PayPal eCommerce.
 
 == Description ==
 
-Artistography allows a user to organize albums and videos onto an artist page.  The artist page has jQuery-UI style tabs, and polls tags on posts for the artist's name and then files them into the Related Posts tab.
+Allows you to organize music, pictures/images, and videos on an artist page.  The artist page has jQuery-UI style tabs, and polls tags on posts for the artist's name and then files them into the Related Posts tab.  It utilizes soundmanager2 and displays free songs on a player on the website.  Recommended for use with Advanced AJAX Page Loader.  This is a constant work in progress, and is evolving into an incredible plugin for musicians or record labels.
 
 Uses for FTP and file browsing capability:
  * http://sourceforge.net/projects/encode-explorer/ (version 6.3)
@@ -59,6 +59,84 @@ Uses for FTP and file browsing capability:
      Displays artist name of album with album database id=1
 
 == Changelog ==
+
+=0.3.1-alpha=
+*Added AJAX Loader Option in case using Advanced AJAX Page Loader, Wordpress AJAXIFY or the like to include scripts/styles on all pages so they are there if needed
+
+=0.3.0=
+*Randomize soundmanager2 playlist order
+*Added stylesheet for soundmanager2
+
+=0.3.0-alpha5=
+*Properly displays explicit tag in soundmanager2 player
+
+=0.3.0-alpha4=
+*Added Track number/explicit fields to song class
+
+=0.3.0-alpha3=
+*Fixed some minor bugs breaking release
+
+=0.3.0-alpha2=
+*Added soundmanager v2.97
+*Fixed minor bug in Music Manager related to not getting next node for Download selector
+*Added Songs class/admin manager
+*Free songs load into soundmanager playlist to play on the site
+*Fixed artists display script
+
+=0.2.8=
+*Fixed Updated/Edit Gallery Posts
+*Fixed Order manager table colspan
+
+=0.2.8-alpha10=
+*AJAX Music Manager
+*Orders page now has filter and AJAX Viewer
+*Worked on Gallery Edit
+
+=0.2.8-alpha9=
+*Dialog window to view orders in detail
+
+=0.2.8-alpha8=
+*Added parent_txn_id to orders table
+
+=0.2.8-alpha7=
+*Added most of the paypal options we may need for a full store later
+
+=0.2.8-alpha5=
+*Updated Orders class to support new database options
+
+=0.2.8-alpha3=
+*Updated Orders admin panel
+
+=0.2.8-alpha2=
+*Changed database for orders and tweaked to get it working
+*Added Business Name option
+
+=0.2.7=
+*Using curl for PayPal IPN and reading raw POST data instead
+
+=0.2.6=
+*Updated small bugs in cart
+
+=0.2.3=
+*Changed jQuery for Artist picture hover to fadeIn fadeOut and added Image Gallerie to stats
+*Working on PayPAl IPN
+
+=0.2.2=
+*Still working on Gallery manager
+
+=0.2.1-alpha5=
+*Working on Gallery Manager
+*Added Lightbox/Colorbox Gallery Styles
+
+=0.2.1-alpha4=
+*Got Gallery Manager working
+
+=0.2.1-alpha3=
+*Setup add to cart/download link shower to display download link if logged in user paid for it already
+*Pass IPN URL permalink to PayPal
+*Add artist photos from media library
+*Added Image Galleries tab/code
+*Added specific script adder to use separate .js files per admin page
 
 =0.2.1-alpha2=
 *Fixed bug in IPN handler
