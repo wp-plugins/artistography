@@ -133,7 +133,7 @@ class Artist
  
         $shortcode_found = false; // use this flag to see if styles and scripts need to be enqueued
         foreach ($posts as $the_post) {
-            if (FALSE !== stripos($the_post->post_content, '[artistography_display_enabled_artists')) {
+            if (FALSE !== stripos($the_post->post_content, '[artistography_display_artists')) {
                 $shortcode_found = true; // bingo!
                 break;
             }

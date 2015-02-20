@@ -52,6 +52,7 @@ echo "		  </select>
 			<option value='0'>Unlinked</option>";
 			for ($i = 0; $i < $download->getTotalRows(); $i++) {
 				echo "<option value='$download->id'>$download->id - $download->file_name</option>";
+				$download->getNodeNext();
 			}
 echo "		  </select>
    		<label for='name'>" .__("Description", $i18ndomain). "</label>

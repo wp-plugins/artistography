@@ -3,7 +3,7 @@ Contributors: MistahWrite
 Tags: artistography, artist, discography
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stabe tag: 0.3.0-alpha
+Stabe tag: 0.3.0-alpha2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -60,8 +60,12 @@ Uses for FTP and file browsing capability:
 
 == Changelog ==
 
-=0.3.0-alpha=
+=0.3.0-alpha2=
 *Added soundmanager v2.97
+*Fixed minor bug in Music Manager related to not getting next node for Download selector
+*Added Songs class/admin manager
+*Free songs load into soundmanager playlist to play on the site
+*Fixed artists display script
 
 =0.2.8=
 *Fixed Updated/Edit Gallery Posts
