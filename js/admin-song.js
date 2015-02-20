@@ -18,13 +18,15 @@ $(document).ready(function() {
 
   if ( $( "#songsTable" ).length != 0 ) {
 
-      function addSong(artist_id, name, url, price) {
+      function addSong(number, artist_id, name, url, price, explicit) {
           var data_add = {
                   action: 'Create_Song',
+		  number: number,
 		  artist_id: artist_id,
                   song_name: name,
                   url: url,
-                  price: price
+                  price: price,
+		  explicit: explicit
           };
 
           $.post(ajaxurl, data_add, function(response) {
@@ -37,14 +39,16 @@ $(document).ready(function() {
           });
       }
 
-      function updateSong(song_id, artist_id, name, url, price) {
+      function updateSong(song_id, number, artist_id, name, url, price, explicit) {
           var data_update = {
               action: 'Update_Song',
 	      song_id: song_id,
+	      number: number,
               artist_id: artist_id,
               song_name: name,
               url: url,
-              price: price
+              price: price,
+	      explicit: explicit
           };
 
           $.post(ajaxurl, data_update, function(response) {
@@ -66,10 +70,12 @@ $(document).ready(function() {
               
               $( "#dialog-form" ).dialog( "open" );
               $( "#id" ).val(res[0]);
-	      $( "#artist_id" ).val(res[1]);
-              $( "#name" ).val(res[2]);
-              $( "#url" ).val(res[3]);
-              $( "#price" ).val(res[4]);
+	      $( "#number" ).val(res[1]);
+	      $( "#artist_id" ).val(res[2]);
+              $( "#name" ).val(res[3]);
+              $( "#url" ).val(res[4]);
+              $( "#price" ).val(res[5]);
+	      $( "#explicit" ).val(res[6]);
 
           });
       }
@@ -202,11 +208,13 @@ $(document).ready(function() {
     $( "#dialog:ui-dialog" ).dialog( "destroy" );
 
     var id = $( "#id" ),
+     number = $( "#number" ),
      artist_id = $( "#artist_id" ),
      name = $( "#name" ),
      url = $( "#url" ),
      price = $( "#price" ),
-     allFields = $( [] ).add( id ).add( artist_id ).add( name ).add( url ).add( price ),
+     explicit = $( "#explicit" ),
+     allFields = $( [] ).add( id ).add( number ).add( artist_id ).add( name ).add( url ).add( price ).add( explicit ),
      tips = $( ".validateTips" );
 
     function updateTips( t ) {
@@ -232,7 +240,7 @@ $(document).ready(function() {
       autoOpen: false,
       show: "implode",
       hide: "explode",
-      height: 400,
+      height: 500,
       width: 350,
       modal: true,
       buttons: {
@@ -243,13 +251,13 @@ $(document).ready(function() {
           bValid = bValid && checkLength( name, "name", 3, 100 );
 
           if ( id.val() === '' && bValid ) {
-            id = addSong(artist_id.val(), name.val(), url.val(), price.val());
+            id = addSong(number.val(), artist_id.val(), name.val(), url.val(), price.val(), explicit.val());
 //            $( "#songTable tbody" ).append( "<tr>" + "<td align='center'>" + id + "</td><td align='center'><a href='" + url.val() + "' target='_blank'><img src='" + picture_url.val() + "' height='75' width='75' /></a></td><td align='center'><a href='" + url.val() + "' target='_blank'>" + name.val() + "</a></td><td align='center'>0</td><td align'center'>Pending Creation...</td></tr>" );
 
             zebraRows('tbody tr:odd td', 'odd');
             $( this ).dialog( "close" );
           } else {
-            result = updateSong(id.val(), artist_id.val(), name.val(), url.val(), price.val());
+            result = updateSong(id.val(), number.val(), artist_id.val(), name.val(), url.val(), price.val(), explicit.val());
             $( this ).dialog( 'close' );
             location.reload();
           }

@@ -16,10 +16,12 @@ class Song
      // property declaration
     public $id = NULL;
 
+    public $number = NULL;
     public $artist_id = NULL;
     public $name = NULL;
     public $url = NULL;
     public $price = NULL;
+    public $explicit = NULL;
 
      // meta data property declarations
     public $last_updated_by_id = NULL;
@@ -47,12 +49,14 @@ class Song
 
         $song = new Song;
 
+	$number = stripslashes($_POST['number']);
         $artist_id = stripslashes($_POST['artist_id']);
 	$song_name = stripslashes($_POST['song_name']);
         $url = stripslashes($_POST['url']);
 	$price = stripslashes($_POST['price']);
+	$explicit = stripslashes($_POST['explicit']);
 
-        $result = $song->insert($artist_id, $song_name, $url, $price);
+        $result = $song->insert($number, $artist_id, $song_name, $url, $price, $explicit);
         if(is_numeric($result)) {
           echo $result;
         } else {
@@ -69,12 +73,14 @@ class Song
         $song = new Song;
 
 	$song_id = stripslashes($_POST['song_id']);
+	$number = stripslashes($_POST['number']);
         $artist_id = stripslashes($_POST['artist_id']);
 	$song_name = stripslashes($_POST['song_name']);
         $url = stripslashes($_POST['url']);
 	$price = stripslashes($_POST['price']);
+	$explicit = stripslashes($_POST['explicit']);
 
-        if($song->updateById ($song_id, $artist_id, $song_name, $url, $price) ) {
+        if($song->updateById ($song_id, $number, $artist_id, $song_name, $url, $price, $explicit) ) {
           echo '1'; //success
         } else {
           echo sprintf(__("Failed: Unable to Update Artist id: %u", $i18n_domain), $artist_id);
@@ -92,10 +98,12 @@ class Song
         if($song->loadById($_POST['song_id'])->getTotalRows() > 0) {
 
           echo $song->id
+		."##$$##". stripslashes($song->number)
 		."##$$##". stripslashes($song->artist_id)
                 ."##$$##". stripslashes($song->name)
-              	."##$$##".  stripslashes($song->url)
-		."##$$##". stripslashes($song->price);
+              	."##$$##". stripslashes($song->url)
+		."##$$##". stripslashes($song->price)
+		."##$$##". stripslashes($song->explicit);
         }
 
         unset($song);
@@ -185,23 +193,27 @@ class Song
             $this->create_date = $this->query_result->create_date;
             $this->update_date = $this->query_result->update_date;
 
+	    $this->number = $this->query_result->number;
 	    $this->artist_id = $this->query_result->artist_id;
             $this->name = $this->query_result->name;
             $this->url = $this->query_result->url;
 	    $this->price = $this->query_result->price;
+	    $this->explicit = $this->query_result->explicit;
         } else {
             $this->query_result = 
 
-            $this->id = 
+            $this->id =
             $this->poster_id = 
             $this->last_updated_by_id = 
             $this->create_date = 
             $this->update_date = 
 
+	    $this->number =
 	    $this->artist_id;
             $this->name = 
             $this->url = 
-	    $this->price = 0;
+	    $this->price = 
+	    $this->explicit = 0;
         }
         return $this;
     }
@@ -308,7 +320,7 @@ class Song
     }
 
      // update artist entry
-    public function updateById ($song_id, $artist_id, $song_name, $url, $price) {
+    public function updateById ($song_id, $number, $artist_id, $song_name, $url, $price, $explicit) {
         GLOBAL $wpdb, $i18n_domain;
         GLOBAL $current_user;
 
@@ -317,13 +329,15 @@ class Song
         $this->query = $wpdb->prepare(
                  "UPDATE " .self::$songTable. "
                   SET update_date = now(),
+		      number = %u,
 		      artist_id = %u,
                       name = %s,
                       url = %s,
 		      price = %s,
+		      explicit = %b,
                       last_updated_by_id = %u
                   WHERE id = %s",
-                  $artist_id, $song_name, $url, $price, $current_user->ID, $song_id);
+                  (int)$number, $artist_id, $song_name, $url, $price, $explicit, $current_user->ID, $song_id);
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === FALSE) {
@@ -334,7 +348,7 @@ class Song
         }
     }
 
-    public function insert ($artist_id, $song_name, $url, $price) {
+    public function insert ($number, $artist_id, $song_name, $url, $price, $explicit) {
         GLOBAL $wpdb, $i18n_domain;
         GLOBAL $current_user;
 
@@ -342,9 +356,9 @@ class Song
 
         $this->query = $wpdb->prepare(
                        "INSERT INTO " .self::$songTable. "
-                        (create_date, update_date, poster_id, last_updated_by_id, artist_id, name, url, price)
-                        VALUES (now(), now(), %u, %u, %s, %s, %s, %s)",
-                        $current_user->ID, $current_user->ID, $artist_id, $song_name, $url, $price);
+                        (create_date, update_date, poster_id, last_updated_by_id, number, artist_id, name, url, price, explicit)
+                        VALUES (now(), now(), %u, %u, %u, %s, %s, %s, %s, %b)",
+                        $current_user->ID, $current_user->ID, (int)$number, $artist_id, $song_name, $url, $price, $explicit);
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === 0 OR $this->getTotalRows() === FALSE) {

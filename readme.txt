@@ -1,17 +1,17 @@
 === Artistography ===
 Contributors: MistahWrite
-Tags: artistography, artist, discography
+Tags: artistography, artist, discography, media, music, videos, images, pictures, gallery, galleries, songs, albums, eCommerce, e-Commerce, PayPal, soundmanager2, playlist, cart, download manager, ftp, zupload, encode explorer, 
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stabe tag: 0.3.0-alpha3
+Stabe tag: 0.3.0-alpha4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Artistography allows you to have a discography on a record label of artists with inter-linked featurings and collaborations among them, or outside artists.
+Organizes a portfolio of music, videos, and images on your blog/website with PayPal eCommerce.
 
 == Description ==
 
-Artistography allows a user to organize albums and videos onto an artist page.  The artist page has jQuery-UI style tabs, and polls tags on posts for the artist's name and then files them into the Related Posts tab.
+Allows you to organize music, pictures/images, and videos on an artist page.  The artist page has jQuery-UI style tabs, and polls tags on posts for the artist's name and then files them into the Related Posts tab.  It utilizes soundmanager2 and displays free songs on a player on the website.  Recommended for use with Advanced AJAX Page Loader.  This is a constant work in progress, and is evolving into an incredible plugin for musicians or record labels.
 
 Uses for FTP and file browsing capability:
  * http://sourceforge.net/projects/encode-explorer/ (version 6.3)

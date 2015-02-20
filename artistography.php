@@ -2,8 +2,8 @@
 /*
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
- * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.3.0-alpha3
+ * Description: Build a collection of artist's media (videos, music, pictures) and organize them into a portfolio on your blog/website with PayPal functionality.
+ * Version: 0.3.0-alpha4
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -16,7 +16,7 @@ define('WP_DEBUG_DISPLAY', true);
 
 define('LOG_FILE', "./ipn.log");
 
-define('ARTISTOGRAPHY_VERSION', '0.3.0-alpha3');
+define('ARTISTOGRAPHY_VERSION', '0.3.0-alpha4');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -348,6 +348,11 @@ function artistography_pluginInstall() {
 	$query = "ALTER TABLE $thetable DROP COLUMN artist_id";
 	$wpdb->query($query);
   }
+  if (version_compare($version, "0.3.0-alpha4", '<')) {
+        $thetable = $wpdb->prefix . $TABLE_NAME[TABLE_SONGS];
+        $query = "DROP TABLE $thetable";
+        $wpdb->query($query);
+  }
   update_option('wp_artistography_version', ARTISTOGRAPHY_VERSION);
 
     // Create Data Tables If They Don't Already Exist
@@ -374,10 +379,12 @@ function artistography_pluginInstall() {
           break;
 
 	case TABLE_SONGS:
-          $query .= "artist_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
+          $query .= "number INT(5) UNSIGNED,
+		     artist_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
 		     name TEXT NOT NULL,
                      url TEXT,
-		     price DECIMAL (7,2) DEFAULT '0.00' NOT NULL,";
+		     price DECIMAL (7,2) DEFAULT '0.00' NOT NULL,
+		     explicit BOOLEAN DEFAULT FALSE NOT NULL,";
           break;
 
 	case TABLE_SONG_ALBUM_LINKER:
@@ -594,7 +601,19 @@ function my_soundmanager2_footer_hook() {
 
   <div class="sm2-inline-element sm2-button-element">
    <div class="sm2-button-bd">
+    <a href="#prev" title="Previous" class="sm2-inline-button sm2-previous">&lt; previous</a>
+   </div>
+  </div>
+
+  <div class="sm2-inline-element sm2-button-element">
+   <div class="sm2-button-bd">
     <a href="#play" class="sm2-inline-button play-pause">Play / pause</a>
+   </div>
+  </div>
+
+  <div class="sm2-inline-element sm2-button-element">
+   <div class="sm2-button-bd">
+    <a href="#next" title="Next" class="sm2-inline-button sm2-next">&gt; next</a>
    </div>
   </div>
 
@@ -627,18 +646,6 @@ function my_soundmanager2_footer_hook() {
    <div class="sm2-button-bd">
     <span class="sm2-inline-button sm2-volume-control volume-shade"></span>
     <a href="#volume" class="sm2-inline-button sm2-volume-control">volume</a>
-   </div>
-  </div>
-
-  <div class="sm2-inline-element sm2-button-element">
-   <div class="sm2-button-bd">
-    <a href="#prev" title="Previous" class="sm2-inline-button sm2-previous">&lt; previous</a>
-   </div>
-  </div>
-
-  <div class="sm2-inline-element sm2-button-element">
-   <div class="sm2-button-bd">
-    <a href="#next" title="Next" class="sm2-inline-button sm2-next">&gt; next</a>
    </div>
   </div>
 
