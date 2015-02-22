@@ -2,8 +2,8 @@
 /*
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
- * Description: Build a collection of media from artists (videos, music, pictures) to organize a record label blog/website with a store connected to the music/songs or other types of art.
- * Version: 0.2.1-alpha2
+ * Description: Build a collection of artist's media (videos, music, pictures) and organize them into a portfolio on your blog/website with PayPal functionality.
+ * Version: 0.3.1-alpha2
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -14,15 +14,19 @@ define('WP_DEBUG', true);
 define('WP_DEBUG_LOG', true); 
 define('WP_DEBUG_DISPLAY', true);
 
-define('ARTISTOGRAPHY_VERSION', '0.2.1-alpha2');
+define('LOG_FILE', "./ipn.log");
+
+define('ARTISTOGRAPHY_VERSION', '0.3.1-alpha2');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
-define('TABLE_ARTIST_ALBUM_LINKER', 1);
-define('TABLE_ARTIST_FILE_DOWNLOAD', 2);
-define('TABLE_ARTIST_MUSIC_ALBUMS', 3);
-define('TABLE_ARTIST_IMAGE_GALLERY', 4);
-define('TABLE_ARTIST_ORDERS', 5);
+define('TABLE_SONGS', 1);
+define('TABLE_SONG_ALBUM_LINKER', 2);
+define('TABLE_ARTIST_ALBUM_LINKER', 3);
+define('TABLE_ARTIST_FILE_DOWNLOAD', 4);
+define('TABLE_ARTIST_MUSIC_ALBUMS', 5);
+define('TABLE_ARTIST_IMAGE_GALLERIES', 6);
+define('TABLE_ARTIST_ORDERS', 7);
 
 define('WP_ROOT', str_replace('/wp-admin', '', dirname($_SERVER['SCRIPT_FILENAME'])));
 define('SITEURL', get_option('siteurl'));
@@ -57,20 +61,25 @@ GLOBAL $buynow_icon_url; $buynow_icon_url = $artistography_plugin_dir . '/css/im
 GLOBAL $buynow_icon_width; $buynow_icon_width = '213';
 GLOBAL $buynow_icon_height; $buynow_icon_height = '95';
 
+GLOBAL $transparent_pixel_url; $transparent_pixel_url = $artistography_plugin_dir . '/css/images/1x1.png';
+
 GLOBAL $TABLE_NAME; $TABLE_NAME =
   array ('artistography_artists',
+	 'artistography_songs',
+	 'artistography_song_album_linker',
          'artistography_artist_album_linker',
          'artistography_file_download',
          'artistography_music_albums',
-         'artistography_image_gallery',
+         'artistography_image_galleries',
          'artistography_orders');
 
 require_once('class/item.php.inc');
 require_once('class/artist.php.inc');
+require_once('class/song.php.inc');
 require_once('class/music.php.inc');
 require_once('class/discography.php.inc');
 require_once('class/download.php.inc');
-//require_once('class/image_gallery.php.inc');
+require_once('class/galleries.php.inc');
 require_once('class/orders.php.inc');
 require_once('admin/general_funcs.php.inc');
 
@@ -96,6 +105,7 @@ function artistography_pluginInstall() {
   $version = get_option('wp_artistography_version', false);
 
    /*** Store any options ***/
+  add_option('wp_artistography_business_name', 'My Business Name');
   add_option('wp_artistography_donate_email', 'mistahwrite@gmail.com');
   add_option('wp_artistography_paypal_sandbox', true);
   add_option('wp_artistography_preserve_hidden_pages', true);
@@ -106,6 +116,8 @@ function artistography_pluginInstall() {
   add_option('wp_artistography_ftp_pass', '');
   add_option('wp_artistography_ftp_path', '');
   add_option('wp_artistography_version', ARTISTOGRAPHY_VERSION, NULL, true);
+  add_option('wp_artistography_gallery_style', 'Colorbox');
+  add_option('wp_artistography_ajax_loader', false);
 
    /* Create Download Page */
   if (!get_option('wp_artistography_download_page')) {
@@ -310,6 +322,38 @@ function artistography_pluginInstall() {
     $wpdb->query($query);
   }
 
+  if (version_compare($version, "0.2.1-alpha4", '<')) {
+    $thetable = $wpdb->prefix . 'artistography_image_gallery';
+    $query = "DROP TABLE $thetable";
+    $wpdb->query($query);
+
+    $thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_IMAGE_GALLERIES];
+    $query = "DROP TABLE $thetable";
+    $wpdb->query($query);
+  }
+
+  if (version_compare($version, "0.2.8-alpha2", '<')) {
+    	$thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_ORDERS];
+        $query = "DROP TABLE $thetable";
+        $wpdb->query($query);
+  }
+  if (version_compare($version, "0.2.8-alpha6", '<')) {
+	delete_option('wp_artistography_business_name');
+  }
+  if (version_compare($version, "0.2.8-alpha10", '<')) {
+	$thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_ORDERS];
+	$query = "DROP TABLE $thetable";
+	$wpdb->query($query);
+
+	$thetable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_MUSIC_ALBUMS];
+	$query = "ALTER TABLE $thetable DROP COLUMN artist_id";
+	$wpdb->query($query);
+  }
+  if (version_compare($version, "0.3.0-alpha4", '<')) {
+        $thetable = $wpdb->prefix . $TABLE_NAME[TABLE_SONGS];
+        $query = "DROP TABLE $thetable";
+        $wpdb->query($query);
+  }
   update_option('wp_artistography_version', ARTISTOGRAPHY_VERSION);
 
     // Create Data Tables If They Don't Already Exist
@@ -335,6 +379,20 @@ function artistography_pluginInstall() {
                      enabled BOOLEAN DEFAULT false NOT NULL,";
           break;
 
+	case TABLE_SONGS:
+          $query .= "number INT(5) UNSIGNED,
+		     artist_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
+		     name TEXT NOT NULL,
+                     url TEXT,
+		     price DECIMAL (7,2) DEFAULT '0.00' NOT NULL,
+		     explicit BOOLEAN DEFAULT FALSE NOT NULL,";
+          break;
+
+	case TABLE_SONG_ALBUM_LINKER:
+          $query .= "song_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
+                     album_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,";
+	  break;
+
         case TABLE_ARTIST_ALBUM_LINKER:
           $query .= "artist_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,
                      album_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,";
@@ -348,7 +406,6 @@ function artistography_pluginInstall() {
 
         case TABLE_ARTIST_MUSIC_ALBUMS:
           $query .= "page_views INT(10) UNSIGNED DEFAULT '0' NOT NULL,
-                     artist_id INT(10),
                      artist_name TEXT NOT NULL,
                      album_name TEXT NOT NULL,
                      album_date DATETIME NOT NULL,
@@ -360,25 +417,51 @@ function artistography_pluginInstall() {
                      description LONGTEXT,";
           break;
 
-        case TABLE_ARTIST_IMAGE_GALLERY:
+        case TABLE_ARTIST_IMAGE_GALLERIES:
           $query .= "page_views INT(10) UNSIGNED DEFAULT '0' NOT NULL,
                      artist_id INT(10),
-                     picture_url TEXT NOT NULL,
-                     description LONGTEXT,
-                     enabled BOOLEAN DEFAULT FALSE NOT NULL,";
+		     name TEXT NOT NULL,
+                     gallery TEXT NOT NULL,
+		     cover_picture TEXT NOT NULL,
+                     description LONGTEXT,";
           break;
 
 	case TABLE_ARTIST_ORDERS:
-	  $query .= "forename TEXT NOT NULL,
+	$query .= "  payer_id TEXT NOT NULL,
+		     address_status TEXT,
+		     payer_status TEXT,
+		     forename TEXT NOT NULL,
 		     surname TEXT NOT NULL,
 		     email TEXT NOT NULL,
 		     address_line_1 TEXT NOT NULL,
                      postcode TEXT NOT NULL,
-                     town TEXT NOT NULL,
-                     itemsOrdered TEXT NOT NULL,
-		     created DATETIME NOT NULL,
-                     txn_id TEXT NOT NULL,
-                     user_ip TEXT NOT NULL,
+		     town TEXT NOT NULL,
+		     state TEXT NOT NULL,
+		     country_code TEXT NOT NULL,
+		     contact_phone TEXT,
+		     itemsOrdered TEXT,
+		     itemsNumberOrdered TEXT,
+		     quantityOrdered TEXT,
+		     txn_id TEXT NOT NULL,
+		     txn_type TEXT,
+		     parent_txn_id TEXT,
+		     verify_sign TEXT,
+		     payment_status TEXT NOT NULL,
+		     payment_amount TEXT,
+		     payment_currency TEXT,
+		     item_name TEXT,
+		     item_number TEXT,
+		     quantity TEXT,
+		     shipping TEXT,
+		     tax TEXT,
+		     mc_fee TEXT,
+		     mc_gross TEXT,
+		     mc_handling TEXT,
+		     mc_shipping TEXT,
+		     memo TEXT,
+		     pending_reason TEXT,
+		     refund_reason_code TEXT,
+		     refund_receipt_id TEXT,
 		     user_id INT(10) UNSIGNED DEFAULT '0' NOT NULL,";
 	  break;
 
@@ -400,7 +483,7 @@ function artistography_pluginUninstall() {
     if ($download_page_id) {
        // force delete download page
       $result = wp_delete_post( $download_page_id, true ); 
-      if(!$result) {
+      if($result) {
         delete_option('wp_artistography_download_page');
       }
     }
@@ -410,7 +493,7 @@ function artistography_pluginUninstall() {
     if ($cart_page_id) {
        // force delete cart page
       $result = wp_delete_post( $cart_page_id, true );
-      if(!$result) {
+      if($result) {
         delete_option('wp_artistography_cart_page');
       }
     }
@@ -420,7 +503,7 @@ function artistography_pluginUninstall() {
     if ($checkout_page_id) {
        // force delete checkout page
       $result = wp_delete_post( $checkout_page_id, true );
-      if(!$result) {
+      if($result) {
         delete_option('wp_artistography_checkout_page');
       }
     }
@@ -430,7 +513,7 @@ function artistography_pluginUninstall() {
     if ($orders_page_id) {
        // force delete checkout page
       $result = wp_delete_post( $orders_page_id, true );
-      if(!$result) {
+      if($result) {
         delete_option('wp_artistography_orders_page');
       }
     }
@@ -440,7 +523,7 @@ function artistography_pluginUninstall() {
     if ($thankyou_page_id) {
        // force delete checkout page
       $result = wp_delete_post( $thankyou_page_id, true );
-      if(!$result) {
+      if($result) {
         delete_option('wp_artistography_thankyou_page');
       }
     }
@@ -450,7 +533,7 @@ function artistography_pluginUninstall() {
     if ($ipn_page_id) {
        // force delete checkout page
       $result = wp_delete_post( $ipn_page_id, true );
-      if(!$result) {
+      if($result) {
         delete_option('wp_artistography_ipn_page');
       }
     }
@@ -467,6 +550,8 @@ function artistography_pluginUninstall() {
     delete_option('wp_artistography_ftp_user');
     delete_option('wp_artistography_ftp_pass');
     delete_option('wp_artistography_ftp_path');
+    delete_option('wp_artistography_gallery_style');
+    delete_option('wp_artistography_ajax_loader');
     delete_option('wp_artistography_version');
 
     foreach ($TABLE_NAME as $key => $value) {
@@ -500,14 +585,127 @@ function artistography_exclude_pages ($pages) {
 	return $shaved_pages;
 }
 
+function my_soundmanager2_footer_hook() {
+	$songs = new Song;
+	$artist = new Artist;
+
+	if ($songs->loadByPrice('0.00', 'rand()')->getTotalRows() > 0) {
+		echo '
+</div>
+<!-- fixed, bottom-aligned, full-width player -->
+
+<div class="sm2-bar-ui full-width fixed dark-text">
+
+ <div class="bd sm2-main-controls">
+
+  <div class="sm2-inline-texture"></div>
+  <div class="sm2-inline-gradient"></div>
+
+  <div class="sm2-inline-element sm2-button-element">
+   <div class="sm2-button-bd">
+    <a href="#prev" title="Previous" class="sm2-inline-button sm2-previous">&lt; previous</a>
+   </div>
+  </div>
+
+  <div class="sm2-inline-element sm2-button-element">
+   <div class="sm2-button-bd">
+    <a href="#play" class="sm2-inline-button play-pause">Play / pause</a>
+   </div>
+  </div>
+
+  <div class="sm2-inline-element sm2-button-element">
+   <div class="sm2-button-bd">
+    <a href="#next" title="Next" class="sm2-inline-button sm2-next">&gt; next</a>
+   </div>
+  </div>
+
+  <div class="sm2-inline-element sm2-inline-status">
+
+   <div class="sm2-playlist">
+    <div class="sm2-playlist-target">
+     <!-- playlist <ul> + <li> markup will be injected here -->
+     <!-- if you want default / non-JS content, you can put that here. -->
+     <noscript><p>JavaScript is required.</p></noscript>
+    </div>
+   </div>
+
+   <div class="sm2-progress">
+    <div class="sm2-row">
+    <div class="sm2-inline-time">0:00</div>
+     <div class="sm2-progress-bd">
+      <div class="sm2-progress-track">
+       <div class="sm2-progress-bar"></div>
+       <div class="sm2-progress-ball"><div class="icon-overlay"></div></div>
+      </div>
+     </div>
+     <div class="sm2-inline-duration">0:00</div>
+    </div>
+   </div>
+
+  </div>
+
+  <div class="sm2-inline-element sm2-button-element sm2-volume">
+   <div class="sm2-button-bd">
+    <span class="sm2-inline-button sm2-volume-control volume-shade"></span>
+    <a href="#volume" class="sm2-inline-button sm2-volume-control">volume</a>
+   </div>
+  </div>
+
+  <!-- unimplemented -->
+  <!--
+  <div class="sm2-inline-element sm2-button-element disabled">
+   <div class="sm2-button-bd">
+    <a href="#repeat" title="Repeat playlist" class="sm2-inline-button repeat">&infin; repeat</a>
+   </div>
+  </div>
+  -->
+
+  <div class="sm2-inline-element sm2-button-element sm2-menu">
+   <div class="sm2-button-bd">
+    <a href="#menu" class="sm2-inline-button sm2-menu-button">menu</a>
+   </div>
+  </div>
+
+ </div>
+
+ <div class="bd sm2-playlist-drawer sm2-element">
+
+  <div class="sm2-inline-texture">
+   <div class="sm2-box-shadow"></div>
+  </div>
+
+  <!-- playlist content is mirrored here -->
+
+  <div class="sm2-playlist-wrapper">
+    <ul class="sm2-playlist-bd">';
+		for($i = 0; $i < $songs->getTotalRows(); $i++) {
+			echo "<li><a href='$songs->url'><b>" .$artist->loadById($songs->artist_id)->name. "</b> - $songs->name" .(($songs->explicit) ? "<span class='label'>Explicit</span>" : ''). "</a></li>";
+
+			$songs->getNodeNext();
+		}
+		echo '    </ul>
+  </div>
+
+ </div>
+		';
+	}
+}
 
 function artistography_init() {
   GLOBAL $i18n_domain, $artistography_plugin_dir;
 
    /* Hide Pages from Menu */
   add_filter('get_pages', 'artistography_exclude_pages');
+  add_action('wp_footer', 'my_soundmanager2_footer_hook', PHP_INT_MAX);
 
   if(!artistography_is_current_version()) artistography_pluginInstall();
+
+  if(true == get_option('wp_artistography_ajax_loader')) {
+     // we want to load the scripts/styles on all pages because we may need it later
+    add_action( 'wp_enqueue_scripts', 'artistography_enqueue_style_and_scripts', 0);
+  }
+
+  add_thickbox();
 
   load_plugin_textdomain( $i18n_domain, false, $artistography_plugin_dir );
 }
@@ -515,21 +713,22 @@ add_action('init', 'artistography_init');
 
   define(ADMIN_MENU_ORDERS, __('Orders', $i18n_domain));
   define(ADMIN_MENU_MANAGE_ARTISTS, __('Manage Artists', $i18n_domain));
-  define(ADMIN_MENU_MANAGE_MUSIC, __('Music Albums', $i18n_domain));
+  define(ADMIN_MENU_MANAGE_SONGS, __('Manage Songs', $i18n_domain));
+  define(ADMIN_MENU_MANAGE_ALBUMS, __('Manage Albums', $i18n_domain));
   define(ADMIN_MENU_MANAGE_DOWNLOADS, __('Downloads', $i18n_domain));
   define(ADMIN_MENU_MANAGE_DISCOGRAPHY, __('Discography', $i18n_domain));
-//  define(ADMIN_MENU_MANAGE_GALLERIES, __('Galleries', $i18n_domain));
-//  define(ADMIN_MENU_MANAGE_ALBUM_ART, __('Album Art', $i18n_domain));
+  define(ADMIN_MENU_MANAGE_GALLERIES, __('Galleries', $i18n_domain));
   define(ADMIN_MENU_FTP_UPLOADER, __('FTP Uploader', $i18n_domain));
   define(ADMIN_MENU_OPTIONS, __('Options', $i18n_domain));
   define(ADMIN_MENU_ABOUT, __('About', $i18n_domain));
 
   define(TOP_LEVEL_HANDLE, 'artistography-top-level');
   define(SUBMENU_MANAGE_ARTISTS_HANDLE, 'artistography-submenu-manage-artists');
-  define(SUBMENU_MANAGE_MUSIC_HANDLE, 'artistography-submenu-manage-music');
+  define(SUBMENU_MANAGE_SONGS_HANDLE, 'artistography-submenu-manage-songs');
+  define(SUBMENU_MANAGE_ALBUMS_HANDLE, 'artistography-submenu-manage-albums');
   define(SUBMENU_MANAGE_DOWNLOADS_HANDLE, 'artistography-submenu-manage-downloads');
   define(SUBMENU_MANAGE_DISCOGRAPHY_HANDLE, 'artistography-submenu-manage-discography');
-//  define(SUBMENU_MANAGE_GALLERIES_HANDLE, 'artistography-submenu-manage-galleries');
+  define(SUBMENU_MANAGE_GALLERIES_HANDLE, 'artistography-submenu-manage-galleries');
   define(SUBMENU_FTP_UPLOADER, 'artistography-submenu-ftp-uploader');
   define(SUBMENU_OPTIONS_HANDLE, 'artistography-submenu-options');
   define(SUBMENU_ABOUT_HANDLE, 'artistography-submenu-about');
@@ -537,24 +736,81 @@ add_action('init', 'artistography_init');
 function artistography_enqueue_admin_style_and_scripts() {
     GLOBAL $artistography_plugin_dir;
 
+    wp_enqueue_media();
+    wp_enqueue_style('thickbox');
+    wp_enqueue_script('media-upload');
+    wp_enqueue_script('thickbox');
+
+    wp_enqueue_script('jquery');
+
     wp_enqueue_style( 'jquery-ui', $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.css', array(), '1.11.2', 'all');
     wp_enqueue_style( 'jquery-ui', $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.theme.css', array(), '1.11.2', 'all');
     wp_enqueue_script( 'jquery-ui',  $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.js', array( 'jquery' ), '1.0.0');
 
     wp_enqueue_style( 'artistography', $artistography_plugin_dir . '/css/admin-style.css', array(), ARTISTOGRAPHY_VERSION, 'all');
-    wp_enqueue_script( 'artistography',  $artistography_plugin_dir . '/js/admin.js', array( 'jquery-ui' ), ARTISTOGRAPHY_VERSION);
+
+    switch($_GET['page']) {
+	case SUBMENU_MANAGE_ARTISTS_HANDLE:
+		$admin_script = 'admin-artist.js';
+		break;
+	case SUBMENU_MANAGE_SONGS_HANDLE:
+                $admin_script = 'admin-song.js';
+                break;
+	case SUBMENU_MANAGE_ALBUMS_HANDLE:
+		$admin_script = 'admin-music.js';
+		break;
+	case SUBMENU_MANAGE_DISCOGRAPHY_HANDLE:
+		$admin_script = 'admin-discography.js';
+		break;
+	case SUBMENU_MANAGE_GALLERIES_HANDLE:
+		wp_enqueue_media();
+		$admin_script = 'admin-gallery.js';
+		break;
+	case TOP_LEVEL_HANDLE:
+	case SUBMENU_MANAGE_ORDERS_HANDLE:
+		$admin_script = 'admin-orders.js';
+		break;
+	default:
+    		$admin_script = 'admin.js';
+    }
+    wp_enqueue_script( 'artistography',  $artistography_plugin_dir . "/js/$admin_script", array( 'jquery-ui' ), ARTISTOGRAPHY_VERSION);
 }
 
 function artistography_enqueue_style_and_scripts() {
     GLOBAL $artistography_plugin_dir;
 
-    wp_enqueue_style( 'jquery-ui', $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.css', array(), '1.11.2', 'all');
-    wp_enqueue_style( 'jquery-ui', $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.theme.css', array(), '1.11.2', 'all');
-    wp_enqueue_script( 'jquery-ui',  $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.js', array( 'jquery' ), '1.0.0');
+	if(strcmp("Lightbox", get_option('wp_artistography_gallery_style')) == 0) {
+    		wp_enqueue_style('thickbox');
+    		wp_enqueue_script('thickbox');
+	} else if (strcmp("Colorbox", get_option('wp_artistography_gallery_style')) == 0) {
+		wp_enqueue_style( 'colorbox', $artistography_plugin_dir . '/js/colorbox-master/example5/colorbox.css', array(), '1.0.0', 'all');
+		wp_enqueue_script( 'colorbox',  $artistography_plugin_dir . '/js/colorbox-master/jquery.colorbox.js', array( 'jquery' ), '1.0.0');
+	}
 
-    wp_enqueue_style( 'artistography', $artistography_plugin_dir . '/css/style.css', array(), ARTISTOGRAPHY_VERSION, 'all');
-    wp_enqueue_script( 'artistography',  $artistography_plugin_dir . '/js/script.js', array( 'jquery-ui' ), ARTISTOGRAPHY_VERSION);
+	wp_enqueue_script('jquery');
+
+	wp_enqueue_style( 'jquery-ui', $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.css', array(), '1.11.2', 'all');
+	wp_enqueue_style( 'jquery-ui', $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.theme.css', array(), '1.11.2', 'all');
+	wp_enqueue_script( 'jquery-ui',  $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.js', array( 'jquery' ), '1.0.0');
+
+	wp_enqueue_style( '', $artistography_plugin_dir . '/css/bar-ui.css', array(), '2.9.7a', 'all');
+	wp_enqueue_script( '', $artistography_plugin_dir . '/soundmanagerv297a-20140901/script/soundmanager2.js', array(), '2.9.7a');
+	wp_enqueue_script( '', $artistography_plugin_dir . '/soundmanagerv297a-20140901/script/bar-ui.js', array( 'soundmanager2' ), '2.9.7a');
+
+	wp_enqueue_style( 'artistography', $artistography_plugin_dir . '/css/style.css', array(), ARTISTOGRAPHY_VERSION, 'all');
+	wp_enqueue_script( 'artistography',  $artistography_plugin_dir . '/js/script.js', array( 'jquery-ui' ), ARTISTOGRAPHY_VERSION);
 }
+
+
+function artistography_enqueue_sm_style_and_scripts() {
+	GLOBAL $artistography_plugin_dir;
+
+        wp_enqueue_style( 'soundmanager2-bar-ui', $artistography_plugin_dir . '/soundmanagerv297a-20140901/demo/bar-ui/css/bar-ui.css', array(), '297a-20140901', 'all');
+        wp_enqueue_script( 'soundmanager2', $artistography_plugin_dir . '/soundmanagerv297a-20140901/script/soundmanager2.js', array(), '297a-20140901');
+        wp_enqueue_script( 'soundmanager2-bar-ui', $artistography_plugin_dir . '/soundmanagerv297a-20140901/demo/bar-ui/script/bar-ui.js', array( 'soundmanager2' ), '297a-20140901');
+	wp_enqueue_style( 'soundmanager2', $artistography_plugin_dir . '/css/soundmanager2.css', array(), ARTISTOGRAPHY_VERSION, 'all');
+}
+add_action( 'wp_enqueue_scripts', 'artistography_enqueue_sm_style_and_scripts');
 
  /* START ADMIN MENU INTERFACE */
 add_action('admin_menu', 'artistography_plugin_menu');
@@ -569,11 +825,11 @@ function artistography_plugin_menu() {
   add_menu_page(ADMIN_MENU_STATS, __('Artistography', $i18n_domain), 'manage_options', TOP_LEVEL_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_ORDERS), ADMIN_MENU_ORDERS, 'manage_options', TOP_LEVEL_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_ARTISTS), ADMIN_MENU_MANAGE_ARTISTS, 'manage_options', SUBMENU_MANAGE_ARTISTS_HANDLE, 'artistography_plugin_options');
-  add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_MUSIC), ADMIN_MENU_MANAGE_MUSIC, 'manage_options', SUBMENU_MANAGE_MUSIC_HANDLE, 'artistography_plugin_options');
+  add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_SONGS), ADMIN_MENU_MANAGE_SONGS, 'manage_options', SUBMENU_MANAGE_SONGS_HANDLE, 'artistography_plugin_options');
+  add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_ALBUMS), ADMIN_MENU_MANAGE_ALBUMS, 'manage_options', SUBMENU_MANAGE_ALBUMS_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_DISCOGRAPHY), ADMIN_MENU_MANAGE_DISCOGRAPHY, 'manage_options', SUBMENU_MANAGE_DISCOGRAPHY_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_DOWNLOADS), ADMIN_MENU_MANAGE_DOWNLOADS, 'manage_options', SUBMENU_MANAGE_DOWNLOADS_HANDLE, 'artistography_plugin_options');
-//  add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_GALLERIES), ADMIN_MENU_MANAGE_GALLERIES, 'manage_options', SUBMENU_MANAGE_GALLERIES_HANDLE, 'artistography_plugin_options');
-//  add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_ALBUM_ART), ADMIN_MENU_MANAGE_ALBUM_ART, 'manage_options', SUBMENU_MANAGE_ALBUM_ART_HANDLE, 'artistography_plugin_options');
+  add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_GALLERIES), ADMIN_MENU_MANAGE_GALLERIES, 'manage_options', SUBMENU_MANAGE_GALLERIES_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_FTP_UPLOADER), ADMIN_MENU_FTP_UPLOADER, 'manage_options', SUBMENU_FTP_UPLOADER, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_OPTIONS), ADMIN_MENU_OPTIONS, 'manage_options', SUBMENU_OPTIONS_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_ABOUT), ADMIN_MENU_ABOUT, 'manage_options', SUBMENU_ABOUT_HANDLE, 'artistography_plugin_options');
@@ -602,7 +858,11 @@ function artistography_plugin_options() {
       require_once('admin/manage_artists.php.inc');
       break;
 
-    case sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_MUSIC):
+    case sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_SONGS):
+      require_once('admin/manage_songs.php.inc');
+      break;
+
+    case sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_ALBUMS):
       require_once('admin/manage_music.php.inc');
       break;
 
@@ -617,10 +877,6 @@ function artistography_plugin_options() {
 
     case sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_GALLERIES):
       require_once('admin/manage_galleries.php.inc');
-      break;
-
-    case sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_ALBUM_ART):
-      require_once('admin/manage_album_art.php.inc');
       break;
 
     case sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_FTP_UPLOADER):
