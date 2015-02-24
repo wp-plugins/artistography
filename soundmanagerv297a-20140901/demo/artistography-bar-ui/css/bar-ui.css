@@ -733,6 +733,11 @@
  box-shadow: inset 0px 1px 6px rgba(0,0,0,0.15);
 }
 
+.sm2-album-art-wrapper {
+ align: center;
+ vertical-align : middle;
+}
+
 .sm2-playlist-wrapper {
  position: relative;
  padding: 0.5em 0.5em 0.5em 0.25em;
@@ -740,7 +745,7 @@
 }
 
 .sm2-playlist-wrapper ul {
- max-height: 9.25em;
+ height: 20.25em;
  overflow: auto;
 }
 

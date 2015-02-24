@@ -211,7 +211,7 @@ class Song
             $this->update_date = 
 
 	    $this->number =
-	    $this->artist_id;
+	    $this->artist_id =
             $this->name = 
             $this->url = 
 	    $this->price = 

@@ -6,8 +6,8 @@ $music = new Music;
 $songalbumlinker = new SongAlbumLinker;
 
 $num = $song->loadAll('number, id')->getTotalRows();
-$width = '100%';
-$height = '1.0em';
+$width = '330px';
+$height = '3.0em';
 
 echo "    <div style='float:right;border:1px dotted black; padding:10px;'>"
    . "      <label for='filter'>" .__("Filter", $i18n_domain). ":</label>"
@@ -20,7 +20,7 @@ echo "    <div style='float:right;border:1px dotted black; padding:10px;'>"
     } else {
         for ($i = 0; $i < $song->getTotalRows(); $i++) {
 		$hide = $songalbumlinker->loadBySongId($song->id)->getTotalRows();
-            echo '  <div class="draggable ' .(($hide == 1) ? 'used-hidden' : ''). '" id="song_id_' .$song->id. '" style="width:300px;height:2.0em">'
+            echo '  <div class="draggable ' .(($hide == 1) ? 'used-hidden' : ''). '" id="song_id_' .$song->id. "\" style='width:$width;height:$height'>"
                . '    <font style="font-size:8pt">'
 	       . $song->number . " - "
 	       . $artist->loadById($song->artist_id)->name . " - "
@@ -52,7 +52,7 @@ echo "    <div style='float:right;border:1px dotted black; padding:10px;'>"
                 for($j = 0; $j < $songalbumlinker->getTotalRows(); $j++) {
                     $songalbumlinker->loadByNode($j);
                     $song2->loadById($songalbumlinker->song_id);
-                    echo "<div class='pseudodraggable' id='album_id_$songalbumlinker->album_id-song_id_$songalbumlinker->song_id'  style='width:330px;height:2.0em'>"
+                    echo "<div class='pseudodraggable' id='album_id_$songalbumlinker->album_id-song_id_$songalbumlinker->song_id'  style='width:$width;height:$height'>"
                        . '  <font style="font-size:8pt">'
 		       . $song2->number ." - "
 		       . $artist->loadById($song2->id)->name . " - "

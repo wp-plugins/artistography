@@ -32,3 +32,18 @@ $(document).ready(function() {
 		}
 	});
 });
+      function loadAlbumArt(song_id) {
+          var data = {
+                  action: 'Load_Album_Art',
+                  song_id: song_id
+          };
+
+          $.post(MyAjax.ajaxurl, data, function(response) {
+              $( "#sm2-album-art" ).attr('src', response);
+              $( "#sm2-album-art" ).attr('height', '100%');
+//	      $( "#sm2-album-art" ).attr("width", "100%");
+//		var width = $( "#sm2-album-art" ).width();
+//		var height = $( "#sm2-album-art" ).height();
+              $("#sm2-album-art" ).attr('width', height);
+          });
+      }

@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of artist's media (videos, music, pictures) and organize them into a portfolio on your blog/website with PayPal functionality.
- * Version: 0.3.1-alpha3
+ * Version: 0.3.1-alpha4
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -16,7 +16,7 @@ define('WP_DEBUG_DISPLAY', true);
 
 define('LOG_FILE', "./ipn.log");
 
-define('ARTISTOGRAPHY_VERSION', '0.3.1-alpha3');
+define('ARTISTOGRAPHY_VERSION', '0.3.1-alpha4');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -586,16 +586,15 @@ function artistography_exclude_pages ($pages) {
 	return $shaved_pages;
 }
 
-function my_soundmanager2_footer_hook() {
+function my_soundmanager2_bar_hook() {
 	$songs = new Song;
 	$artist = new Artist;
 
 	if ($songs->loadByPrice('0.00', 'rand()')->getTotalRows() > 0) {
 		echo '
-</div>
 <!-- fixed, bottom-aligned, full-width player -->
 
-<div class="sm2-bar-ui full-width fixed dark-text">
+<div class="sm2-bar-ui full-width fixed dark-text" style="height:75%:bottom:0px;">
 
  <div class="bd sm2-main-controls">
 
@@ -676,19 +675,19 @@ function my_soundmanager2_footer_hook() {
   </div>
 
   <!-- playlist content is mirrored here -->
-
-  <div class="sm2-playlist-wrapper">
+  <div class="sm2-album-art-wrapper" style="position:fixed;left:0;top:0;height:100%"><img id="sm2-album-art" /></div>
+  <div class="sm2-playlist-wrapper" style="width:50%:position:fixed;left:50%;top:0">
     <ul class="sm2-playlist-bd">';
 		for($i = 0; $i < $songs->getTotalRows(); $i++) {
-			echo "<li><a href='$songs->url'><b>" .$artist->loadById($songs->artist_id)->name. "</b> - $songs->name" .(($songs->explicit) ? "<span class='label'>Explicit</span>" : ''). "</a></li>";
+			echo "<li id='playlist_song_$songs->id'><a href='$songs->url'><b>" .$artist->loadById($songs->artist_id)->name. "</b> - $songs->name" .(($songs->explicit) ? "<span class='label'>Explicit</span>" : ''). "</a></li>";
 
 			$songs->getNodeNext();
 		}
-		echo '    </ul>
+		echo '</ul>
   </div>
 
  </div>
-		';
+</div>';
 	}
 }
 
@@ -697,7 +696,9 @@ function artistography_init() {
 
    /* Hide Pages from Menu */
   add_filter('get_pages', 'artistography_exclude_pages');
-  add_action('wp_footer', 'my_soundmanager2_footer_hook', PHP_INT_MAX);
+  if(!is_admin()) {
+  	add_action('wp_after_admin_bar_render', 'my_soundmanager2_bar_hook', PHP_INT_MAX);
+  }
 
   if(!artistography_is_current_version()) artistography_pluginInstall();
 
@@ -805,15 +806,17 @@ function artistography_enqueue_style_and_scripts() {
 
 	wp_enqueue_style( 'artistography', $artistography_plugin_dir . '/css/style.css', array(), ARTISTOGRAPHY_VERSION, 'all');
 	wp_enqueue_script( 'artistography',  $artistography_plugin_dir . '/js/script.js', array( 'jquery-ui' ), ARTISTOGRAPHY_VERSION);
+	 // Include the Ajax library on the front end
+        wp_localize_script( 'artistography', 'MyAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php')));
 }
 
 
 function artistography_enqueue_sm_style_and_scripts() {
 	GLOBAL $artistography_plugin_dir;
 
-        wp_enqueue_style( 'soundmanager2-bar-ui', $artistography_plugin_dir . '/soundmanagerv297a-20140901/demo/bar-ui/css/bar-ui.css', array(), '297a-20140901', 'all');
+        wp_enqueue_style( 'soundmanager2-bar-ui', $artistography_plugin_dir . '/soundmanagerv297a-20140901/demo/artistography-bar-ui/css/bar-ui.css', array(), '297a-20140901', 'all');
         wp_enqueue_script( 'soundmanager2', $artistography_plugin_dir . '/soundmanagerv297a-20140901/script/soundmanager2.js', array(), '297a-20140901');
-        wp_enqueue_script( 'soundmanager2-bar-ui', $artistography_plugin_dir . '/soundmanagerv297a-20140901/demo/bar-ui/script/bar-ui.js', array( 'soundmanager2' ), '297a-20140901');
+        wp_enqueue_script( 'soundmanager2-bar-ui', $artistography_plugin_dir . '/soundmanagerv297a-20140901/demo/artistography-bar-ui/script/bar-ui.js', array( 'soundmanager2' ), '297a-20140901');
 	wp_enqueue_style( 'soundmanager2', $artistography_plugin_dir . '/css/soundmanager2.css', array(), ARTISTOGRAPHY_VERSION, 'all');
 }
 add_action( 'wp_enqueue_scripts', 'artistography_enqueue_sm_style_and_scripts');

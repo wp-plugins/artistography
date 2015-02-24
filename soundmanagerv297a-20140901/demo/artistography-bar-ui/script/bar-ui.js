@@ -763,6 +763,8 @@
 	    // if this is an <li> with an inner link, grab and use the text from that.
 	    var links = item.getElementsByTagName('a');
 
+	    loadAlbumArt(item.id.replace('playlist_song_', '')); //loadAlbumArt(song_id);
+
 	    if (links.length) {
 	      item = links[0];
 	    }

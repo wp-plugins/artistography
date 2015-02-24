@@ -4,6 +4,10 @@
 add_action('wp_ajax_Connect_Song_to_Album', 'SongAlbumLinker::callback_Connect_Song_to_Album');
 add_action('wp_ajax_Disconnect_Song_from_Album', 'SongAlbumLinker::callback_Disconnect_Song_from_Album');
 
+ // AJAX Playlist image
+add_action('wp_ajax_Load_Album_Art', 'SongAlbumLinker::callback_Load_Album_Art');
+add_action('wp_ajax_nopriv_Load_Album_Art', 'SongAlbumLinker::callback_Load_Album_Art');
+
 class SongAlbumLinker
 {
     protected static $songalbumTable = NULL;  // TABLE NAME of DISCOGRAPHY TABLE
@@ -91,6 +95,27 @@ class SongAlbumLinker
              . "It's possible another administrator may be using this feature at the same time.", $i18n_domain);  // failed
         }
 
+        unset($songalbumlinker);
+        die;
+    }
+
+    public static function callback_Load_Album_Art(){
+        GLOBAL $i18n_domain;
+	GLOBAL $transparent_pixel_url;
+
+        $song_id = $_POST['song_id'];
+
+	$album = new Music;
+        $songalbumlinker = new SongAlbumLinker;
+        $songalbumlinker->loadBySongId($song_id);
+
+        if ($songalbumlinker->getTotalRows() > 0) {
+            echo $album->loadById($songalbumlinker->album_id)->picture_url; // success
+        } else {
+            echo $transparent_pixel_url;
+        }
+
+	unset($album);
         unset($songalbumlinker);
         die;
     }
