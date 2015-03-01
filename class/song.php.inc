@@ -283,10 +283,22 @@ class Song
     public function &loadByPrice ($price, $order_by = 'id') {
         GLOBAL $wpdb, $i18n_domain;
 
-        $this->query = $wpdb->prepare("SELECT *
+        $this->query = $wpdb->prepare("SELECT DISTINCT *
                         FROM " .self::$songTable. "
                         WHERE price = %u
 			ORDER BY $order_by", $price);
+        $this->setTotalRows($wpdb->query($this->query));
+
+        if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
+
+        $this->setCurrNode(0); // set to first node
+        return $this->loadCurrNodeValues();
+    }
+
+    public function &loadLastInsertId () {
+        GLOBAL $wpdb, $i18n_domain;
+
+        $this->query = $wpdb->prepare("SELECT LAST_INSERT_ID()");
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
@@ -348,7 +360,7 @@ class Song
             wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
         } else {
              // was entered successfully into database
-            return $this->getTotalRows();
+            return true;
         }
     }
 
@@ -369,7 +381,8 @@ class Song
             return sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query); 
         } else {
              // was entered successfully into database
-            return 1;
+	    $this->loadLastInsertId();
+            return $this->id;
         }
     }
 }  /* end class Song */

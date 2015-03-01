@@ -18,7 +18,7 @@
 
   soundManager.setup({
     // trade-off: higher UI responsiveness (play/progress bar), but may use more CPU.
-    html5PollingInterval: 50,
+//    html5PollingInterval: 50,
     flashVersion: 9
   });
 
@@ -763,11 +763,11 @@
 	    // if this is an <li> with an inner link, grab and use the text from that.
 	    var links = item.getElementsByTagName('a');
 
-	    loadAlbumArt(item.id.replace('playlist_song_', '')); //loadAlbumArt(song_id);
-
 	    if (links.length) {
 	      item = links[0];
 	    }
+
+	    loadAlbumArt(item.id.replace('playlist_song_', ''));
 
         // remove any failed character sequence, also
 	    dom.playlistTarget.innerHTML = '<ul class="sm2-playlist-bd"><li>' + item.innerHTML.replace(extras.loadFailedCharacter, '') + '</li></ul>';

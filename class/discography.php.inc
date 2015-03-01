@@ -298,7 +298,8 @@ class Discography
                               .  "  </td>"
                               .  "  <td style='border:0;'>"
                               .  "    <div class='tracklist'><font style='font-size:8pt;text-align:left;'>"
-                              .  do_shortcode($album->description)
+			      .  "[artistography_playlist id={$discography->album_id}]"
+                              .  $album->description
                               .  "    </font></div>"
                               .  "  </td>";
                     }
@@ -530,7 +531,7 @@ class Discography
         return $this->loadCurrNodeValues();
     }
 
-    public function &loadMusicByArtistId ($artist_id, $order_by = 'album_date DESC') {
+    public function &loadMusicByArtistId ($artist_id, $order_by = 'mt.album_date DESC') {
         GLOBAL $wpdb, $i18n_domain;
 
         $this->query = $wpdb->prepare("SELECT *

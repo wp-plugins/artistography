@@ -58,11 +58,8 @@ class Artist
         $artist_descr = stripslashes($_POST['artist_descr']);
 
         $result = $artist->insert($artist_name, $url, $picture_url, $artist_descr);
-        if(is_numeric($result)) {
-          echo $result;
-        } else {
-          echo sprintf(__("Failed: %s", $i18n_domain), $result);  // failed
-        }
+
+        echo $result;
 
         unset($artist);
         die;
@@ -452,7 +449,7 @@ class Artist
             wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
         } else {
              // was entered successfully into database
-            return $this->getTotalRows();
+            return true;
         }
     }
 
@@ -473,7 +470,7 @@ class Artist
             return sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query); 
         } else {
              // was entered successfully into database
-            return true;
+            return $wpdb->insert_id;
         }
     }
 }  /* end class Artist */

@@ -252,7 +252,7 @@ $(document).ready(function() {
 
           if ( id.val() === '' && bValid ) {
             id = addSong(number.val(), artist_id.val(), name.val(), url.val(), price.val(), explicit.val());
-//            $( "#songTable tbody" ).append( "<tr>" + "<td align='center'>" + id + "</td><td align='center'><a href='" + url.val() + "' target='_blank'><img src='" + picture_url.val() + "' height='75' width='75' /></a></td><td align='center'><a href='" + url.val() + "' target='_blank'>" + name.val() + "</a></td><td align='center'>0</td><td align'center'>Pending Creation...</td></tr>" );
+//            $( "#songTable tbody" ).append( "<tr>" + "<td align='center'>" + id.val() + "</td><td align='center'><a href='" + url.val() + "' target='_blank'><img src='" + picture_url.val() + "' height='75' width='75' /></a></td><td align='center'><a href='" + url.val() + "' target='_blank'>" + name.val() + "</a></td><td align='center'>0</td><td align'center'>Pending Creation...</td></tr>" );
 
             zebraRows('tbody tr:odd td', 'odd');
             $( this ).dialog( "close" );
@@ -268,6 +268,7 @@ $(document).ready(function() {
       },
       close: function() {
         allFields.val( "" ).removeClass( "ui-state-error" );
+	zebraRows('.visible:even td', 'odd');
       }
     });
 

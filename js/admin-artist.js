@@ -29,12 +29,9 @@ $(document).ready(function() {
 
           // since 2.8 ajaxurl is always defined in the admin header and points to admin-ajax.php
           $.post(ajaxurl, data_add, function(response) {
-              if($.isNumeric(response)) {
-                  // artist was just added successfully
-                return response; // TODO: make the id of newly added artist
-              } else {
-                  alert('Got this from the server: ' + response);
-              }
+	   // artist was just added successfully
+alert(response);
+          return response; // TODO: make the id of newly added artist
           });
       }
 
@@ -200,9 +197,10 @@ $(document).ready(function() {
 
   if ( $( "#dialog-form" ).length != 0) {
     // a workaround for a flaw in the demo system (http://dev.jqueryui.com/ticket/4375), ignore!
-    $( "#dialog:ui-dialog" ).dialog( "destroy" );
+//    $( "#dialog:ui-dialog" ).dialog( "destroy" );
 
-    var id = $( "#id" ),
+    var dialog, form,
+     id = $( "#id" ),
      name = $( "#name" ),
      url = $( "#url" ),
      picture_url = $( "#picture_url" ),
@@ -229,7 +227,7 @@ $(document).ready(function() {
       }
     }
 
-    $( "#dialog-form" ).dialog({
+    dialog = $( "#dialog-form" ).dialog({
       autoOpen: false,
       show: "implode",
       hide: "explode",
@@ -244,11 +242,11 @@ $(document).ready(function() {
           bValid = bValid && checkLength( name, "name", 3, 100 );
 
           if ( id.val() === '' && bValid ) {
-            id = addArtist(name.val(), url.val(), picture_url.val(), artist_descr.val());
-            $( "#artistsTable tbody" ).append( "<tr>" + "<td align='center'>" + id + "</td><td align='center'><a href='" + url.val() + "' target='_blank'><img src='" + picture_url.val() + "' height='75' width='75' /></a></td><td align='center'><a href='" + url.val() + "' target='_blank'>" + name.val() + "</a></td><td align='center'>0</td><td align'center'>Pending Creation...</td></tr>" );
+            var artist_id = addArtist(name.val(), url.val(), picture_url.val(), artist_descr.val());
+alert(artist_id);
+            $( "#artistsTable tbody" ).append( "<tr>" + "<td align='center'>" + artist_id + "</td><td align='center'><a href='" + url.val() + "' target='_blank'><img src='" + picture_url.val() + "' height='75' width='75' /></a></td><td align='center'><a href='" + url.val() + "' target='_blank'>" + name.val() + "</a></td><td align='center'>0</td><td align'center'>Pending Creation...</td></tr>" );
 
-            zebraRows('tbody tr:odd td', 'odd');
-            $( this ).dialog( "close" );
+		$( this ).dialog( "close" );
           } else {
             result = updateArtist(id.val(), name.val(), url.val(), picture_url.val(), artist_descr.val());
             $( this ).dialog( 'close' );
@@ -261,6 +259,7 @@ $(document).ready(function() {
       },
       close: function() {
         allFields.val( "" ).removeClass( "ui-state-error" );
+	zebraRows('.visible:even td', 'odd');
       }
     });
 

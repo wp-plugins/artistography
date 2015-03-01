@@ -338,6 +338,7 @@ var set_to_post_id = 10; // Set this
       },
       close: function() {
         allFields.val( "" ).removeClass( "ui-state-error" );
+	zebraRows('.visible:even td', 'odd');
       }
     });
 

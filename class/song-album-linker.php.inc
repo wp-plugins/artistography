@@ -1,5 +1,8 @@
 <?php
 
+ // Short code
+add_shortcode( 'artistography_playlist', 'SongAlbumLinker::shortCodePlaylist' );
+
  // AJAX Administration Drag/Drop Discography Auto-Save feature
 add_action('wp_ajax_Connect_Song_to_Album', 'SongAlbumLinker::callback_Connect_Song_to_Album');
 add_action('wp_ajax_Disconnect_Song_from_Album', 'SongAlbumLinker::callback_Disconnect_Song_from_Album');
@@ -11,6 +14,7 @@ add_action('wp_ajax_nopriv_Load_Album_Art', 'SongAlbumLinker::callback_Load_Albu
 class SongAlbumLinker
 {
     protected static $songalbumTable = NULL;  // TABLE NAME of DISCOGRAPHY TABLE
+    protected static $songTable = NULL;
 
      // property declaration
     public $id = NULL;
@@ -46,7 +50,7 @@ class SongAlbumLinker
         GLOBAL $wpdb, $TABLE_NAME;
 
         self::$songalbumTable = $wpdb->prefix . $TABLE_NAME[TABLE_SONG_ALBUM_LINKER];
-
+	self::$songTable = $wpdb->prefix . $TABLE_NAME[TABLE_SONGS];
         $this->loadAll();
 
         $this->song = new Song;
@@ -128,6 +132,36 @@ class SongAlbumLinker
         if(strlen($min) < 2) $min = "0$min";
         if(strlen($sec) < 2) $sec = "0$sec";
         return "$year-$month-$day $hour:$min:$sec";
+    }
+
+     // [artistography_playlist id="1"]
+     // id is the album_id
+    public static function shortCodePlaylist( $atts ) {
+        extract( shortcode_atts( array(
+                'id' => '1'
+        ), $atts ) );
+
+	$artist = new Artist;
+	$song = new Song;
+	$songalbumlinker = new SongAlbumLinker;
+	$html = "";
+
+	 // load all songs by album id and sort by track number
+        $songalbumlinker->loadByAlbumIdJoinSong(esc_attr($id));
+
+	for ($i = 0; $i < $songalbumlinker->getTotalRows(); $i++) {
+		$song->loadById($songalbumlinker->song_id);
+		$html .= $song->number .". "
+		      .  $artist->loadById($song->artist_id)->name ." - "
+		      .  $song->name ."<br/>\n";
+		$songalbumlinker->getNodeNext();
+	}
+
+	unset($artist);
+	unset($song);
+        unset($songalbumlinker);
+
+        return $html;
     }
 
     protected function &loadCurrNodeValues () {
@@ -238,6 +272,24 @@ class SongAlbumLinker
 
         $this->query = $wpdb->prepare("SELECT *
                         FROM  " .self::$songalbumTable. "
+                        WHERE album_id = %u
+                        ORDER BY $order_by",
+                        $album_id);
+        $this->setTotalRows($wpdb->query($this->query));
+
+        if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
+
+        $this->setCurrNode(0); // set to first node
+        return $this->loadCurrNodeValues();
+    }
+
+    public function &loadByAlbumIdJoinSong ($album_id, $order_by = 's.number') {
+        GLOBAL $wpdb, $i18n_domain;
+
+        $this->query = $wpdb->prepare("SELECT *
+                        FROM  " .self::$songalbumTable. " sa
+			RIGHT JOIN " .self::$songTable. " s
+			ON sa.song_id = s.id
                         WHERE album_id = %u
                         ORDER BY $order_by",
                         $album_id);

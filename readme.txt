@@ -3,7 +3,7 @@ Contributors: MistahWrite
 Tags: artistography, artist, discography, media, music, videos, images, pictures, gallery, galleries, songs, albums, eCommerce, e-Commerce, PayPal, soundmanager2, playlist, cart, download manager, ftp, zupload, encode explorer, store, checkout 
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stabe tag: 0.3.1-alpha4
+Stabe tag: 0.3.1-alpha5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -40,6 +40,9 @@ Uses for FTP and file browsing capability:
 [artistography_display_artist]
      
 
+[artistography_playlist id=1]
+	Displays songs that are linked to album with id=1 in a list ordered by the song track numbers
+
 [artistography_album_download_link id=1]
      Displays a download picture with link to download album of album with database id=1
 
@@ -59,6 +62,10 @@ Uses for FTP and file browsing capability:
      Displays artist name of album with album database id=1
 
 == Changelog ==
+
+=0.3.1-alpha5=
+*Add [artistography_playlist] shortcode
+*Fixed shuffle of soundmanager2 playlist items
 
 =0.3.1-alpha4=
 *Show album art in soundmanager2 playlist

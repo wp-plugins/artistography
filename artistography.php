@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of artist's media (videos, music, pictures) and organize them into a portfolio on your blog/website with PayPal functionality.
- * Version: 0.3.1-alpha4
+ * Version: 0.3.1-alpha5
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -16,7 +16,7 @@ define('WP_DEBUG_DISPLAY', true);
 
 define('LOG_FILE', "./ipn.log");
 
-define('ARTISTOGRAPHY_VERSION', '0.3.1-alpha4');
+define('ARTISTOGRAPHY_VERSION', '0.3.1-alpha5');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -590,7 +590,7 @@ function my_soundmanager2_bar_hook() {
 	$songs = new Song;
 	$artist = new Artist;
 
-	if ($songs->loadByPrice('0.00', 'rand()')->getTotalRows() > 0) {
+	if ($songs->loadByPrice('0.00')->getTotalRows() > 0) {
 		echo '
 <!-- fixed, bottom-aligned, full-width player -->
 
@@ -679,9 +679,13 @@ function my_soundmanager2_bar_hook() {
   <div class="sm2-playlist-wrapper" style="width:50%:position:fixed;left:50%;top:0">
     <ul class="sm2-playlist-bd">';
 		for($i = 0; $i < $songs->getTotalRows(); $i++) {
-			echo "<li id='playlist_song_$songs->id'><a href='$songs->url'><b>" .$artist->loadById($songs->artist_id)->name. "</b> - $songs->name" .(($songs->explicit) ? "<span class='label'>Explicit</span>" : ''). "</a></li>";
-
+			$song_list[$i] = $songs->id;
 			$songs->getNodeNext();
+		}
+		shuffle($song_list);
+		for($i = 0; $i < count($song_list); $i++) {
+			$songs->loadById($song_list[$i]);
+			echo "<li id='playlist_song_$songs->id'><a href='$songs->url'><b>" .$artist->loadById($songs->artist_id)->name. "</b> - $songs->name" .(($songs->explicit) ? "<span class='label'>Explicit</span>" : ''). "</a></li>";
 		}
 		echo '</ul>
   </div>
@@ -718,7 +722,7 @@ add_action('init', 'artistography_init');
   define(ADMIN_MENU_MANAGE_SONGS, __('Manage Songs', $i18n_domain));
   define(ADMIN_MENU_MANAGE_ALBUMS, __('Manage Albums', $i18n_domain));
   define(ADMIN_MENU_MANAGE_DOWNLOADS, __('Downloads', $i18n_domain));
-  define(ADMIN_MENU_MANAGE_DISCOGRAPHY, __('Discography', $i18n_domain));
+  define(ADMIN_MENU_MANAGE_ARTIST_ALBUM_LINKER, __('Artist/Album Linker', $i18n_domain));
   define(ADMIN_MENU_MANAGE_SONG_ALBUM_LINKER, __('Song/Album Linker', $i18n_domain));
   define(ADMIN_MENU_MANAGE_GALLERIES, __('Galleries', $i18n_domain));
   define(ADMIN_MENU_FTP_UPLOADER, __('FTP Uploader', $i18n_domain));
@@ -730,7 +734,7 @@ add_action('init', 'artistography_init');
   define(SUBMENU_MANAGE_SONGS_HANDLE, 'artistography-submenu-manage-songs');
   define(SUBMENU_MANAGE_ALBUMS_HANDLE, 'artistography-submenu-manage-albums');
   define(SUBMENU_MANAGE_DOWNLOADS_HANDLE, 'artistography-submenu-manage-downloads');
-  define(SUBMENU_MANAGE_DISCOGRAPHY_HANDLE, 'artistography-submenu-manage-discography');
+  define(SUBMENU_MANAGE_ARTIST_ALBUM_LINKER_HANDLE, 'artistography-submenu-manage-artist-album-linker');
   define(SUBMENU_MANAGE_SONG_ALBUM_LINKER_HANDLE, 'artistography-submenu-manage-song-album-linker');
   define(SUBMENU_MANAGE_GALLERIES_HANDLE, 'artistography-submenu-manage-galleries');
   define(SUBMENU_FTP_UPLOADER, 'artistography-submenu-ftp-uploader');
@@ -763,7 +767,7 @@ function artistography_enqueue_admin_style_and_scripts() {
 	case SUBMENU_MANAGE_ALBUMS_HANDLE:
 		$admin_script = 'admin-music.js';
 		break;
-	case SUBMENU_MANAGE_DISCOGRAPHY_HANDLE:
+	case SUBMENU_MANAGE_ARTIST_ALBUM_LINKER_HANDLE:
 		$admin_script = 'admin-discography.js';
 		break;
 	case SUBMENU_MANAGE_SONG_ALBUM_LINKER_HANDLE:
@@ -836,7 +840,7 @@ function artistography_plugin_menu() {
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_ARTISTS), ADMIN_MENU_MANAGE_ARTISTS, 'manage_options', SUBMENU_MANAGE_ARTISTS_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_SONGS), ADMIN_MENU_MANAGE_SONGS, 'manage_options', SUBMENU_MANAGE_SONGS_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_ALBUMS), ADMIN_MENU_MANAGE_ALBUMS, 'manage_options', SUBMENU_MANAGE_ALBUMS_HANDLE, 'artistography_plugin_options');
-  add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_DISCOGRAPHY), ADMIN_MENU_MANAGE_DISCOGRAPHY, 'manage_options', SUBMENU_MANAGE_DISCOGRAPHY_HANDLE, 'artistography_plugin_options');
+  add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_ARTIST_ALBUM_LINKER), ADMIN_MENU_MANAGE_ARTIST_ALBUM_LINKER, 'manage_options', SUBMENU_MANAGE_ARTIST_ALBUM_LINKER_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_SONG_ALBUM_LINKER), ADMIN_MENU_MANAGE_SONG_ALBUM_LINKER, 'manage_options', SUBMENU_MANAGE_SONG_ALBUM_LINKER_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_DOWNLOADS), ADMIN_MENU_MANAGE_DOWNLOADS, 'manage_options', SUBMENU_MANAGE_DOWNLOADS_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_GALLERIES), ADMIN_MENU_MANAGE_GALLERIES, 'manage_options', SUBMENU_MANAGE_GALLERIES_HANDLE, 'artistography_plugin_options');
@@ -881,7 +885,7 @@ function artistography_plugin_options() {
       require_once('admin/download_stats.php.inc');
       break;
 
-    case sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_DISCOGRAPHY):
+    case sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_ARTIST_ALBUM_LINKER):
       require_once('admin/manage_discography.php.inc');
       break;
 

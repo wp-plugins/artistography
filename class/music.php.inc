@@ -362,6 +362,18 @@ class Music
         return $this->loadCurrNodeValues();
     }
 
+    public function &loadLastInsertId () {
+        GLOBAL $wpdb, $i18n_domain;
+
+        $this->query = $wpdb->prepare("SELECT LAST_INSERT_ID()");
+        $this->setTotalRows($wpdb->query($this->query));
+
+        if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
+
+        $this->setCurrNode(0); // set to first node
+        return $this->loadCurrNodeValues();
+    }
+
     public function &loadByDownloadId ($download_id, $order_by = 'id') {
         GLOBAL $wpdb, $i18n_domain;
 
@@ -451,7 +463,7 @@ class Music
             wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
         } else {
              // was entered successfully into database
-            return $this->getTotalRows();
+            return true;
         }
     }
 
@@ -471,7 +483,8 @@ class Music
             wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
         } else {
              // was entered successfully into database
-            return true;
+	    $this->loadLastInsertId();
+            return $this->id;
         }
     }
 }  /* end class Music */

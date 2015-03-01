@@ -237,6 +237,7 @@ $(document).ready(function() {
 			close: function(ev, ui) {
 				$(this).hide();
 				allFields.val( "" ).removeClass( "ui-state-error" );
+				zebraRows('.visible:even td', 'odd')
 			}
 		});
 	}
