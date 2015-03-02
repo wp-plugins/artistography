@@ -83,6 +83,7 @@ require_once('class/download.php.inc');
 require_once('class/galleries.php.inc');
 require_once('class/orders.php.inc');
 require_once('admin/general_funcs.php.inc');
+require_once('class/cart_widget.php.inc');
 
 function folder_is_empty($folder) {
   $counter = 0;

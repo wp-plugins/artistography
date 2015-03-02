@@ -734,7 +734,7 @@ class Orders
                     $total += ($qty * (float)($album->price));
                     $html = "<center><table>
                              <tr>
-                                <th>" .__("Quanity", $i18n_domain). "</th>
+                                <th>" .__("Qty", $i18n_domain). "</th>
                                 <th>" .__("Item", $i18n_domain). "</th>
                                 <th>" .__("Price", $i18n_domain). "</th>
                                 <th>" .__("Action", $i18n_domain). "</th>
@@ -746,7 +746,7 @@ class Orders
                                 </td>
                                 <td>" .CURRENCY. "$album->price</td>
                                 <td>
-                                  <form action='' method='post'>
+                                  <form action='" .get_permalink(get_option('wp_artistography_cart_page')). "' method='post'>
                                     <input type='hidden' name='artistography_product_id' value='$product' />
                                     <input type='hidden' name='artistography_action' value='remove' />
                                     <input type='submit' value='Remove' />
