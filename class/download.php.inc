@@ -77,8 +77,8 @@ class Download
 	} else {
 	   /* Music is not free */
 	  /* TODO: Test if order has processed */
-//		$Orders->loadByUserId(current_user_id());
-		$order_processed = $Orders->locateOrderMusicId($Music->id);
+		$Orders->loadByUserId(get_current_user_id());
+		$order_processed = $Orders->locateOrderMusicDownloadId($Music->id);
 		if($order_processed) {
 			$html = $Download->do_download($download_id);
 		} else {
