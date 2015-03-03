@@ -141,8 +141,6 @@ class SongAlbumLinker
                 'id' => '1'
         ), $atts ) );
 
-	$artist = new Artist;
-	$song = new Song;
 	$songalbumlinker = new SongAlbumLinker;
 	$html = "";
 
@@ -150,18 +148,13 @@ class SongAlbumLinker
         $songalbumlinker->loadByAlbumIdJoinSong(esc_attr($id));
 
 	for ($i = 0; $i < $songalbumlinker->getTotalRows(); $i++) {
-		$song->loadById($songalbumlinker->song_id);
-		$html .= $song->number .". "
-		      .  $artist->loadById($song->artist_id)->name ." - "
-		      .  $song->name ."<br/>\n";
+		$html .= "[artistography_display_song id='$songalbumlinker->song_id']";
 		$songalbumlinker->getNodeNext();
 	}
 
-	unset($artist);
-	unset($song);
         unset($songalbumlinker);
 
-        return $html;
+        return do_shortcode($html);
     }
 
     protected function &loadCurrNodeValues () {

@@ -8,6 +8,85 @@ $(document).ready(function() {
     if ( $( "#accordion3" ).length != 0 ) $( "#accordion3" ).accordion({ autoHeight: false});
     if ( $( "#accordion4" ).length != 0 ) $( "#accordion4" ).accordion({ autoHeight: false});
 
+	function LoadShoppingCart() {
+	    var data = {
+	        action: 'Get_Cart_Contents'
+	    };
+	    $.post(MyAjax.ajaxurl, data, function(response) {
+	    	$(".artistography_cart").empty().append(response);
+		$('html, body').animate({
+		    scrollTop: $(".widget_artistography_cart_widget").offset().top
+		}, 2000);
+
+		     /* Delete From Cart Button */
+		    $( ".remove_from_cart" ).button({
+		        text: true,
+		        icons: {
+		            primary: "ui-icon-trash"
+		        }    }).click(function() {
+		        var id = $( this ).attr('id');
+		          var data = {
+		                  action: 'Remove_From_Cart',
+        		          product: id
+		          };
+		          $.post(MyAjax.ajaxurl, data, function(response) {
+		                LoadShoppingCart();
+        		  });
+    		});
+	    });
+	}
+	LoadShoppingCart();
+
+     /* Edit Shopping Cart Button */
+    $( ".edit_cart" ).button({
+        text: true,
+        icons: {
+            primary: "ui-icon-cart"
+        }
+    }).click(function() {
+	/* Do AJAX call to get URL of cart and go there */
+	  var data = {
+                  action: 'Get_Cart_URL'
+          };
+          $.post(MyAjax.ajaxurl, data, function(response) {
+		location.assign(response);
+          });
+    });
+
+     /* Buy Song Button */
+    $( ".song_to_cart" ).button({
+        text: true,
+        icons: {
+            primary: "ui-icon-cart"
+        }
+    }).click(function() {
+        var id = $( this ).attr('id').replace('song_download_', '');
+          var data = {
+                  action: 'Add_Song_To_Cart',
+		  song_id: id
+          };
+          $.post(MyAjax.ajaxurl, data, function(response) {
+                LoadShoppingCart();
+          });
+    });
+
+     /* Buy Album Download Button */
+    $( ".album_download_to_cart" ).button({
+        text: false,
+        icons: {
+            primary: "ui-icon-cart"
+        }
+    }).click(function() {
+        var id = $( this ).attr('id').replace('album_download_', '');
+          var data = {
+                  action: 'Add_Album_Download_To_Cart',
+                  album_id: id
+          };
+          $.post(MyAjax.ajaxurl, data, function(response) {
+                LoadShoppingCart();
+          });
+    });
+
     $(".colorbox").colorbox({scalePhotos:true, maxWidth: '90%', maxHeight: '90%', slideshow:true});
 
     $('.artist_table').slideDown();

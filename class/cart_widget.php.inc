@@ -4,7 +4,16 @@ add_action( 'widgets_init', function(){
      register_widget( 'Artistography_Cart_Widget' );
 });
 
+ // AJAX
+add_action('wp_ajax_Get_Cart_URL', 'Artistography_Cart_Widget::callback_Get_Cart_URL');
+add_action('wp_ajax_nopriv_Get_Cart_URL', 'Artistography_Cart_Widget::callback_Get_Cart_URL');
+
 class Artistography_Cart_Widget extends WP_Widget {
+
+	public static function callback_Get_Cart_URL() {
+		echo get_permalink(get_option('wp_artistography_cart_page'));
+		die;
+	}
 
 	/**
 	 * Sets up the widgets name etc
@@ -37,6 +46,8 @@ class Artistography_Cart_Widget extends WP_Widget {
 		}
 
 		echo $orders->showCart();
+
+		echo "<button class='edit_cart'>Edit Cart</button>";
 
 		echo $args['after_widget'];
 	}

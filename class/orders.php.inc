@@ -7,6 +7,18 @@ add_shortcode( 'artistography_ipn', 'Orders::shortCodeIPN' );
 
 //AJAX Administration
 add_action('wp_ajax_View_Order', 'Orders::callback_View_Order');
+add_action('wp_ajax_Get_Cart_Contents', 'Orders::callback_Get_Cart_Contents');
+add_action('wp_ajax_nopriv_Get_Cart_Contents', 'Orders::callback_Get_Cart_Contents');
+
+add_action('wp_ajax_Add_Album_Download_To_Cart', 'Orders::callback_Add_Album_Download_To_Cart');
+add_action('wp_ajax_nopriv_Add_Album_Download_To_Cart', 'Orders::callback_Add_Album_Download_To_Cart');
+
+add_action('wp_ajax_Add_Song_To_Cart', 'Orders::callback_Add_Song_To_Cart');
+add_action('wp_ajax_nopriv_Add_Song_To_Cart', 'Orders::callback_Add_Song_To_Cart');
+
+add_action('wp_ajax_Remove_From_Cart', 'Orders::callback_Remove_From_Cart');
+add_action('wp_ajax_nopriv_Remove_From_Cart', 'Orders::callback_Remove_From_Cart');
+
 class Orders
 {
 	protected static $ordersTable = NULL;  // TABLE NAME of MUSIC ALBUM TABLE
@@ -68,6 +80,27 @@ class Orders
 	public function getTotalRows ()   {    return $this->query_total_rows;    }
 	public function getCurrNode ()    {    return $this->query_curr_node;    }
 	public function getQueryResult () {    return $this->query_result;    }
+
+        public static function callback_Add_Album_Download_To_Cart() {
+                $id = $_POST['album_id'];
+
+                $_SESSION['artistography_cart']["album_download_$id"] = 1;
+                die;
+        }
+
+	public static function callback_Add_Song_To_Cart() {
+		$id = $_POST['song_id'];
+
+                $_SESSION['artistography_cart']["song_download_$id"] = 1;
+		die;
+	}
+
+	public static function callback_Remove_From_Cart() {
+		$product = $_POST['product'];
+
+		unset($_SESSION['artistography_cart'][$product]);
+		die;
+	}
 
 	public static function callback_View_Order(){
 		GLOBAL $i18n_domain;
@@ -354,41 +387,8 @@ class Orders
 		return $found;
 	}
 
-	public static function shortCodeShowCart( $atts, $content=null, $code="" ) {
-		GLOBAL $i18n_domain;
-
-		 /*** Process Cart Actions ***/
-		if (array_key_exists('artistography_product_id', $_POST)) {
-			if ($_POST['artistography_product_id']) {
-				$product_id = $_POST['artistography_product_id'];
-				if(array_key_exists('artistography_qty', $_POST))
-					$qty = $_POST['artistography_qty'];
-				else
-					$qty = 0;
-
-				$action = $_POST['artistography_action'];
-				switch($action) {
-					case "add":
-						 // if this is a download then quantity should never exceed 1
-						if (array_key_exists($product_id, $_SESSION['artistography_cart']))
-							 // if this is a download then quantity should never exceed 1
-							if(FALSE !== strpos($product_id, 'download') ) {
-								$_SESSION['artistography_cart'][$product_id] = 1;
-							} else {
-								$_SESSION['artistography_cart'][$product_id] = $_SESSION['artistography_cart'][$product_id] + $qty;
-							}
-						else
-							$_SESSION['artistography_cart'][$product_id] = $qty;
-					break;
-					case "empty":
-						unset($_SESSION['artistography_cart']);
-					break;
-					case "remove":
-						unset($_SESSION['artistography_cart'][$product_id]);
-					break;
-				}
-			}
-		}
+        public static function shortCodeShowCart( $atts, $content=null, $code="" ) {
+                GLOBAL $i18n_domain;
 
 		 /*** Display Cart Contents ***/
 		$html = self::showCart();
@@ -400,6 +400,9 @@ class Orders
 		$html = '';
 
 		$album = new Music;
+		$artist = new Artist;
+		$song = new Song;
+
 		$sandbox = get_option('wp_artistography_paypal_sandbox');
 
 		if(!is_user_logged_in()) {
@@ -425,13 +428,18 @@ class Orders
 				$i = 1;
 				foreach($_SESSION['artistography_cart'] as $product => $qty) {
 		                  if(strpos($product, 'album_download_') !== FALSE) {
-                     		    $album_download = true;
-                     		    $product_id = str_replace('album_download_', '', $product);
-                    		  }
-				  $album->loadById($product_id);
-				  $html .= "<input type='hidden' name='item_name_$i' value='album_download_$album->id - $album->artist_name - $album->album_name' />";
-				  $html .= "<input type='hidden' name='quantity_$i' value='$qty' />";
-				  $html .= "<input type='hidden' name='amount_$i' value='$album->price' />";
+                     		  	$product_id = str_replace('album_download_', '', $product);
+				  	$album->loadById($product_id);
+				  	$html .= "<input type='hidden' name='item_name_$i' value='$product - $album->artist_name - $album->album_name' />";
+				  	$html .= "<input type='hidden' name='quantity_$i' value='$qty' />";
+				  	$html .= "<input type='hidden' name='amount_$i' value='$album->price' />";
+				  } else if (strpos($product, 'song_download_') !== FALSE) {
+                                        $product_id = str_replace('song_download_', '', $product);
+                                        $song->loadById($product_id);
+                                        $html .= "<input type='hidden' name='item_name_$i' value='$product - " .$artist->loadById($song->artist_id)->name. " - $song->name' />";
+                                        $html .= "<input type='hidden' name='quantity_$i' value='$qty' />";
+                                        $html .= "<input type='hidden' name='amount_$i' value='$song->price' />";
+				  }
 				  $i++;
 				}
 				$html .= "<input type='hidden' name='cmd' value='_cart' />
@@ -452,6 +460,7 @@ class Orders
 				              	       background:url($buynow_icon_url) no-repeat;
 					               background-size:" .$buynow_icon_width. "px " .$buynow_icon_height. "px;' align='right' /></div>";
 				$html .= "</form>";
+				$html .= "<button class='edit_cart'>Go Back to Edit Cart</button>";
 			}
 		}
                 return $html;
@@ -730,62 +739,90 @@ class Orders
                 return $html;
         }
 
-	public static function showCart() {
-		GLOBAL $i18n_domain, $checkout_icon_url, $checkout_icon_width, $checkout_icon_height;
+	public static function processCartItem($product, $qty, &$total, $showActions = true) {
+		GLOBAL $i18n_domain;
 
-                $order = new Orders;
-                $album = new Music;
+		$order = new Orders;
+		$album = new Music;
+		$song = new Song;
+		$artist = new Artist;
+		$html = "";
 
-                $total = (float)"0.00";
+                $html .= "<tr>
+                                <td>$qty</td>";
+	
+                if(strpos($product, 'album_download_') !== FALSE) {
+                    $product_id = str_replace('album_download_', '', $product);
 
-		 /*** Display Cart Contents ***/
-                if(!empty($_SESSION['artistography_cart'])) {
-                  $html = "<center><table>
-                           <tr>
-                              <th>" .__("Qty", $i18n_domain). "</th>
-                              <th>" .__("Item", $i18n_domain). "</th>
-                              <th>" .__("Price", $i18n_domain). "</th>
-                              <th>" .__("Action", $i18n_domain). "</th>
-                           </tr>";
-                  foreach($_SESSION['artistography_cart'] as $product => $qty) {
-		    if(strpos($product, 'album_download_') !== FALSE) {
-			$album_download = true;
-			$product_id = str_replace('album_download_', '', $product);
-		    }
                     $album->loadById($product_id);
                     $total += ($qty * (float)($album->price));
 
-		    $html .= "<tr>
-                                <td>$qty</td>
-                                <td><img src='" .stripslashes($album->picture_url). "' width='50' height='50' />
-                                        $album->artist_name - $album->album_name
-                                </td>
-                                <td>" .CURRENCY. "$album->price</td>
-                                <td>
-                                  <form action='" .get_permalink(get_option('wp_artistography_cart_page')). "' method='post'>
-                                    <input type='hidden' name='artistography_product_id' value='$product' />
-                                    <input type='hidden' name='artistography_action' value='remove' />
-                                    <input type='submit' value='Remove' />
-                                  </form>
-                                </td>
-                             </tr>";
+                    $html .= "      <td><img src='" .stripslashes($album->picture_url). "' width='50' height='50' />
+                                            $album->artist_name - $album->album_name
+                                    </td>
+                                    <td>" .CURRENCY. "$album->price</td>";
+                } else if(strpos($product, 'song_download_') !== FALSE){
+                    $product_id = str_replace('song_download_', '', $product);
+                    $song->loadById($product_id);
+                    $total += ($qty * (float)($song->price));
+
+                    $html .= "      <td>
+                                            " .$artist->loadById($song->artist_id)->name. " - $song->name
+                                    </td>
+                                    <td>" .CURRENCY. "$song->price</td>";
+                }
+		if($showActions) {
+                     // REMOVE BUTTON
+                    $html .= "  <td>
+                                        <button class='remove_from_cart' id='$product'>Remove</button>
+                            </td>";
+		}
+                $html .= "</tr>";
+
+		return $html;
+	}
+
+	public static function showCart() {
+		GLOBAL $ajax_loader_url;
+		$html = "<div class='artistography_cart'><center><img style='border:none' src='$ajax_loader_url' /></center></div>";
+                return $html;
+	}
+
+	public static function callback_Get_Cart_Contents() {
+		GLOBAL $i18n_domain, $checkout_icon_url, $checkout_icon_width, $checkout_icon_height;
+		$total = (float)"0.00";
+		$html = "";
+		$showActions = true;
+
+		if(!empty($_SESSION['artistography_cart'])) {
+                  $html .= "<center><table>
+                           <tr>
+                              <th>" .__("Qty", $i18n_domain). "</th>
+                              <th>" .__("Item", $i18n_domain). "</th>
+                              <th>" .__("Price", $i18n_domain). "</th>";
+		  if($showActions) {
+                    $html .= "<th>" .__("Action", $i18n_domain). "</th>";
+		  }
+                  $html .= "</tr>";
+                  foreach($_SESSION['artistography_cart'] as $product => $qty) {
+			$html .= self::processCartItem($product, $qty, $total, $showActions);
                   }
                 $html .= "<tr>
-                                <td colspan='2'>Total:</td><td>" .CURRENCY.number_format(round($total, 2), 2). "</td><td></td>
-                             </tr>
+                                <td colspan='2'>Total:</td><td>" .CURRENCY.number_format(round($total, 2), 2). "</td>";
+		if($showActions) { $html .= "<td></td>"; }
+                $html .= "</tr>
                              </table></center><br/>\n
-                                <a href='" .SITEURL. "/artistography_checkout'><img src='$checkout_icon_url' width='$checkout_icon_width' height='$checkout_icon_height' style='border:0px;' align='right' /></a>";
+                                <a href='" .get_permalink(get_option('wp_artistography_checkout_page')). "'><img src='$checkout_icon_url' width='$checkout_icon_width' height='$checkout_icon_height' style='border:0px;' align='right' /></a>";
                 } else {
-                  $html = "<font style='font-size:14pt'>The shopping cart is empty.</font>";
+                  $html .= "<font style='font-size:14pt'>The shopping cart is empty.</font>";
                 }
-                return $html;
+                echo $html;
+		die;
 	}
 
 	public static function showInvoice() {
 		GLOBAL $i18n_domain;
 
-		$order = new Orders;
-                $album = new Music;
                 $total = (float)"0.00";
 
                  /*** Display Cart Contents ***/
@@ -797,19 +834,7 @@ class Orders
                                 <th>" .__("Price", $i18n_domain). "</th>
                              </tr>";
                   foreach($_SESSION['artistography_cart'] as $product => $qty) {
-                    if(strpos($product, 'album_download_') !== FALSE) {
-                        $album_download = true;
-                        $product_id = str_replace('album_download_', '', $product);
-                    }
-                    $album->loadById($product_id);
-                    $total += ($qty * (float)($album->price));
-                    $html .= "<tr>
-                                <td>$qty</td>
-                                <td><img src='" .stripslashes($album->picture_url). "' width='50' height='50' />
-                                        $album->artist_name - $album->album_name
-                                </td>
-                                <td>" .CURRENCY. "$album->price</td>
-                             </tr>";
+			$html .= self::processCartItem($product, $qty, $total, false);
                   }
                 $html .= "<tr>
                                 <td colspan='2'>Total:</td><td>" .CURRENCY.number_format(round($total, 2), 2). "</td>

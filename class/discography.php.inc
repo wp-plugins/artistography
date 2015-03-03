@@ -200,15 +200,11 @@ class Discography
 	$html = "";
 
         $html .= "<font style='font-size:14pt'>Price: " .CURRENCY. "$price</font><br/>\n
-                  <form method='post' action=\"" .get_permalink(get_option('wp_artistography_cart_page'))."\">
-                     <input type='hidden' name='artistography_qty' value='1' />\n
-                     <input type='hidden' name='artistography_action' value='add' />\n
-                     <input type='hidden' name='artistography_product_id' value='album_download_$album_id' />\n
-                     <input type='submit' value=''
+                     <button class='album_download_to_cart' id='album_download_$album_id'
                          style=\"border: none;
                                  width: " .$add_to_cart_icon_width. "px; height: " .$add_to_cart_icon_height. "px;
                                  background:url($add_to_cart_icon_url) no-repeat;
-                                 background-size: " .$add_to_cart_icon_width ."px " .$add_to_cart_icon_height ."px;\" /></form><br/><br/><br/><br/>";
+                                 background-size: " .$add_to_cart_icon_width ."px " .$add_to_cart_icon_height ."px;\">Add to Cart</button><br/><br/><br/><br/>";
 	return $html;
     }
 

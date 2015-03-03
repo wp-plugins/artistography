@@ -384,32 +384,40 @@ class Artist
 
      /* Get posts in "Videos" category via tags */
     public function getVideoPosts ($order_by='date') {
-        $cat_id = get_term_by('name', 'Videos', 'category')->term_id;
-        $args = array('tag' => strtolower(str_replace("&", "", str_replace(" ", "-", str_replace(".", "-", str_replace("& ", "", $this->name))))),
-                      'orderby' => $order_by,
-                      'numberposts' => -1);
-        $posts = get_posts($args);
-        foreach ($posts as $key => $value) {
-            if(!in_category($cat_id, $value)) {
-                unset($posts[$key]);
-            }
-        }
-        return $posts;
+	$video_term = get_term_by('name', 'Videos', 'category');
+	if(is_object($video_term)) {
+	        $cat_id = $video_term->term_id;
+	        $args = array('tag' => strtolower(str_replace("&", "", str_replace(" ", "-", str_replace(".", "-", str_replace("& ", "", $this->name))))),
+			'orderby' => $order_by,
+			'numberposts' => -1);
+       		$posts = get_posts($args);
+       		foreach ($posts as $key => $value) {
+       			if(!in_category($cat_id, $value)) {
+               			unset($posts[$key]);
+       			}
+       		}
+       		return $posts;
+	}
+	return NULL;
     }
 
      /* Get posts in all categories (except "Videos") via tags */
     public function getRelatedPosts ($order_by='date') {
-        $cat_id = get_term_by('name', 'Videos', 'category')->term_id;
-        $args = array('tag' => strtolower(str_replace("&", "", str_replace(" ", "-", str_replace(".", "-", str_replace("& ", "", $this->name))))),
-                      'orderby' => $order_by,
-                      'numberposts' => -1);
-        $posts = get_posts($args);
-        foreach ($posts as $key => $value) {
-            if(in_category($cat_id, $value)) {
-                unset($posts[$key]);
-            }
-        }
-        return $posts;
+	$related_term = get_term_by('name', 'Videos', 'category');
+	if(is_object($related_term)) {
+       		$cat_id = $related_term->term_id;
+	        $args = array('tag' => strtolower(str_replace("&", "", str_replace(" ", "-", str_replace(".", "-", str_replace("& ", "", $this->name))))),
+	        	'orderby' => $order_by,
+	       		'numberposts' => -1);
+	        $posts = get_posts($args);
+	        foreach ($posts as $key => $value) {
+	            if(in_category($cat_id, $value)) {
+	                unset($posts[$key]);
+	            }
+	        }
+		return $posts;
+	}
+        return NULL;
     }
 
     public function deleteById ($id) {

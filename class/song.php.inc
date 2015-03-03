@@ -161,8 +161,15 @@ class Song
 
         $song = new Song;
 	$artist = new Artist;
+	$html = "";
 
-        $html = "<a href='$song->url'>" .$artist->loadById($song->loadById(esc_attr($id))->artist_id)->name . " - ". $song->name. "</a>";
+        $html .= "<a href='$song->url'>$song->number. " .$artist->loadById($song->loadById(esc_attr($id))->artist_id)->name . " - ". $song->name. "</a>";
+
+	if($song->price != '0.00') {
+		$html .= "<button class='song_to_cart' id='song_download_$song->id'>Buy " .CURRENCY. "$song->price</button>";
+	}
+
+	$html .= "<br/>";
 
 	unset($artist);
         unset($song);
