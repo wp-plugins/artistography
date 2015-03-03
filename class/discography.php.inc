@@ -11,9 +11,8 @@ add_action('wp_ajax_Disconnect_Artist_from_Album', 'Discography::callback_Discon
 
 class Discography
 {
-    protected static $artistTable = NULL;  // TABLE NAME of ARTIST TABLE
     protected static $musicTable = NULL;  // TABLE NAME of MUSIC ALBUM TABLE
-    protected static $discographyTable = NULL;  // TABLE NAME of MUSIC ALBUM TABLE
+    protected static $discographyTable = NULL;  // TABLE NAME of DISCOGRAPHY TABLE
 
      // property declaration
     public $id = NULL;
@@ -48,8 +47,7 @@ class Discography
     public function __construct() {
         GLOBAL $wpdb, $TABLE_NAME;
 
-        self::$artistTable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTISTS];
-        self::$musicTable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_MUSIC_ALBUMS];
+	self::$musicTable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_MUSIC_ALBUMS];
         self::$discographyTable = $wpdb->prefix . $TABLE_NAME[TABLE_ARTIST_ALBUM_LINKER];
 
         $this->loadAll();
@@ -106,6 +104,8 @@ class Discography
 
     public static function conditionally_add_scripts_and_styles($posts){
         GLOBAL $artistography_plugin_dir;
+         // scripts are already being loaded on every page
+        if (true == get_option('wp_artistography_ajax_loader')) return $posts;
         if (empty($posts)) return $posts;
  
         $shortcode_found = false; // use this flag to see if styles and scripts need to be enqueued
@@ -134,15 +134,12 @@ class Discography
 
         $id = esc_attr($id);
 
-        $discography = new Discography;
-        $artist = new Artist;
         $album = new Music;
+	$album->loadById($id);
         $html = "";
 
-        $html = "[caption id=\"attachment_557\" align=\"alignleft\" width=\"300\" caption=\"Dr. Oscify Breathe Easy Soon\"]<a href=\"http://www.sprucegooserecords.com/wp-content/uploads/2011/05/DrOscify-Breathe-Easy-Soon.jpg\"><img class=\"size-medium wp-image-557\" title=\"Dr. Oscify Breathe Easy Soon\" src=\"http://www.sprucegooserecords.com/wp-content/uploads/2011/05/DrOscify-Breathe-Easy-Soon-300x300.jpg\" alt=\"\" width=\"300\" height=\"300\" /></a>[/caption]\n";
+        $html = "[caption align=\"alignleft\" width=\"300\" caption=\"$album->artist_name - $album->album_name\"]<a href=\"$album->picture_url\"><img class=\"size-medium\" title=\"$album->artist_name - $album->album_name\" src=\"$album->picture_url\" alt=\"\" width=\"300\" height=\"300\" /></a>[/caption]\n";
 
-        unset($discography);
-        unset($artist);
         unset($album);
         return do_shortcode($html);
     }
@@ -153,38 +150,67 @@ class Discography
 		'id' => '0'
 	), $atts ) );
 
-        GLOBAL $i18n_domain, $artistography_plugin_dir;
-        GLOBAL $download_icon_url, $download_icon_width, $download_icon_height;
-        GLOBAL $add_to_cart_icon_url, $add_to_cart_icon_width, $add_to_cart_icon_height;
+        GLOBAL $i18n_domain, $transparent_pixel_url, $download_icon_width, $download_icon_height;
 
         $id = esc_attr($id);
 
         $album = new Music;
+	$orders = new Orders;
+
         $html = "";
         $album->loadById($id);
 
+	 /* Is it even linked right now? */
 	if ($album->download_id > 0) {
-        	if ($album->price == "0.00") {
-               	  $html .= "       <center><a href='$siteurl/artistography_download/$album->download_id'>"
-                        .  "        <img width='$download_icon_width' height='$download_icon_height' src='$download_icon_url' style='border:none;' /></a></center>";
-                } else {
-                  $html .= "<font style='font-size:14pt'>Price: " .CURRENCY. "$album->price</font><br/>\n"
-                        .  " <form method='post' action='" .SITEURL."/artistography_cart'>"
-                        .  "    <input type='hidden' name='artistography_qty' value='1' />\n"
-                        .  "    <input type='hidden' name='artistography_action' value='add' />\n"
-                        .  "    <input type='hidden' name='artistography_product_id' value='$album->id' />\n"
-                        .  "    <input type='submit' value=''
-                             style=\"border: none;
-                                     width: " .$add_to_cart_icon_width. "px; height: " .$add_to_cart_icon_height. "px;
-                                     background:url($add_to_cart_icon_url) no-repeat;
-				     background-size: " .$add_to_cart_icon_width ."px " .$add_to_cart_icon_height ."px;\"";
+		if ($album->price == "0.00") {
+			$html .= self::show_download($album->download_id);
+		} else {
+			if (is_user_logged_in()) {
+                        	$orders->loadByUserId(wp_get_current_user()->ID);
+                        	$order_processed = $orders->locateOrderMusicDownloadId($id);
+                        	if($order_processed) {
+					$html .= self::show_download($album->download_id);
+				} else {
+					$html .= self::show_add_to_cart($id, $album->price);
+                		}
+			} else {
+				$html .= self::show_add_to_cart($id, $album->price);
+        		}
                 }
-        }
+	} else {
+		$html .= "<img style='border:0px' src='$transparent_pixel_url' width='$download_icon_width' height='$download_icon_height' />";
+	}
 
         unset($album);
+	unset($orders);
         return $html;
     }
 
+    public static function show_download($download_id) {
+	GLOBAL $download_icon_url, $download_icon_width, $download_icon_height;
+	$html = "";
+
+	$html .= "<center><a href='" .get_permalink(get_option('wp_artistography_download_page')). "$download_id'>
+	      	  <img width='$download_icon_width' height='$download_icon_height' src='$download_icon_url' style='border:none;' /></a></center>";
+	return $html;
+    }
+
+    public static function show_add_to_cart($album_id, $price) {
+	GLOBAL $add_to_cart_icon_url, $add_to_cart_icon_width, $add_to_cart_icon_height;
+	$html = "";
+
+        $html .= "<font style='font-size:14pt'>Price: " .CURRENCY. "$price</font><br/>\n
+                  <form method='post' action=\"" .get_permalink(get_option('wp_artistography_cart_page'))."\">
+                     <input type='hidden' name='artistography_qty' value='1' />\n
+                     <input type='hidden' name='artistography_action' value='add' />\n
+                     <input type='hidden' name='artistography_product_id' value='album_download_$album_id' />\n
+                     <input type='submit' value=''
+                         style=\"border: none;
+                                 width: " .$add_to_cart_icon_width. "px; height: " .$add_to_cart_icon_height. "px;
+                                 background:url($add_to_cart_icon_url) no-repeat;
+                                 background-size: " .$add_to_cart_icon_width ."px " .$add_to_cart_icon_height ."px;\" /></form><br/><br/><br/><br/>";
+	return $html;
+    }
 
      // [artistography_display_artist_page id="4" gid="1"]
     public static function shortCodeDisplayArtistPage( $atts, $content=null, $code="") {
@@ -201,13 +227,16 @@ class Discography
         $discography = new Discography;
         $artist = new Artist;
         $album = new Music;
+	$gallery = new Gallery;
+
         $html = "";
 
         if ($artist->loadById($id)->getTotalRows() > 0) {
             $artist->incrementPageViewsById($id);
-            $discography->loadEnabledByArtistId($id);
+            $discography->loadMusicByArtistId($id);
             $num = $discography->getTotalRows();
             $video_postslist = $artist->getVideoPosts();
+	    $gallery->loadByArtistId($id);
             $related_postslist = $artist->getRelatedPosts();
 
             $html .= "<div id='tabs' style='display:none'>\n"
@@ -215,6 +244,10 @@ class Discography
                   .  "    <li><a href='#tabs-1'>About</a></li>\n";
             if ($num > 0) {
                 $html .= "    <li><a href='#tabs-2'>Music (" .$num. ")</a></li>\n";
+            }
+
+            if ($gallery->getTotalRows() > 0) {
+                $html .= "    <li><a href='#tabs-5'>Image Galleries (" .$gallery->getTotalRows(). ")</a></li>\n";
             }
 
             if ( !empty($video_postslist) ) {
@@ -225,13 +258,10 @@ class Discography
                 $html .= "    <li><a href='#tabs-4'>Related Posts (" .count($related_postslist). ")</a></li>\n";
             }
 
-            if ($gid != 0) {
-//                $html .= "    <li><a href='#tabs-5'>Images</a></li>\n";
-            }
             $html .= "  </ul>\n"
                   .  "  <div id='tabs-1'>\n";
              /*** DISPLAY ARTIST ABOUT TAB ***/
-            $html .= "    <p><table width='100%' border='1'><tr><td><img src='" .stripslashes($artist->picture_url)
+            $html .= "    <p><table width='100%'><tr><td><img src='" .stripslashes($artist->picture_url)
                   .  "' height='225' width='225' align='left' style='margin-right:1.0em;overflow:auto;' />\n";
             if(empty($content)) {
                 $html .= stripslashes($artist->description). "\n";
@@ -270,7 +300,8 @@ class Discography
                               .  "  </td>"
                               .  "  <td style='border:0;'>"
                               .  "    <div class='tracklist'><font style='font-size:8pt;text-align:left;'>"
-                              .  do_shortcode($album->description)
+			      .  "[artistography_playlist id={$discography->album_id}]"
+                              .  $album->description
                               .  "    </font></div>"
                               .  "  </td>";
                     }
@@ -285,19 +316,67 @@ class Discography
                       .  "</div>";
             }
 
+	$size='120';
+             /*** DISPLAY IMAGE GALLERIES TAB ***/
+            if ($gallery->getTotalRows() > 0) {
+                $html .= "  <div id='tabs-5'>\n";
+		if (strcmp('Accordion', get_option('wp_artistography_gallery_style')) == 0) {
+                	$html .= "    <div id='accordion4'>\n";
+                	for($i = 0; $i < $gallery->getTotalRows(); $i++) {
+                        	$html .= "<h3><a href='#'><table><tr><td><img src='$gallery->cover_picture_url' width='100' height='100' /></td><td><u><b>$gallery->name</b></u><br/>$gallery->description</td></tr></table></a></h3>";
+                        	$html .= "<div><p>";
+                        	$html .= do_shortcode('[gallery columns="4" ids="' .$gallery->gallery. '"]');
+                        	$html .= "</p></div>";
+                        	$gallery->getNodeNext();
+                	}
+                	$html .= "    </div>\n";
+		} else if (strcmp('Thickbox', get_option('wp_artistography_gallery_style')) == 0) {
+			$html .= "<div style='max-height:300px;overflow:auto;'>";
+			for($i = 0; $i < $gallery->getTotalRows(); $i++) {
+				$pics = explode(', ', $gallery->gallery);
+				$num_pics = count($pics);
+                                $html .= "<center><div style='padding: 5px; float:left;display:block;'><a title=\"$gallery->description\" class='thickbox' rel='gallery-$gallery->id' href='" .wp_get_attachment_url( $pics[0] ). "'><img src='$gallery->cover_picture_url' width='$size' height='$size' /><br/>\n";
+				$html .= "<u><b>$gallery->name</b></u><br/>\n";
+				$html .= "$num_pics Pictures</a></div></center>\n";
+				$html .= "<div style='display:block;visibility:hidden;'>";
+				for($j=1; $j < $num_pics; $j++) {
+					$html .= "<a href='" .wp_get_attachment_url( $pics[$j] ). "' title=\"$gallery->description\" class='thickbox' rel='gallery-$gallery->id' />";
+				}
+				$html .= "</div>";
+                                $gallery->getNodeNext();
+                        }
+			$html .= "</div>";
+		} else if (strcmp('Colorbox', get_option('wp_artistography_gallery_style')) == 0) {
+                        $html .= "<div style='min-height:30px;overflow:auto;'>";
+                        for($i = 0; $i < $gallery->getTotalRows(); $i++) {
+                                $pics = explode(', ', $gallery->gallery);
+                                $num_pics = count($pics);
+                                $html .= "<center><div style='padding: 5px;float:left;display:block;'><a title='" .htmlspecialchars($gallery->description). "' class='colorbox' rel='gallery-$gallery->id' href='" .wp_get_attachment_url( $pics[0] ). "'><img src='$gallery->cover_picture_url' width='$size' height='$size' /><br/>\n";
+                                $html .= "<u><b>$gallery->name</b></u><br/>\n";
+                                $html .= "$num_pics Pictures</a></div></center>\n";
+                                $html .= "<div style='display:block;visibility:hidden;'>";
+                                for($j=1; $j < $num_pics; $j++) {
+                                        $html .= "<a href='" .wp_get_attachment_url( $pics[$j] ). "' title='" .htmlspecialchars($gallery->description). "' class='colorbox' rel='gallery-$gallery->id'></a>";
+                                }
+                                $html .= "</div>";
+                                $gallery->getNodeNext();
+                        }
+                        $html .= "</div>";
+                }
+
+                $html .= "  </div>\n";
+            }
+
              /*** DISPLAY VIDEOS TAB ***/
             if ( !empty($video_postslist) ) {
                 $html .= "  <div id='tabs-3'>\n"
                       .  "    <div id='accordion2'>\n";
                 foreach ($video_postslist as $post) {
                     $comment_array = get_approved_comments($post->ID);
-                    $comment_counter = 0;
-                    foreach($comment_array as $comment){
-                        $comment_counter += 1;
-                    }
+                    $comment_counter = count($comment_array);
                     $html .= "    <h3><a href='#'>$post->post_title</a></h3>\n"
                           .  "    <div><table><tr><td>" .do_shortcode($post->post_content). "</td></tr>"
-                          .  "    <tr><td><hr width='100%' /></td></tr>"
+                          .  "    <tr><td><hr width='90%' /></td></tr>"
                           .  "    <tr><td><a href='"
                           .  get_permalink($post->ID). "' target='_blank'>Permalink</a> | <a href='"
                           .  get_permalink($post->ID). "' target='_blank'>Comments (" .$comment_counter. ")</a></td></tr>"
@@ -326,12 +405,6 @@ class Discography
                 $html .= "    </div>\n"
                       .  "  </div>\n";
             }
-
-            if ($gid != 0) {
-                $html .= "  <div id='tabs-5'>\n";
-//                $html .= do_shortcode('[gallery id=' .$gid. ']');
-                $html .= "  </div>\n";
-            }
             $html .= "</div>\n";
         } else if ($id == '0') {
 	    $html .= __('Error: Artist ID specified in Artistography shortcode not found in database.  First artist is always id=1 not id=0.', $i18n_domain);
@@ -340,6 +413,7 @@ class Discography
             $html .= __('Error: Artist ID specified in Artistography shortcode not found in database.', $i18n_domain);
         }
 
+	unset($gallery);
         unset($discography);
         unset($album);
         unset($artist);
@@ -399,7 +473,7 @@ class Discography
     // meant to simply load the nth item in the query through a for loop
     // assumes query, query_curr_node, and query_total_rows is set
 
-        if (($this->query_curr_node + 1) <= $this->getTotalRows()) {
+        if (($this->query_curr_node + 1) < $this->getTotalRows()) {
             $this->query_curr_node += 1;
             $this->loadCurrNodeValues();
         }
@@ -459,7 +533,7 @@ class Discography
         return $this->loadCurrNodeValues();
     }
 
-    public function &loadEnabledByArtistId ($artist_id, $order_by = 'album_date DESC') {
+    public function &loadMusicByArtistId ($artist_id, $order_by = 'mt.album_date DESC') {
         GLOBAL $wpdb, $i18n_domain;
 
         $this->query = $wpdb->prepare("SELECT *
@@ -467,7 +541,6 @@ class Discography
                   RIGHT JOIN  " .self::$musicTable. " mt
                           ON  dt.album_id = mt.id
                        WHERE  dt.artist_id = %u
-                         AND  mt.enabled = true
                     ORDER BY  $order_by",
                         $artist_id);
         $this->setTotalRows($wpdb->query($this->query));

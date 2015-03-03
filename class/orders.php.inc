@@ -4,26 +4,53 @@ add_shortcode( 'artistography_show_checkout', 'Orders::shortCodeShowCheckout' );
 add_shortcode( 'artistography_show_thankyou', 'Orders::shortCodeShowThankyou' );
 add_shortcode( 'artistography_show_orders', 'Orders::shortCodeShowOrders' );
 add_shortcode( 'artistography_ipn', 'Orders::shortCodeIPN' );
+
+//AJAX Administration
+add_action('wp_ajax_View_Order', 'Orders::callback_View_Order');
 class Orders
 {
 	protected static $ordersTable = NULL;  // TABLE NAME of MUSIC ALBUM TABLE
 
-	public $album_id = NULL;
-	public $album = NULL;
-
 	public $id = NULL;
 
+	public $payer_id = NULL;
+	public $address_status = NULL;
+	public $payer_status = NULL;
 	public $forename = NULL;
         public $surname = NULL;
         public $email = NULL;
         public $address_line_1 = NULL;
         public $postcode = NULL;
         public $town = NULL;
-        public $itemsOrdered = NULL;
+	public $state = NULL;
+	public $country_code = NULL;
+	public $contact_phone = NULL;
+	public $itemsOrdered = NULL;
+	public $itemsNumberOrdered = NULL;
+	public $quantityOrdered = NULL;
         public $created = NULL;
-        public $txn_id = NULL;
+	public $txn_id = NULL;
+	public $txn_type = NULL;
+	public $parent_txn_id = NULL;
+	public $verify_sign = NULL;
 	public $custom = NULL;
-        public $user_ip = NULL;
+        public $payment_status = NULL;
+        public $payment_amount = NULL;
+        public $payment_currency = NULL;
+        public $item_name = NULL;
+	public $item_number = NULL;
+	public $quantity = NULL;
+	public $shipping = NULL;
+	public $mc_fee = NULL;
+	public $mc_gross = NULL;
+	public $mc_shipping = NULL;
+	public $mc_handling = NULL;
+	public $tax = NULL;
+	public $refund_reason_code = NULL;
+	public $refund_receipt_id = NULL;
+	public $memo = NULL;
+	public $pending_reason = NULL;
+
 	public $user_id = NULL;
 
 	 // this class interfaces with the database
@@ -37,9 +64,67 @@ class Orders
 	protected function setCurrNode ($node)  {    $this->query_curr_node = $node;    }
 
 	 // get funcs (public)
+	public function getOrdersTableName () {return self::$ordersTable; }
 	public function getTotalRows ()   {    return $this->query_total_rows;    }
 	public function getCurrNode ()    {    return $this->query_curr_node;    }
 	public function getQueryResult () {    return $this->query_result;    }
+
+	public static function callback_View_Order(){
+		GLOBAL $i18n_domain;
+
+		$orders = new Orders;
+
+		if($orders->loadById($_POST['order_id'])->getTotalRows() > 0) {
+			$products = unserialize(stripslashes($orders->itemsOrdered));
+
+			$output = $orders->id
+				."##$$##". stripslashes($orders->forename)
+				    ." ".  stripslashes($orders->surname)
+		                ."##$$##". stripslashes($orders->email)
+				."##$$##". stripslashes($orders->address_line_1)
+				."##$$##". stripslashes($orders->town)
+			        ."##$$##". stripslashes($orders->state)
+				."##$$##". stripslashes($orders->country_code)
+				."##$$##". stripslashes($orders->contact_phone)
+				."##$$##". stripslashes($orders->payer_id)
+				."##$$##". stripslashes($orders->address_status)
+				."##$$##". stripslashes($orders->payer_status)
+				."##$$##". stripslashes($orders->itemsNumberOrdered)
+				."##$$##". stripslashes($orders->quantityOrdered)
+				."##$$##". stripslashes($orders->txn_type)
+			        ."##$$##". stripslashes($orders->parent_txn_id)
+				."##$$##". stripslashes($orders->verify_sign)
+			        ."##$$##". stripslashes($orders->quantity)
+				."##$$##". stripslashes($orders->shipping)
+				."##$$##". stripslashes($orders->mc_fee)
+				."##$$##". stripslashes($orders->mc_gross)
+				."##$$##". stripslashes($orders->mc_shipping)
+				."##$$##". stripslashes($orders->mc_handling)
+				."##$$##". stripslashes($orders->tax)
+				."##$$##". stripslashes($orders->refund_reason_code)
+				."##$$##". stripslashes($orders->refund_receipt_id)
+				."##$$##". stripslashes($orders->memo)
+			 	."##$$##". stripslashes($orders->pending_reason)
+		                ."##$$##". stripslashes($orders->postcode)
+                      		."##$$##";
+				for($j = 0; $j < count($products); $j++) {
+                        		$output .= ($j+1) .$products[$j]. "\r\n";
+                		}
+                      $output .= "##$$##". stripslashes($orders->created)
+                       		."##$$##". stripslashes($orders->txn_id)
+                       		."##$$##". stripslashes($orders->custom)
+               			."##$$##". stripslashes($orders->payment_status)
+               			."##$$##". stripslashes($orders->payment_amount)
+               			."##$$##". stripslashes($orders->payment_currency)
+               			."##$$##". stripslashes($orders->item_name)
+               			."##$$##". stripslashes($orders->item_number)
+               			."##$$##". stripslashes($orders->user_id);
+			echo $output;
+		}
+
+		unset($artist);
+		die;
+	}
 
 	public function __construct() {
 		GLOBAL $wpdb, $TABLE_NAME;
@@ -64,20 +149,68 @@ class Orders
 			$this->forename = $this->query_result->forename;
 			$this->surname = $this->query_result->surname;
 			$this->email = $this->query_result->email;
-			$this->album_line_1 = $this->query_result->address_line_1;
+			$this->address_line_1 = $this->query_result->address_line_1;
 			$this->postcode = $this->query_result->postcode;
 			$this->town = $this->query_result->town;
+			$this->state = $this->query_result->state;
 
 			$this->itemsOrdered = $this->query_result->itemsOrdered;
-			$this->created = $this->query_result->created;
+			$this->created = $this->query_result->create_date;
 			$this->txn_id = $this->query_result->txn_id;
 			$this->user_id = $this->query_result->user_id;
-			$this->user_ip = $this->query_result->user_ip;
+			$this->payment_status = $this->query_result->payment_status;
+			$this->payment_amount = $this->query_result->payment_amount;
+			$this->payment_currency = $this->query_result->payment_currency;
+			$this->item_name = $this->query_result->item_name;
+		        $this->item_number = $this->query_result->item_number;
+
+			$this->payer_id = $this->query_result->payer_id;
+			$this->address_status = $this->query_result->address_status;
+		        $this->payer_status = $this->query_result->payer_status;
+		        $this->state = $this->query_result->state;
+		        $this->country_code = $this->query_result->country_code;
+		        $this->contact_phone = $this->query_result->contact_phone;
+		        $this->itemsNumberOrdered = $this->query_result->itemsNumberOrdered;
+		        $this->quantityOrdered = $this->query_result->quantityOrdered;
+		        $this->txn_type = $this->query_result->txn_type;
+		        $this->parent_txn_id = $this->query_result->parent_txn_id;
+		        $this->verify_sign = $this->query_result->verify_sign;
+		        $this->quantity = $this->query_result->quantity;
+		        $this->shipping = $this->query_result->shipping;
+		        $this->mc_fee = $this->query_result->mc_fee;
+		        $this->mc_gross =$this->query_result->mc_gross;
+	                $this->mc_shipping = $this->query_result->mc_shipping;
+			$this->mc_handling = $this->query_result->mc_handling;
+                        $this->tax = $this->query_result->tax;
+                        $this->refund_reason_code = $this->query_result->refund_reason_code;
+		        $this->refund_receipt_id = $this->query_result->refund_receipt_id;
+		        $this->memo = $this->query_result->memo;
+	                $this->pending_reason = $this->query_result->pending_reason;
 		} else {
 			$this->query_result =
             
-			$this->album_id =
-			$this->album =
+			$this->payer_id =
+			$this->address_status =
+			$this->payer_status =
+			$this->state =
+			$this->country_code =
+			$this->contact_phone =
+			$this->itemsNumberOrdered =
+			$this->quantityOrdered =
+			$this->txn_type =
+			$this->parent_txn_id =
+			$this->verify_sign =
+			$this->quantity =
+		        $this->shipping =
+		        $this->mc_fee =
+		        $this->mc_gross =
+	        	$this->mc_shipping =
+			$this->mc_handling = 
+	        	$this->tax =
+	       		$this->refund_reason_code =
+		        $this->refund_receipt_id =
+	        	$this->memo =
+		        $this->pending_reason =
 
 			$this->id =
 			$this->forename =          
@@ -88,10 +221,15 @@ class Orders
 			$this->town =       
 
 			$this->itemsOrdered =
-			$this->created =
+			$this->create_date =
 			$this->txn_id =
 			$this->custom =
-			$this->user_ip = 
+
+			$this->payment_status =
+			$this->payment_amount =
+			$this->payment_currency =
+			$this->item_name =
+			$this->item_number =
 			$this->user_id = 0;
         	}
 		return $this;
@@ -112,7 +250,7 @@ class Orders
     // meant to simply load the nth item in the query through a for loop
     // assumes query, query_curr_node, and query_total_rows is set
 
-        if (($this->query_curr_node + 1) <= $this->getTotalRows()) {
+        if (($this->query_curr_node + 1) < $this->getTotalRows()) {
             $this->query_curr_node += 1;
             $this->loadCurrNodeValues();
         }
@@ -156,12 +294,13 @@ class Orders
         return $this->loadCurrNodeValues();
     }
 
-    public function &loadByUserId ($id) {
+    public function &loadByUserId ($id, $order_by = 'id') {
         GLOBAL $wpdb, $i18n_domain;
 
         $this->query = $wpdb->prepare("SELECT *
                         FROM " .self::$ordersTable. "
-                        WHERE user_id = %u", $id);
+                        WHERE user_id = %u
+			ORDER BY $order_by", $id);
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
@@ -184,7 +323,7 @@ class Orders
         return $this->loadCurrNodeValues();
     }
 
-	public function locateOrderMusicId($music_id) {
+	public function locateOrderMusicDownloadId($music_id) {
 		GLOBAL $wpdb, $i18n_domain;
 
 		$Music = new Music;
@@ -196,16 +335,18 @@ class Orders
 		
         	if ($this->getTotalRows() > 0) {
                 	do {
-                		$products = unserialize($this->itemsOrdered);
-                		for($j = 0; $j < count($products); $j++) {
-					$product_id = explode(' - ', $products[$j])[0];
-                        		if (strcmp($music_id, $product_id) == 0) {
-						$found = true;
-					}
-                		}
-                		$orders->getNodeNext();
+				$products = unserialize($this->itemsOrdered);
+				if(strcmp("Completed", $this->payment_status) == 0) {
+                			for($j = 0; $j < count($products); $j++) {
+						$product_id = str_replace('album_download_', '', explode(' - ', $products[$j])[0]);
+                        			if (strcmp($music_id, $product_id) == 0) {
+							$found = true;
+						}
+                			}
+				}
+                		$this->getNodeNext();
                 		$i++;
-        	        } while($i<$orders->getTotalRows());
+        	        } while($i<$this->getTotalRows());
 	        } else {
 			$found = false;
 		}
@@ -217,20 +358,35 @@ class Orders
 		GLOBAL $i18n_domain;
 
 		 /*** Process Cart Actions ***/
-		if ($_POST['artistography_product_id']) {
-			$product_id = $_POST['artistography_product_id'];
-			$qty = $_POST['artistography_qty'];
-			$action = $_POST['artistography_action'];
-			switch($action) {
-				case "add":
-					$_SESSION['artistography_cart'][$product_id] = $_SESSION['artistography_cart'][$product_id] + $qty;
-				break;
-				case "empty":
-					unset($_SESSION['artistography_cart']);
-				break;
-				case "remove":
-					unset($_SESSION['artistography_cart'][$product_id]);
-				break;
+		if (array_key_exists('artistography_product_id', $_POST)) {
+			if ($_POST['artistography_product_id']) {
+				$product_id = $_POST['artistography_product_id'];
+				if(array_key_exists('artistography_qty', $_POST))
+					$qty = $_POST['artistography_qty'];
+				else
+					$qty = 0;
+
+				$action = $_POST['artistography_action'];
+				switch($action) {
+					case "add":
+						 // if this is a download then quantity should never exceed 1
+						if (array_key_exists($product_id, $_SESSION['artistography_cart']))
+							 // if this is a download then quantity should never exceed 1
+							if(FALSE !== strpos($product_id, 'download') ) {
+								$_SESSION['artistography_cart'][$product_id] = 1;
+							} else {
+								$_SESSION['artistography_cart'][$product_id] = $_SESSION['artistography_cart'][$product_id] + $qty;
+							}
+						else
+							$_SESSION['artistography_cart'][$product_id] = $qty;
+					break;
+					case "empty":
+						unset($_SESSION['artistography_cart']);
+					break;
+					case "remove":
+						unset($_SESSION['artistography_cart'][$product_id]);
+					break;
+				}
 			}
 		}
 
@@ -268,8 +424,12 @@ class Orders
 				}
 				$i = 1;
 				foreach($_SESSION['artistography_cart'] as $product => $qty) {
-				  $album->loadById($product);
-				  $html .= "<input type='hidden' name='item_name_$i' value='$album->id - $album->artist_name - $album->album_name' />";
+		                  if(strpos($product, 'album_download_') !== FALSE) {
+                     		    $album_download = true;
+                     		    $product_id = str_replace('album_download_', '', $product);
+                    		  }
+				  $album->loadById($product_id);
+				  $html .= "<input type='hidden' name='item_name_$i' value='album_download_$album->id - $album->artist_name - $album->album_name' />";
 				  $html .= "<input type='hidden' name='quantity_$i' value='$qty' />";
 				  $html .= "<input type='hidden' name='amount_$i' value='$album->price' />";
 				  $i++;
@@ -278,13 +438,13 @@ class Orders
 					  <input type='hidden' name='upload' value='1' />
 					  <input type='hidden' name='business' value='" .get_option('wp_artistography_donate_email'). "' />";
 
-				$html .= "<input type='hidden' name='custom' value='user_id=" .get_current_user_id(). "' />";
+				$html .= "<input type='hidden' name='custom' value='user_id_" .get_current_user_id(). "' />";
 				$html .= "<input type='hidden' name='currency_code' value='USD' />\n";
                                 $html .= "<input type='hidden' name='lc' value='US' />\n";
                                 $html .= "<input type='hidden' name='rm' value='2' />\n";
-                                $html .= "<input type='hidden' name='return' value='" .SITEURL. "/artistography_thankyou' />\n";
-                                $html .= "<input type='hidden' name='cancel_return' value='" .SITEURL. "/artistography_cart' />\n";
-                                $html .= "<input type='hidden' name='notify_url' value='" .SITEURL. "/artistography_ipn' />\n";
+                                $html .= "<input type='hidden' name='return' value='" .get_permalink(get_option('wp_artistography_thankyou_page')). "' />\n";
+                                $html .= "<input type='hidden' name='cancel_return' value='" .get_permalink(get_option('wp_artistography_cart_page')). "' />\n";
+                                $html .= "<input type='hidden' name='notify_url' value='" .get_permalink(get_option('wp_artistography_ipn_page')). "' />\n";
 
                 		$html .= "  <div align='right'><input type='submit' value=''
 						style='border:none;
@@ -316,120 +476,293 @@ class Orders
                 return $html;
         }
 
-         // IPN Guide: https://www.paypalobjects.com/webstatic/en_US/developer/docs/pdf/ipnguide.pdf
-         //http://code.tutsplus.com/tutorials/wordpress-and-paypal-an-introduction--wp-25074
-        public static function shortCodeIPN( $atts, $content=null, $code="" ) {
-                GLOBAL $i18n_domain, $TABLE_NAME;
+	 // https://github.com/paypal/ipn-code-samples/blob/master/paypal_ipn.php
+	public static function shortCodeIPN( $atts, $content=null, $code="" ) {
+                GLOBAL $wpdb, $i18n_domain, $TABLE_NAME;
                 $html = "";
-
 		$header = "";
+
+		$orders = new Orders;
+
+		// Read POST data
+		// // reading posted data directly from $_POST causes serialization
+		// // issues with array data in POST. Reading raw POST data from input stream instead.
+		 $raw_post_data = file_get_contents('php://input');
+		 $raw_post_array = explode('&', $raw_post_data);
+		 $myPost = array();
+		 foreach ($raw_post_array as $keyval) {
+			$keyval = explode ('=', $keyval);
+		 		if (count($keyval) == 2)
+		 				$myPost[$keyval[0]] = urldecode($keyval[1]);
+		}
+
+		// read the post from PayPal system and add 'cmd'
 		$req = 'cmd=_notify-validate';
-		foreach($_POST as $key => $value) {
-			$value = urlencode(stripslashes($value));
+		if(function_exists('get_magic_quotes_gpc')) {
+		 	$get_magic_quotes_exists = true;
+		}
+		foreach ($myPost as $key => $value) {
+			if($get_magic_quotes_exists == true && get_magic_quotes_gpc() == 1) {
+				$value = urlencode(stripslashes($value));
+			} else {
+				$value = urlencode($value);
+			}
 			$req .= "&$key=$value";
 		}
-		$header .= "POST /cgi-bin/webscr HTTP/1.0\r\n";
-		$header .= "Content-Type: application/x-www-form-urlencoded\r\n";
-		$header .= "Content-Length: " .strlen($req). "\r\n\r\n";
-		$fp = fsockopen('ssl://www.sandbox.paypal.com', 443, $errno, $errstr, 30);
-
-		if (!$fp) {
-			// http error
+		// Post IPN data back to PayPal to validate the IPN data is genuine
+		// Without this step anyone can fake IPN data
+		if(true == get_option('wp_artistography_paypal_sandbox')) {
+			$paypal_url = 'https://www.sandbox.paypal.com/cgi-bin/webscr';
 		} else {
-			fputs ($fp, $header . $req);
-			while(!feof($fp)) {
-				$res = fgets($fp, 1024);
+			$paypal_url = 'https://www.paypal.com/cgi-bin/webscr';
+		}
 
-				$fh = fopen('results.txt', 'w');
-					fwrite($fh, $res);
-					fclose($fh);
+		$ch = curl_init($paypal_url);
+		if ($ch == FALSE) {
+				return FALSE;
+		}
+		curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER,1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $req);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
+		curl_setopt($ch, CURLOPT_FORBID_REUSE, 1);
+		if(DEBUG == true) {
+				curl_setopt($ch, CURLOPT_HEADER, 1);
+					curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
+		}
+		// CONFIG: Optional proxy configuration
+		//curl_setopt($ch, CURLOPT_PROXY, $proxy);
+		//curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, 1);
+		// Set TCP timeout to 30 seconds
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 30);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Connection: Close'));
 
-				if (strcmp($res, "VERIFIED") == 0) {
-					$firstName	= $_POST['first_name'];
-					$lastName	= $_POST['last_name'];
-					$payerEmail	= $_POST['payer_email'];
-					$addressStreet	= $_POST['address_street'];
-					$addressZip	= $_POST['address_zip'];
-					$addressCity	= $_POST['address_city'];
-					$productsBought	= $_POST[''];
-					$txnID		= $_POST['txn_id'];
+		// CONFIG: Please download 'cacert.pem' from "http://curl.haxx.se/docs/caextract.html" and set the directory path
+		// of the certificate as shown below. Ensure the file is readable by the webserver.
+		// This is mandatory for some environments.
+		$cert = __DIR__ . "/cacert.pem";
+		curl_setopt($ch, CURLOPT_CAINFO, $cert);
 
-        	                        $this->custom = array();
-	                                parse_str($txn_id->custom, $this->custom);
-					$userID = $this->custom['user_id'];
+		$res = curl_exec($ch);
+		if (curl_errno($ch) != 0) // cURL error
+		{
+			if(DEBUG == true) {	
+				error_log(date('[Y-m-d H:i e] '). "Can't connect to PayPal to validate IPN message: " . curl_error($ch) . PHP_EOL, 3, LOG_FILE);
+			}
+			curl_close($ch);
+			exit;
+		} else {
+			// Log the entire HTTP response if debug is switched on.
+			if(DEBUG == true) {
+				error_log(date('[Y-m-d H:i e] '). "HTTP request of validation request:". curl_getinfo($ch, CURLINFO_HEADER_OUT) ." for IPN payload: $req" . PHP_EOL, 3, LOG_FILE);
+				error_log(date('[Y-m-d H:i e] '). "HTTP response of validation request: $res" . PHP_EOL, 3, LOG_FILE);
+			}
+			curl_close($ch);
+		}
 
-					 //Used to store quickly items bought
-					$i = 1;
-					foreach($_POST as $key => $value) {
-						if($key == 'item_name'.$i) {
-							$products_bought[] = $value;
-							$i++;
-						}
-					}
-					$products = serialize($products_bought);
+		// Inspect IPN validation result and act accordingly
+		// Split response headers and payload, a better way for strcmp
+		$tokens = explode("\r\n\r\n", trim($res));
+		$res = trim(end($tokens));
+		if (strcmp ($res, "VERIFIED") == 0) {
+			// check whether the payment_status is Completed
+			// check that txn_id has not been previously processed
+			// check that receiver_email is your PayPal email
+			// check that payment_amount/payment_currency are correct
+			// process payment and mark item as paid
+			$addressStatus		= $_POST['address_status'];
+			$payerStatus		= $_POST['payer_status'];
+			$firstName		= $_POST['first_name'];
+			$lastName		= $_POST['last_name'];
+			$payerEmail		= $_POST['payer_email'];
+			$payerID		= $_POST['payer_id'];
+			$addressStatus		= $_POST['address_status'];
+			$addressStreet		= $_POST['address_street'];
+			$addressZip		= $_POST['address_zip'];
+			$addressCity		= $_POST['address_city'];
+			$addressState		= $_POST['address_state'];
+			$countryCode		= $_POST['country_code'];
+			$contactPhone		= $_POST['contact_phone'];
+			$productsBought		= $_POST[''];
+			$verifySign		= $_POST['verify_sign'];
+			$txnType		= $_POST['txn_type'];
+			$txnID			= $_POST['txn_id'];
+			$parentTxnId		= $_POST['parent_txn_id'];
+			$custom			= $_POST['custom'];
 
-					$wpdb->insert(self::$ordersTable,
-					array(	'forename'		=> $firstName,
-						'surname'		=> $lastName,
-						'email'			=> $payerEmail,
-						'address_line_1'	=> $addressStreet,
-						'postcode'		=> $addressZip,
-						'town'			=> $addressCity,
-						'itemsOrdered'		=> $products,
-						'created'		=> current_time('mysql'),
-						'txn_id'		=> $txnID,
-						'user_ip'		=> $_SERVER['REMOTE_ADDR'],
-						'user_id'		=> $userID
-					),
-					array(	'%s',			// FORENAME
-						'%s',			// SURNAME
-						'%s',			// EMAIL
-						'%s',			// ADDRESS 1
-						'%s',			// PCODE
-						'%s',			// TOWN
-						'%s',			// ORDERED
-						'%s',			// STATUS
-						'%s',			// CREATED
-						'%s',			// USER IP
-						'%s'			// WORDPRESS USER ID
-					));
-				} else if (strcmp($res, "INVALID") == 0) {
-					// You may prefer to store the transaction even if fail
-				} /* end if */
-			} /* end while */
-			fclose($fp);
+			$paymentStatus		= $_POST['payment_status'];
+			$paymentAmount		= $_POST['payment_amount'];
+			$paymentCurrency	= $_POST['mc_currency'];
+			$receiverEmail		= $_POST['receiver_email'];
+			$itemName		= $_POST['item_name'];
+			$itemNumber		= $_POST['item_number'];
+			$quantity		= $_POST['quantity'];
+			$shipping		= $_POST['shipping'];
+			$tax			= $_POST['tax'];
+			$mcFee			= $_POST['mc_fee'];
+			$mcGross		= $_POST['mc_gross'];
+			$mcHandling		= $_POST['mc_handling'];
+			$mcShipping		= $_POST['mc_shipping'];
+			$memo			= $_POST['memo'];
+			$pendingReason		= $_POST['pending_reason'];
+			$refundReasonCode	= $_POST['reason_code'];
+			$refundReceiptID	= $_POST['receipt_id'];
+
+			$userID = str_replace('user_id_', '', $custom);
+
+			//Used to store quickly items bought
+			$i = 1;
+			foreach($_POST as $key => $value) {
+				if($key == 'item_name'.$i) {
+					$products_bought[] = $value;
+					$i++;
+				}
+			}
+			$i = 1;
+			foreach($_POST as $key => $value) {
+				if ($key == 'item_number'.$i) {
+					$products_number_bought[] = $value;
+					$i++;
+				}
+			}
+			$i = 1;
+			foreach($_POST as $key => $value) {
+				if ($key == 'quantity'.$i) {
+					$quantity_bought[] = $value;
+					$i++;
+				}
+			}
+			$products = serialize($products_bought);
+			$products_number = serialize($products_number_bought);
+			$quantity = serialize($quantity_bought);
+
+			$wpdb->insert($orders->getOrdersTableName(),
+			array(	'address_status'	=> $addressStatus,
+				'payer_status'		=> $payerStatus,
+				'forename'		=> $firstName,
+				'surname'		=> $lastName,
+				'email'			=> $payerEmail,
+				'payer_id'		=> $payerID,
+				'address_line_1'	=> $addressStreet,
+				'postcode'		=> $addressZip,
+				'town'			=> $addressCity,
+				'state'			=> $addressState,
+				'country_code'		=> $countryCode,
+				'contact_phone'		=> $contactPhone,
+				'itemsOrdered'		=> $products,
+				'itemsNumberOrdered'	=> $products_number,
+				'quantityOrdered'	=> $quantity,
+				'create_date'		=> current_time('mysql'),
+				'parent_txn_id'		=> $parentTxnId,
+				'txn_type'		=> $txnType,
+				'txn_id'		=> $txnID,
+				'verify_sign'		=> $verifySign,
+				'payment_status'	=> $paymentStatus,
+				'payment_amount'	=> $paymentAmount,
+				'payment_currency'	=> $paymentCurrency,
+				'item_name'		=> $itemName,
+				'item_number'		=> $itemNumber,
+				'quantity'		=> $quantity,
+				'shipping'		=> $shipping,
+				'tax'			=> $tax,
+				'mc_fee'		=> $mcFee,
+				'mc_gross'		=> $mcGross,
+				'mc_handling'		=> $mcHandling,
+				'mc_shipping'		=> $mcShipping,
+				'memo'			=> $memo,
+				'pending_reason'	=> $pendingReason,
+				'refund_reason_code'	=> $refundReasonCode,
+				'refund_receipt_id'	=> $refundReceiptID,
+				'user_id'		=> $userID
+			),
+			array(	'%s',			// FORENAME
+				'%s',			// SURNAME
+				'%s',			// EMAIL
+				'%s',			// ADDRESS 1
+				'%s',			// PCODE
+				'%s',			// TOWN
+				'%s',			// STATE
+				'%s',			// ORDERED
+				'%s',			// CREATED
+				'%s',			// TXN ID
+				'%s',			// PAYMENT STATUS
+				'%s',			// PAYMENT AMOUNT
+				'%s',			// PAYMENT CURRENCY
+				'%s',			// ITEM NAME
+				'%s',			// ITEM NUMBER
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s',
+				'%s'			// WORDPRESS USER ID
+			));
+                        if(DEBUG == true) {
+				error_log(date('[Y-m-d H:i e] '), "Insert IPN: $wpdb->last_result" . PHP_EOL, 3, LOG_FILE);
+			}
+		} else if (strcmp($res, "INVALID") == 0) {
+			// You may prefer to store the transaction even if fail
+			// log for manual investigation
+			// Add business logic here which deals with invalid IPN messages
+			if(DEBUG == true) {
+				error_log(date('[Y-m-d H:i e] '), "Invalid IPN: $req" . PHP_EOL, 3, LOG_FILE);
+			}
 		} /* end if */
 
                 return $html;
         }
 
-	public function showCart() {
+	public static function showCart() {
 		GLOBAL $i18n_domain, $checkout_icon_url, $checkout_icon_width, $checkout_icon_height;
 
                 $order = new Orders;
                 $album = new Music;
+
                 $total = (float)"0.00";
 
 		 /*** Display Cart Contents ***/
                 if(!empty($_SESSION['artistography_cart'])) {
+                  $html = "<center><table>
+                           <tr>
+                              <th>" .__("Qty", $i18n_domain). "</th>
+                              <th>" .__("Item", $i18n_domain). "</th>
+                              <th>" .__("Price", $i18n_domain). "</th>
+                              <th>" .__("Action", $i18n_domain). "</th>
+                           </tr>";
                   foreach($_SESSION['artistography_cart'] as $product => $qty) {
-                    $album->loadById($product);
+		    if(strpos($product, 'album_download_') !== FALSE) {
+			$album_download = true;
+			$product_id = str_replace('album_download_', '', $product);
+		    }
+                    $album->loadById($product_id);
                     $total += ($qty * (float)($album->price));
-                    $html = "<center><table>
-                             <tr>
-                                <th>" .__("Quanity", $i18n_domain). "</th>
-                                <th>" .__("Item", $i18n_domain). "</th>
-                                <th>" .__("Price", $i18n_domain). "</th>
-                                <th>" .__("Action", $i18n_domain). "</th>
-                             </tr>
-                             <tr>
+
+		    $html .= "<tr>
                                 <td>$qty</td>
                                 <td><img src='" .stripslashes($album->picture_url). "' width='50' height='50' />
                                         $album->artist_name - $album->album_name
                                 </td>
                                 <td>" .CURRENCY. "$album->price</td>
                                 <td>
-                                  <form action='' method='post'>
+                                  <form action='" .get_permalink(get_option('wp_artistography_cart_page')). "' method='post'>
                                     <input type='hidden' name='artistography_product_id' value='$product' />
                                     <input type='hidden' name='artistography_action' value='remove' />
                                     <input type='submit' value='Remove' />
@@ -448,7 +781,7 @@ class Orders
                 return $html;
 	}
 
-	public function showInvoice() {
+	public static function showInvoice() {
 		GLOBAL $i18n_domain;
 
 		$order = new Orders;
@@ -457,16 +790,20 @@ class Orders
 
                  /*** Display Cart Contents ***/
                 if(!empty($_SESSION['artistography_cart'])) {
-                  foreach($_SESSION['artistography_cart'] as $product => $qty) {
-                    $album->loadById($product);
-                    $total += ($qty * (float)($album->price));
-                    $html = "<center><table>
+		  $html = "<center><table>
                              <tr>
                                 <th>" .__("Quanity", $i18n_domain). "</th>
                                 <th>" .__("Item", $i18n_domain). "</th>
                                 <th>" .__("Price", $i18n_domain). "</th>
-                             </tr>
-                             <tr>
+                             </tr>";
+                  foreach($_SESSION['artistography_cart'] as $product => $qty) {
+                    if(strpos($product, 'album_download_') !== FALSE) {
+                        $album_download = true;
+                        $product_id = str_replace('album_download_', '', $product);
+                    }
+                    $album->loadById($product_id);
+                    $total += ($qty * (float)($album->price));
+                    $html .= "<tr>
                                 <td>$qty</td>
                                 <td><img src='" .stripslashes($album->picture_url). "' width='50' height='50' />
                                         $album->artist_name - $album->album_name
@@ -477,8 +814,7 @@ class Orders
                 $html .= "<tr>
                                 <td colspan='2'>Total:</td><td>" .CURRENCY.number_format(round($total, 2), 2). "</td>
                              </tr>
-                             </table></center><br/>\n
-                                <a href='" .SITEURL. "/artistography_checkout'><img src='$checkout_icon_url' width='$checkout_icon_width' height='$checkout_icon_height' style='border:0px;' align='right' /></a>";
+                             </table></center><br/>";
                 } else {
 		  return false;
                 }
