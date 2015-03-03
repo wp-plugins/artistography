@@ -160,32 +160,26 @@ class Music
     public static function shortCodeDisplayAlbums( $atts ) {
 	extract( shortcode_atts( array(
 		'cols' => '3',
-		'size' => '175'
+		'size' => '200'
 	), $atts ) );
 	GLOBAL $download_icon_height, $download_icon_width, $download_icon_url;
         GLOBAL $add_to_cart_icon_height, $add_to_cart_icon_width, $add_to_cart_icon_url;
+	$width = esc_attr($size). "px";
+	$height = esc_attr($size). "px";
+
         $music = new Music;
         $html = "  <center>\n";
-            $num = $music->loadAll('album_date DESC')->getTotalRows();
+        $num = $music->loadAll('album_date DESC')->getTotalRows();
+	$rows = ((int)($num / esc_attr($cols)) < (float)($num / esc_attr($cols))) ? (int)($num / esc_attr($cols)) + 1 : (int)($num / esc_attr($cols));
+
         if ($num <= 0) {
             $html .= __("No Music Available in the Database!", $i18n_domain);
         } else {
-            $rows = ((int)($num / esc_attr($cols)) < (float)($num / esc_attr($cols))) ? (int)($num / esc_attr($cols)) + 1 : (int)($num / esc_attr($cols));
-            $width = esc_attr($size). "px";
-            $height = esc_attr($size). "px";
 
             for ($i = 0; $i < $rows; $i++) {
                 for ($j = 0; $j < $cols AND ((($cols * ($i)) + ($j+1)) <= $num); $j++) {
                     $music->loadByNode(($i * $cols) + $j);
-                    $html .= "          <div style='float:left;'>\n"
-                          .  "            <center><font style='font-size:8pt'>\n"
-                          .  "            <a href='" .$music->artist_url. "'>" .$music->artist_name. "</a><br/>\n"
-                          .  "            <a href='" .$music->store_url. "'>" .$music->album_name. "</a><br/>\n"
-                          .  "            Released: <a href='" .$music->store_url. "'>" .$music->album_month.".".$music->album_day.".".$music->album_year. "</a><br/>\n"
-                          .  "            <a href='" .$music->store_url. "' target='_blank'><img src='" .$music->picture_url. "' style='border:1px solid black;height:" .$height. ";width:" .$width. ";' /></a><br/>\n"
-			  .  "[artistography_album_download_link id='$music->id']";
-                    $html .= "            </font></center>\n"
-                          .  "          </div>\n";
+                    $html .= "[artistography_display_album id=$music->id size=" .esc_attr($size). "]";
                 }
 
                 for ($j; $j < $cols; $j++) {
@@ -205,18 +199,29 @@ class Music
      // [artistography_display_album id="1"]
     public static function shortCodeDisplayAlbum ( $atts ) {
 	extract( shortcode_atts( array(
-		'id' => '0'
+		'id' => '0',
+		'size' => '200'
 	), $atts ) );
+
+        $width = esc_attr($size). "px";
+        $height = esc_attr($size). "px";
+	$html = "";
 
         $music = new Music;
         $music->loadById(esc_attr($id));
 
-        $html = "Artist: $music->artist_name<br/>\n"
-               . "Album: $music->album_name<br/>\n"
-               . "Release Date: " .$music->album_month .".". $music->album_day .".". $music->album_year;
+        $html .= "          <div style='float:left;'>\n"
+              .  "            <center><font style='font-size:8pt'>\n"
+              .  "            <a href='" .$music->artist_url. "'>" .$music->artist_name. "</a><br/>\n"
+              .  "            <a href='" .$music->store_url. "'>" .$music->album_name. "</a><br/>\n"
+              .  "            Released: <a href='" .$music->store_url. "'>" .$music->album_month.".".$music->album_day.".".$music->album_year. "</a><br/>\n"
+              .  "            <a href='" .$music->store_url. "' target='_blank'><img src='" .$music->picture_url. "' style='border:1px solid black;height:" .$height. ";width:" .$width. ";' /></a><br/>\n"
+              .  "[artistography_album_download_link id='$music->id']";
+        $html .= "            </font></center>\n"
+              .  "          </div>\n";
 
         unset($music);
-        return $html;
+        return do_shortcode($html);
     }
 
      // [artistography_display_album_tracklist id="1"]
@@ -317,7 +322,7 @@ class Music
     // meant to simply load the nth item in the query through a for loop
     // assumes query, query_curr_node, and query_total_rows is set
 
-        if (($this->query_curr_node + 1) <= $this->getTotalRows()) {
+        if (($this->query_curr_node + 1) < $this->getTotalRows()) {
             $this->query_curr_node += 1;
             $this->loadCurrNodeValues();
         }
@@ -362,10 +367,28 @@ class Music
         return $this->loadCurrNodeValues();
     }
 
-    public function &loadLastInsertId () {
+    public function &loadAllNotFree ($order_by = 'id') {
         GLOBAL $wpdb, $i18n_domain;
 
-        $this->query = $wpdb->prepare("SELECT LAST_INSERT_ID()");
+        $this->query = "SELECT *
+                        FROM " .self::$musicTable. "
+                        WHERE price != '0.00'
+                        ORDER BY $order_by";
+        $this->setTotalRows($wpdb->query($this->query));
+
+        if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
+
+        $this->setCurrNode(0); // set to first node
+        return $this->loadCurrNodeValues();
+    }
+
+    public function &loadAllLinked ($order_by = 'id') {
+        GLOBAL $wpdb, $i18n_domain;
+
+        $this->query = "SELECT *
+                        FROM " .self::$musicTable. "
+                        WHERE download_id > 0
+                        ORDER BY $order_by";
         $this->setTotalRows($wpdb->query($this->query));
 
         if ($this->getTotalRows() === FALSE) wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
@@ -483,8 +506,7 @@ class Music
             wp_die( sprintf(__('An error occurred while trying to perform a query: "%s"', $i18n_domain), $this->query) );
         } else {
              // was entered successfully into database
-	    $this->loadLastInsertId();
-            return $this->id;
+            return $wpdb->insert_id;
         }
     }
 }  /* end class Music */

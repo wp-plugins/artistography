@@ -180,7 +180,7 @@ class SongAlbumLinker
             $this->song_id = $this->query_result->song_id;
             $this->album_id = $this->query_result->album_id;
 
-            if($this->artist_id > 0) {
+            if($this->song_id > 0) {
 //                $this->artist->loadById($this->artist_id);
             }
 
@@ -207,7 +207,7 @@ class SongAlbumLinker
     // meant to simply load the nth item in the query through a for loop
     // assumes query, query_curr_node, and query_total_rows is set
 
-        if (($this->query_curr_node + 1) <= $this->getTotalRows()) {
+        if (($this->query_curr_node + 1) < $this->getTotalRows()) {
             $this->query_curr_node += 1;
             $this->loadCurrNodeValues();
         }

@@ -250,7 +250,7 @@ class Orders
     // meant to simply load the nth item in the query through a for loop
     // assumes query, query_curr_node, and query_total_rows is set
 
-        if (($this->query_curr_node + 1) <= $this->getTotalRows()) {
+        if (($this->query_curr_node + 1) < $this->getTotalRows()) {
             $this->query_curr_node += 1;
             $this->loadCurrNodeValues();
         }
@@ -358,20 +358,35 @@ class Orders
 		GLOBAL $i18n_domain;
 
 		 /*** Process Cart Actions ***/
-		if ($_POST['artistography_product_id']) {
-			$product_id = $_POST['artistography_product_id'];
-			$qty = $_POST['artistography_qty'];
-			$action = $_POST['artistography_action'];
-			switch($action) {
-				case "add":
-					$_SESSION['artistography_cart'][$product_id] = $_SESSION['artistography_cart'][$product_id] + $qty;
-				break;
-				case "empty":
-					unset($_SESSION['artistography_cart']);
-				break;
-				case "remove":
-					unset($_SESSION['artistography_cart'][$product_id]);
-				break;
+		if (array_key_exists('artistography_product_id', $_POST)) {
+			if ($_POST['artistography_product_id']) {
+				$product_id = $_POST['artistography_product_id'];
+				if(array_key_exists('artistography_qty', $_POST))
+					$qty = $_POST['artistography_qty'];
+				else
+					$qty = 0;
+
+				$action = $_POST['artistography_action'];
+				switch($action) {
+					case "add":
+						 // if this is a download then quantity should never exceed 1
+						if (array_key_exists($product_id, $_SESSION['artistography_cart']))
+							 // if this is a download then quantity should never exceed 1
+							if(FALSE !== strpos($product_id, 'download') ) {
+								$_SESSION['artistography_cart'][$product_id] = 1;
+							} else {
+								$_SESSION['artistography_cart'][$product_id] = $_SESSION['artistography_cart'][$product_id] + $qty;
+							}
+						else
+							$_SESSION['artistography_cart'][$product_id] = $qty;
+					break;
+					case "empty":
+						unset($_SESSION['artistography_cart']);
+					break;
+					case "remove":
+						unset($_SESSION['artistography_cart'][$product_id]);
+					break;
+				}
 			}
 		}
 
@@ -715,7 +730,7 @@ class Orders
                 return $html;
         }
 
-	public function showCart() {
+	public static function showCart() {
 		GLOBAL $i18n_domain, $checkout_icon_url, $checkout_icon_width, $checkout_icon_height;
 
                 $order = new Orders;
@@ -725,6 +740,13 @@ class Orders
 
 		 /*** Display Cart Contents ***/
                 if(!empty($_SESSION['artistography_cart'])) {
+                  $html = "<center><table>
+                           <tr>
+                              <th>" .__("Qty", $i18n_domain). "</th>
+                              <th>" .__("Item", $i18n_domain). "</th>
+                              <th>" .__("Price", $i18n_domain). "</th>
+                              <th>" .__("Action", $i18n_domain). "</th>
+                           </tr>";
                   foreach($_SESSION['artistography_cart'] as $product => $qty) {
 		    if(strpos($product, 'album_download_') !== FALSE) {
 			$album_download = true;
@@ -732,14 +754,8 @@ class Orders
 		    }
                     $album->loadById($product_id);
                     $total += ($qty * (float)($album->price));
-                    $html = "<center><table>
-                             <tr>
-                                <th>" .__("Qty", $i18n_domain). "</th>
-                                <th>" .__("Item", $i18n_domain). "</th>
-                                <th>" .__("Price", $i18n_domain). "</th>
-                                <th>" .__("Action", $i18n_domain). "</th>
-                             </tr>
-                             <tr>
+
+		    $html .= "<tr>
                                 <td>$qty</td>
                                 <td><img src='" .stripslashes($album->picture_url). "' width='50' height='50' />
                                         $album->artist_name - $album->album_name
@@ -765,7 +781,7 @@ class Orders
                 return $html;
 	}
 
-	public function showInvoice() {
+	public static function showInvoice() {
 		GLOBAL $i18n_domain;
 
 		$order = new Orders;
@@ -774,6 +790,12 @@ class Orders
 
                  /*** Display Cart Contents ***/
                 if(!empty($_SESSION['artistography_cart'])) {
+		  $html = "<center><table>
+                             <tr>
+                                <th>" .__("Quanity", $i18n_domain). "</th>
+                                <th>" .__("Item", $i18n_domain). "</th>
+                                <th>" .__("Price", $i18n_domain). "</th>
+                             </tr>";
                   foreach($_SESSION['artistography_cart'] as $product => $qty) {
                     if(strpos($product, 'album_download_') !== FALSE) {
                         $album_download = true;
@@ -781,13 +803,7 @@ class Orders
                     }
                     $album->loadById($product_id);
                     $total += ($qty * (float)($album->price));
-                    $html = "<center><table>
-                             <tr>
-                                <th>" .__("Quanity", $i18n_domain). "</th>
-                                <th>" .__("Item", $i18n_domain). "</th>
-                                <th>" .__("Price", $i18n_domain). "</th>
-                             </tr>
-                             <tr>
+                    $html .= "<tr>
                                 <td>$qty</td>
                                 <td><img src='" .stripslashes($album->picture_url). "' width='50' height='50' />
                                         $album->artist_name - $album->album_name
@@ -798,8 +814,7 @@ class Orders
                 $html .= "<tr>
                                 <td colspan='2'>Total:</td><td>" .CURRENCY.number_format(round($total, 2), 2). "</td>
                              </tr>
-                             </table></center><br/>\n
-                                <a href='" .SITEURL. "/artistography_checkout'><img src='$checkout_icon_url' width='$checkout_icon_width' height='$checkout_icon_height' style='border:0px;' align='right' /></a>";
+                             </table></center><br/>";
                 } else {
 		  return false;
                 }

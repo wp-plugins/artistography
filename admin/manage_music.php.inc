@@ -3,7 +3,7 @@ $music = new Music;
 $download = new Download;
 
 echo "<div class='aform'><div id='dialog-form' title='" .__('Music', $i18n_domain). "' style='display:none;'>
-   	<p class='validateTips'>" .__("All form fields are required.", $i18ndomain). "</p>
+   	<p class='validateTips'>" .__("All form fields are required.", $i18n_domain). "</p>
    	<form>
    	<fieldset>
 		  <input type='hidden' name='id' id='id' />
@@ -11,7 +11,7 @@ echo "<div class='aform'><div id='dialog-form' title='" .__('Music', $i18n_domai
    		  <input type='text' name='artist_name' id='artist_name' class='text ui-widget-content ui-corner-all' />
                 <label for='name'>Album Name</label>
                   <input type='text' name='album_name' id='album_name' class='text ui-widget-content ui-corner-all' />
-   		<label for='release_date'>" .__("Released", $i18ndomain). "</label>
+   		<label for='release_date'>" .__("Released", $i18n_domain). "</label>
    		  <select name='album_day' id='album_day' class='ui-widget-content ui-corner-all'>";
 			for($day=1; $day <= 31; $day++) {
 				echo "<option value='$day'>$day</option>";
@@ -97,7 +97,7 @@ if ($music->loadAll('id DESC')->getTotalRows() === 0) {
          <td>
               <a href='" .stripslashes($music->artist_url). "'>" .stripslashes($music->artist_name). "</a><br/>
               <a href='" .stripslashes($music->store_url). "'>" .stripslashes($music->album_name). "</a><br/>
-          Released: <a href='" .stripslashes($store_url). "'>";
+          Released: <a href='" .stripslashes($music->store_url). "'>";
         echo $music->album_month. '.' .$music->album_day. '.' .$music->album_year. "
             </center>
          </td>";

@@ -235,7 +235,7 @@ class Song
     // meant to simply load the nth item in the query through a for loop
     // assumes query, query_curr_node, and query_total_rows is set
 
-        if (($this->query_curr_node + 1) <= $this->getTotalRows()) {
+        if (($this->query_curr_node + 1) < $this->getTotalRows()) {
             $this->query_curr_node += 1;
             $this->loadCurrNodeValues();
         }

@@ -3,20 +3,20 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of artist's media (videos, music, pictures) and organize them into a portfolio on your blog/website with PayPal functionality.
- * Version: 0.3.1
+ * Version: 0.3.2-alpha
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
  */
 session_start();
 
-define('WP_DEBUG', true); 
-define('WP_DEBUG_LOG', true); 
-define('WP_DEBUG_DISPLAY', true);
+if (!defined('WP_DEBUG')) define('WP_DEBUG', true); 
+if (!defined('WP_DEBUG_LOG')) define('WP_DEBUG_LOG', true); 
+if (!defined('WP_DEBUG_DISPLAY')) define('WP_DEBUG_DISPLAY', true);
 
 define('LOG_FILE', "./ipn.log");
 
-define('ARTISTOGRAPHY_VERSION', '0.3.1');
+define('ARTISTOGRAPHY_VERSION', '0.3.2-alpha');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -83,7 +83,10 @@ require_once('class/download.php.inc');
 require_once('class/galleries.php.inc');
 require_once('class/orders.php.inc');
 require_once('admin/general_funcs.php.inc');
+
+// widgets
 require_once('class/cart_widget.php.inc');
+require_once('class/products_widget.php.inc');
 
 function folder_is_empty($folder) {
   $counter = 0;
@@ -718,29 +721,30 @@ function artistography_init() {
 }
 add_action('init', 'artistography_init');
 
-  define(ADMIN_MENU_ORDERS, __('Orders', $i18n_domain));
-  define(ADMIN_MENU_MANAGE_ARTISTS, __('Manage Artists', $i18n_domain));
-  define(ADMIN_MENU_MANAGE_SONGS, __('Manage Songs', $i18n_domain));
-  define(ADMIN_MENU_MANAGE_ALBUMS, __('Manage Albums', $i18n_domain));
-  define(ADMIN_MENU_MANAGE_DOWNLOADS, __('Downloads', $i18n_domain));
-  define(ADMIN_MENU_MANAGE_ARTIST_ALBUM_LINKER, __('Artist/Album Linker', $i18n_domain));
-  define(ADMIN_MENU_MANAGE_SONG_ALBUM_LINKER, __('Song/Album Linker', $i18n_domain));
-  define(ADMIN_MENU_MANAGE_GALLERIES, __('Galleries', $i18n_domain));
-  define(ADMIN_MENU_FTP_UPLOADER, __('FTP Uploader', $i18n_domain));
-  define(ADMIN_MENU_OPTIONS, __('Options', $i18n_domain));
-  define(ADMIN_MENU_ABOUT, __('About', $i18n_domain));
+  define('ADMIN_MENU_ORDERS', __('Orders', $i18n_domain));
+  define('ADMIN_MENU_MANAGE_ARTISTS', __('Manage Artists', $i18n_domain));
+  define('ADMIN_MENU_MANAGE_SONGS', __('Manage Songs', $i18n_domain));
+  define('ADMIN_MENU_MANAGE_ALBUMS', __('Manage Albums', $i18n_domain));
+  define('ADMIN_MENU_MANAGE_DOWNLOADS', __('Downloads', $i18n_domain));
+  define('ADMIN_MENU_MANAGE_ARTIST_ALBUM_LINKER', __('Artist/Album Linker', $i18n_domain));
+  define('ADMIN_MENU_MANAGE_SONG_ALBUM_LINKER', __('Song/Album Linker', $i18n_domain));
+  define('ADMIN_MENU_MANAGE_GALLERIES', __('Galleries', $i18n_domain));
+  define('ADMIN_MENU_FTP_UPLOADER', __('FTP Uploader', $i18n_domain));
+  define('ADMIN_MENU_OPTIONS', __('Options', $i18n_domain));
+  define('ADMIN_MENU_ABOUT', __('About', $i18n_domain));
 
-  define(TOP_LEVEL_HANDLE, 'artistography-top-level');
-  define(SUBMENU_MANAGE_ARTISTS_HANDLE, 'artistography-submenu-manage-artists');
-  define(SUBMENU_MANAGE_SONGS_HANDLE, 'artistography-submenu-manage-songs');
-  define(SUBMENU_MANAGE_ALBUMS_HANDLE, 'artistography-submenu-manage-albums');
-  define(SUBMENU_MANAGE_DOWNLOADS_HANDLE, 'artistography-submenu-manage-downloads');
-  define(SUBMENU_MANAGE_ARTIST_ALBUM_LINKER_HANDLE, 'artistography-submenu-manage-artist-album-linker');
-  define(SUBMENU_MANAGE_SONG_ALBUM_LINKER_HANDLE, 'artistography-submenu-manage-song-album-linker');
-  define(SUBMENU_MANAGE_GALLERIES_HANDLE, 'artistography-submenu-manage-galleries');
-  define(SUBMENU_FTP_UPLOADER, 'artistography-submenu-ftp-uploader');
-  define(SUBMENU_OPTIONS_HANDLE, 'artistography-submenu-options');
-  define(SUBMENU_ABOUT_HANDLE, 'artistography-submenu-about');
+  define('TOP_LEVEL_HANDLE', 'artistography-top-level');
+  define('SUBMENU_MANAGE_ORDERS_HANDLE', 'artistography-submenu-manage-orders');
+  define('SUBMENU_MANAGE_ARTISTS_HANDLE', 'artistography-submenu-manage-artists');
+  define('SUBMENU_MANAGE_SONGS_HANDLE', 'artistography-submenu-manage-songs');
+  define('SUBMENU_MANAGE_ALBUMS_HANDLE', 'artistography-submenu-manage-albums');
+  define('SUBMENU_MANAGE_DOWNLOADS_HANDLE', 'artistography-submenu-manage-downloads');
+  define('SUBMENU_MANAGE_ARTIST_ALBUM_LINKER_HANDLE', 'artistography-submenu-manage-artist-album-linker');
+  define('SUBMENU_MANAGE_SONG_ALBUM_LINKER_HANDLE', 'artistography-submenu-manage-song-album-linker');
+  define('SUBMENU_MANAGE_GALLERIES_HANDLE', 'artistography-submenu-manage-galleries');
+  define('SUBMENU_FTP_UPLOADER', 'artistography-submenu-ftp-uploader');
+  define('SUBMENU_OPTIONS_HANDLE', 'artistography-submenu-options');
+  define('SUBMENU_ABOUT_HANDLE', 'artistography-submenu-about');
 
 function artistography_enqueue_admin_style_and_scripts() {
     GLOBAL $artistography_plugin_dir;
@@ -832,11 +836,13 @@ function artistography_plugin_menu() {
 
   GLOBAL $artistography_plugin_dir, $i18n_domain;
 
-  if( FALSE !== stripos($_GET['page'], 'artistography') ) {
-    artistography_enqueue_admin_style_and_scripts();
+  if( array_key_exists('page', $_GET) ) {
+  	if( FALSE !== stripos($_GET['page'], 'artistography') ) {
+		artistography_enqueue_admin_style_and_scripts();
+	}
   }
 
-  add_menu_page(ADMIN_MENU_STATS, __('Artistography', $i18n_domain), 'manage_options', TOP_LEVEL_HANDLE, 'artistography_plugin_options');
+  add_menu_page(TOP_LEVEL_HANDLE, __('Artistography', $i18n_domain), 'manage_options', TOP_LEVEL_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_ORDERS), ADMIN_MENU_ORDERS, 'manage_options', TOP_LEVEL_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_ARTISTS), ADMIN_MENU_MANAGE_ARTISTS, 'manage_options', SUBMENU_MANAGE_ARTISTS_HANDLE, 'artistography_plugin_options');
   add_submenu_page(TOP_LEVEL_HANDLE, sprintf(__('Artistography %s', $i18n_domain), ADMIN_MENU_MANAGE_SONGS), ADMIN_MENU_MANAGE_SONGS, 'manage_options', SUBMENU_MANAGE_SONGS_HANDLE, 'artistography_plugin_options');

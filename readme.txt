@@ -3,7 +3,7 @@ Contributors: MistahWrite
 Tags: artistography, artist, discography, media, music, videos, images, pictures, gallery, galleries, songs, albums, eCommerce, e-Commerce, PayPal, soundmanager2, playlist, cart, download manager, ftp, zupload, encode explorer, store, checkout 
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stabe tag: 0.3.1-alpha6
+Stabe tag: 0.3.2-alpha
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,9 +22,10 @@ Uses for FTP and file browsing capability:
 1. Install the Artisography plugin to your blog, and Activate it.  
 2. Admin/Dashboard > Artistography > Artists: Create An Artist
 3. Admin/Dashboard > Artistography > Music Albums: Create An Album
-4. Admin/Dashboard > Artistography > Discography: Drag and Drop the Artist to the Music Album
+4. Admin/Dashboard > Artistography > Artist/Album Linker: Drag and Drop the Artist to the Music Album
 5. To populate the artist's Related Posts tab just tag posts with the Artist's name.  Artistography will automatically find it.
-6. Use the following shortcodes on a page/post:
+6. Under Appearance > Widgets use the "Artistography Shopping Cart" and "Artistography Products" widgets as needed.
+7. Use the following shortcodes on a page/post:
 
 [artistography_display_artist_page id=1]
      Displays photo/bio, discography, videos, and related posts of artist with database id=1
@@ -38,7 +39,6 @@ Uses for FTP and file browsing capability:
                cols=(default 4)
 
 [artistography_display_artist]
-     
 
 [artistography_playlist id=1]
 	Displays songs that are linked to album with id=1 in a list ordered by the song track numbers
@@ -50,18 +50,30 @@ Uses for FTP and file browsing capability:
      Displays album photo for album with database id=1
 
 [artistography_display_albums]
-     Displays albums in a table with associated download hyperlink (if linked to a download)
+     Displays albums in a table with associated download hyperlink (if linked to a download) or add to cart link
           Optional paramters:
-               cols=(default 4)
+		cols=(default 3)
+		size=(default 200)
 
-[artistography_display_album]
-     
+[artistography_display_album id=1]
+     Displays album where id=1 with associated download hyperlink (if linked to a download) or add to cart link
+	Optional parameters:
+		cols=(default 3)
+		size=(default 200)
+
 [artistography_display_album_tracklist id=1]
      Displays tracklist/description of album with album database id=1
 [artistography_display_album_artist id=1]
      Displays artist name of album with album database id=1
 
 == Changelog ==
+
+=0.3.2-alpha=
+*Fixed a ton of bugs/notices/warnings indicated by WP_DEBUG
+*Added Products widget
+*Fixed shopping cart/checkout cart where more than one item does not show up
+*Fixed shopping cart where quantity of any download will never exceed 1
+*Updated small section of the About page
 
 =0.3.1=
 *Added shopping cart widget

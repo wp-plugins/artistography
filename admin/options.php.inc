@@ -1,6 +1,6 @@
 <?php
 
-if (strcmp($_POST['save'], NULL)) {
+if(array_key_exists('save', $_POST)) if (strcmp($_POST['save'], NULL)) {
   update_option('wp_artistography_donate_email', $_POST['donate_email']);
   update_option('wp_artistography_paypal_sandbox', ((strcmp($_POST['paypal_sandbox'], NULL)) ? true : false));
   update_option('wp_artistography_preserve_hidden_pages', ((strcmp($_POST['preserve_hidden_pages'], NULL)) ? true : false));

@@ -186,16 +186,18 @@ class Discography
         return $html;
     }
 
-    public function show_download($download_id) {
+    public static function show_download($download_id) {
 	GLOBAL $download_icon_url, $download_icon_width, $download_icon_height;
+	$html = "";
 
 	$html .= "<center><a href='" .get_permalink(get_option('wp_artistography_download_page')). "$download_id'>
 	      	  <img width='$download_icon_width' height='$download_icon_height' src='$download_icon_url' style='border:none;' /></a></center>";
 	return $html;
     }
 
-    public function show_add_to_cart($album_id, $price) {
+    public static function show_add_to_cart($album_id, $price) {
 	GLOBAL $add_to_cart_icon_url, $add_to_cart_icon_width, $add_to_cart_icon_height;
+	$html = "";
 
         $html .= "<font style='font-size:14pt'>Price: " .CURRENCY. "$price</font><br/>\n
                   <form method='post' action=\"" .get_permalink(get_option('wp_artistography_cart_page'))."\">
@@ -471,7 +473,7 @@ class Discography
     // meant to simply load the nth item in the query through a for loop
     // assumes query, query_curr_node, and query_total_rows is set
 
-        if (($this->query_curr_node + 1) <= $this->getTotalRows()) {
+        if (($this->query_curr_node + 1) < $this->getTotalRows()) {
             $this->query_curr_node += 1;
             $this->loadCurrNodeValues();
         }
