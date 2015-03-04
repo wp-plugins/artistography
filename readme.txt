@@ -3,7 +3,7 @@ Contributors: MistahWrite
 Tags: artistography, artist, discography, media, music, videos, images, pictures, gallery, galleries, songs, albums, eCommerce, e-Commerce, PayPal, soundmanager2, playlist, cart, download manager, ftp, zupload, encode explorer, store, checkout 
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stabe tag: 0.3.2
+Stabe tag: 0.3.3-alpha
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,11 @@ Uses for FTP and file browsing capability:
      Displays artist name of album with album database id=1
 
 == Changelog ==
+
+=0.3.3-alpha=
+*Fixed bug where soundmanager2 bar-ui wasn't showing up unless logged in
+*Playlist dynamically updates on play button press... Loads song/album into bar-ui
+*Does play links that you click, but still unstable with known defects regarding not being able to pause/stop playback when initiating playback from artistography methods
 
 =0.3.2=
 *AJAX Shopping Cart, removed standard post method

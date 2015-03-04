@@ -1,7 +1,14 @@
 ﻿/*jslint plusplus: true, white: true, nomen: true */
 /* global soundManager, document, console, window */
-
-(function(window) {
+/*
+  var   getItem,
+        setTitle,
+        select,
+        findOffsetFromItem,
+        makeSound,
+        playLink;
+*/
+//(function(window) {
 
   /**
    * SoundManager 2: "Bar UI" player
@@ -9,6 +16,15 @@
    */
 
   "use strict";
+
+  var   getItem,
+        setTitle,
+	select,
+	getURL,
+	findOffsetFromItem,
+	makeSound,
+	playLink;
+
 
   var Player,
       players = [],
@@ -502,7 +518,7 @@
 
 	    }
 
-	    function getItem(offset) {
+	    getItem = function (offset) {
 
 	      var list,
 	          item;
@@ -528,7 +544,7 @@
 
 	    }
 
-	    function findOffsetFromItem(item) {
+	    findOffsetFromItem = function (item) {
 
 	      // given an <li> item, find it in the playlist array and return the index.
 	      var list,
@@ -625,7 +641,7 @@
 
 	    }
 
-	    function select(item) {
+	    select = function (item) {
 
 	      var offset;
 
@@ -680,7 +696,7 @@
 
 */
 
-	    function getURL() {
+	    getURL = function () {
 
 	      // return URL of currently-selected item
 	      var item, url;
@@ -756,7 +772,7 @@
 
 	  }
 
-	  function setTitle(item) {
+	  setTitle = function (item) {
 
 	    // given a link, update the "now playing" UI.
 
@@ -779,7 +795,7 @@
 
 	  }
 
-	  function makeSound(url) {
+	  makeSound = function (url) {
 
 	    var sound = soundManager.createSound({
 
@@ -987,7 +1003,7 @@
 
 	  }
 
-	  function playLink(link) {
+	  playLink = function (link) {
 
 	    // if a link is OK, play it.
 
@@ -1387,4 +1403,13 @@
   window.sm2BarPlayers = players;
   window.SM2BarPlayer = Player;
 
-}(window));
+  window.SM2BarGetItem = getItem;
+  window.SM2BarSetTitle = setTitle;
+  window.SM2BarPlayItem = playItem;
+  window.SM2BarSelect = select;
+  window.SM2BarGetURL = getURL;
+  window.SM2BarFindOffsetFromItem = findOffsetFromItem;
+  window.SM2BarMakeSound = makeSound;
+  window.SM2BarPlayLink = playLink;
+
+//}(window));

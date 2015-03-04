@@ -45,7 +45,7 @@ class Artistography_Cart_Widget extends WP_Widget {
 			echo $args['before_title'] . apply_filters( 'widget_title', $instance['title'] ). $args['after_title'];
 		}
 
-		echo $orders->showCart();
+		echo $orders->showBasicCart();
 
 		echo "<button class='edit_cart'>Edit Cart</button>";
 

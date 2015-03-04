@@ -7,6 +7,10 @@ add_shortcode( 'artistography_ipn', 'Orders::shortCodeIPN' );
 
 //AJAX Administration
 add_action('wp_ajax_View_Order', 'Orders::callback_View_Order');
+
+add_action('wp_ajax_Get_Basic_Cart_Contents', 'Orders::callback_Get_Basic_Cart_Contents');
+add_action('wp_ajax_nopriv_Get_Basic_Cart_Contents', 'Orders::callback_Get_Basic_Cart_Contents');
+
 add_action('wp_ajax_Get_Cart_Contents', 'Orders::callback_Get_Cart_Contents');
 add_action('wp_ajax_nopriv_Get_Cart_Contents', 'Orders::callback_Get_Cart_Contents');
 
@@ -788,11 +792,16 @@ class Orders
                 return $html;
 	}
 
-	public static function callback_Get_Cart_Contents() {
+        public static function showBasicCart() {
+                GLOBAL $ajax_loader_url;
+                $html = "<div class='artistography_basic_cart'><center><img style='border:none' src='$ajax_loader_url' /></center></div>";
+                return $html;
+        }
+
+	public static function getCartContents($showActions = true) {
 		GLOBAL $i18n_domain, $checkout_icon_url, $checkout_icon_width, $checkout_icon_height;
 		$total = (float)"0.00";
 		$html = "";
-		$showActions = true;
 
 		if(!empty($_SESSION['artistography_cart'])) {
                   $html .= "<center><table>
@@ -816,7 +825,16 @@ class Orders
                 } else {
                   $html .= "<font style='font-size:14pt'>The shopping cart is empty.</font>";
                 }
-                echo $html;
+		return $html;
+	}
+
+	public static function callback_Get_Cart_Contents() {
+                echo self::getCartContents();
+		die;
+	}
+
+	public static function callback_Get_Basic_Cart_Contents() {
+		echo self::getCartContents(false);
 		die;
 	}
 

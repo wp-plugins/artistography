@@ -9,6 +9,9 @@ add_action('wp_ajax_Update_Song', 'Song::callback_Update_Song');
 add_action('wp_ajax_Edit_Song', 'Song::callback_Edit_Song');
 add_action('wp_ajax_Delete_Song', 'Song::callback_Delete_Song');
 
+add_action('wp_ajax_Play_Song', 'Song::callback_Play_Song');
+add_action('wp_ajax_nopriv_Play_Song', 'Song::callback_Play_Song');
+
 class Song
 {
     protected static $songTable = NULL;  // TABLE NAME of ARTIST TABLE
@@ -131,6 +134,42 @@ class Song
         die;
     }
 
+    public static function callback_Play_Song(){
+        GLOBAL $i18n_domain;
+
+        $song = new Song;
+	$artist = new Artist;
+	$songalbumlinker = new SongAlbumLinker;
+
+        $song_id = stripslashes($_POST['song_id']);
+
+	$album_id = $songalbumlinker->loadBySongId($song_id);
+	if($songalbumlinker->getTotalRows() > 0) {
+		$album_id = $songalbumlinker->album_id;
+		$songalbumlinker->loadByAlbumIdJoinSong($album_id);
+		for($i=0; $i < $songalbumlinker->getTotalRows(); $i++) {
+			$song->loadById($songalbumlinker->song_id);
+                	echo "<li id='playlist_song_$song->id'";
+			if($song_id == $song->id) {
+				echo "  class='selected'";
+			}
+			echo ">"
+                	.       "<a href='$song->url'><b>" .$artist->loadById($song->artist_id)->name. "</b> - $song->name</a>"
+                	.       "</li>";
+			$songalbumlinker->getNodeNext();
+		}
+	} else {
+		echo "<li id='playlist_song_$song->id' class='selected'>i"
+		.	"<a href='$song->url'><b>" .$artist->loadById($song->artist_id)->name. "<br/> - $song->name</a>"
+		.	"</li>";
+	}
+
+        unset($song);
+	unset($artist);
+	unset($songalbumlinker);
+        die;
+    }
+
     public static function conditionally_add_scripts_and_styles($posts){
         GLOBAL $artistography_plugin_dir;
          // scripts are already being loaded on every page
@@ -160,18 +199,22 @@ class Song
 	), $atts ) );
 
         $song = new Song;
-	$artist = new Artist;
 	$html = "";
 
-        $html .= "<a href='$song->url'>$song->number. " .$artist->loadById($song->loadById(esc_attr($id))->artist_id)->name . " - ". $song->name. "</a>";
+	$song->loadById($id);
+
+        $html .= "<div class='artistography_song'>";
+	$html .= "<span><button class='artistography_play' id='song_play_$song->id'>Play</button>";
+	$html .= "<span class='artistography_song_title'>$song->number. <a href='' title='$song->name'>$song->name</a></span>";
+
+	$html .= "<span class='artistography_length'><a class='track_length' href='$song->url'></a></span>";
 
 	if($song->price != '0.00') {
-		$html .= "<button class='song_to_cart' id='song_download_$song->id'>Buy " .CURRENCY. "$song->price</button>";
+		$html .= "<span class='artistography_buy'><button class='song_to_cart' id='song_download_$song->id'>" .CURRENCY. "$song->price</button></span>";
 	}
 
-	$html .= "<br/>";
+	$html .= "</div>";
 
-	unset($artist);
         unset($song);
         return $html;
     }
