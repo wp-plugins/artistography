@@ -3,7 +3,7 @@ echo "download path = " .$download_path ."<br/>";
 
 $download = new Download;
 
-if ($_POST['do_choose'] && !strcmp($_POST['file'], "")) {
+if(array_key_exists('do_choose', $_POST)) if ($_POST['do_choose'] && !strcmp($_POST['file'], "")) {
   _e("No file Chosen.<br/>\n", $i18n_domain);
 } else if ($_POST['do_choose']) {
   $file = $_POST['file'];
