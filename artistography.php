@@ -3,7 +3,7 @@
  * Plugin Name: Artistography
  * Plugin URI: http://www.artistography.org/
  * Description: Build a collection of artist's media (videos, music, pictures) and organize them into a portfolio on your blog/website with PayPal functionality.
- * Version: 0.3.3-alpha
+ * Version: 0.3.3-alpha2
  * Author: MistahWrite
  * Author URI: http://www.LavaMonsters.com
  * Text Domain: artistography
@@ -16,7 +16,7 @@ if (!defined('WP_DEBUG_DISPLAY')) define('WP_DEBUG_DISPLAY', true);
 
 define('LOG_FILE', "./ipn.log");
 
-define('ARTISTOGRAPHY_VERSION', '0.3.3-alpha');
+define('ARTISTOGRAPHY_VERSION', '0.3.3-alpha2');
 
  // used to reference database tablenames in $TABLE_NAME, which is a globalized array
 define('TABLE_ARTISTS', 0);
@@ -702,11 +702,11 @@ function my_soundmanager2_bar_hook() {
 }
 
 function artistography_init() {
-  GLOBAL $i18n_domain, $artistography_plugin_dir;
+  GLOBAL $i18n_domain, $artistography_plugin_dir, $pagenow;
 
    /* Hide Pages from Menu */
   add_filter('get_pages', 'artistography_exclude_pages');
-  if(!is_admin()) {
+  if(!is_admin() and $pagenow != 'wp-login.php') {
   	add_action('wp_print_footer_scripts', 'my_soundmanager2_bar_hook'); //, PHP_INT_MAX);
   }
 
@@ -811,9 +811,9 @@ function artistography_enqueue_style_and_scripts() {
 	wp_enqueue_style( 'jquery-ui', $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.theme.css', array(), '1.11.2', 'all');
 	wp_enqueue_script( 'jquery-ui',  $artistography_plugin_dir . '/js/jquery-ui-1.11.2/jquery-ui.js', array( 'jquery' ), '1.0.0');
 
-	wp_enqueue_style( '', $artistography_plugin_dir . '/soundmanagerv297a-20140901/demo/artistography-bar-bui/css/bar-ui.css', array(), '2.9.7a', 'all');
-	wp_enqueue_script( '', $artistography_plugin_dir . '/soundmanagerv297a-20140901/script/soundmanager2.js', array(), '2.9.7a');
-	wp_enqueue_script( '', $artistography_plugin_dir . '/soundmanagerv297a-20140901/demo/artistography-bar-bui/script/bar-ui.js', array( 'soundmanager2' ), '2.9.7a');
+	wp_enqueue_style( '', $artistography_plugin_dir . '/SoundManager2/demo/bar-bui/css/bar-ui.css', array(), '2.9.7a', 'all');
+	wp_enqueue_script( '', $artistography_plugin_dir . '/SoundManager2/script/soundmanager2.js', array(), '2.9.7a');
+	wp_enqueue_script( '', $artistography_plugin_dir . '/SoundManager2/demo/bar-bui/script/bar-ui.js', array( 'soundmanager2' ), '2.9.7a');
 
 	wp_enqueue_style( 'artistography', $artistography_plugin_dir . '/css/style.css', array(), ARTISTOGRAPHY_VERSION, 'all');
 	wp_enqueue_script( 'artistography',  $artistography_plugin_dir . '/js/script.js', array( 'jquery-ui' ), ARTISTOGRAPHY_VERSION);
@@ -825,9 +825,9 @@ function artistography_enqueue_style_and_scripts() {
 function artistography_enqueue_sm_style_and_scripts() {
 	GLOBAL $artistography_plugin_dir;
 
-        wp_enqueue_style( 'soundmanager2-bar-ui', $artistography_plugin_dir . '/soundmanagerv297a-20140901/demo/artistography-bar-ui/css/bar-ui.css', array(), '297a-20140901', 'all');
-        wp_enqueue_script( 'soundmanager2', $artistography_plugin_dir . '/soundmanagerv297a-20140901/script/soundmanager2.js', array(), '297a-20140901');
-        wp_enqueue_script( 'soundmanager2-bar-ui', $artistography_plugin_dir . '/soundmanagerv297a-20140901/demo/artistography-bar-ui/script/bar-ui.js', array( 'soundmanager2' ), '297a-20140901');
+        wp_enqueue_style( 'soundmanager2-bar-ui', $artistography_plugin_dir . '/SoundManager2/demo/bar-ui/css/bar-ui.css', array(), '297a-20140901', 'all');
+        wp_enqueue_script( 'soundmanager2', $artistography_plugin_dir . '/SoundManager2/script/soundmanager2.js', array(), '297a-20140901');
+        wp_enqueue_script( 'soundmanager2-bar-ui', $artistography_plugin_dir . '/SoundManager2/demo/bar-ui/script/bar-ui.js', array( 'soundmanager2' ), '297a-20140901');
 	wp_enqueue_style( 'soundmanager2', $artistography_plugin_dir . '/css/soundmanager2.css', array(), ARTISTOGRAPHY_VERSION, 'all');
 }
 add_action( 'wp_enqueue_scripts', 'artistography_enqueue_sm_style_and_scripts');

@@ -3,7 +3,7 @@ Contributors: MistahWrite
 Tags: artistography, artist, discography, media, music, videos, images, pictures, gallery, galleries, songs, albums, eCommerce, e-Commerce, PayPal, soundmanager2, playlist, cart, download manager, ftp, zupload, encode explorer, store, checkout 
 Requires at least: 3.0.1
 Tested up to: 4.1
-Stabe tag: 0.3.3-alpha
+Stabe tag: 0.3.3-alpha2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -67,6 +67,14 @@ Uses for FTP and file browsing capability:
      Displays artist name of album with album database id=1
 
 == Changelog ==
+
+=0.3.3-alpha2=
+*Moved SoundManager2 to SoundManager2 folder.
+*Updated SM2 to latest github master.
+*Added dispatch to utils.events in SM2 Bar-UI.
+*Listen for dispatched events I placed in setTitle and menu click.
+*Using $pagenow global to prevent sm2-bar-ui from showing up on wp-login.php.
+*Using playItemByOffset(offset) on play button click to play playlist.
 
 =0.3.3-alpha=
 *Fixed bug where soundmanager2 bar-ui wasn't showing up unless logged in

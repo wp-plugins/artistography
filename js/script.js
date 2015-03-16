@@ -1,4 +1,5 @@
 var $ = jQuery.noConflict();
+var console = window.console;
 
 $(document).ready(function() {
     var $tabs = $('#tabs').tabs({ fx: { opacity: 'toggle', height: 'toggle', width: 'toggle' } }).slideDown();
@@ -84,8 +85,8 @@ $(document).ready(function() {
           };
           $.post(MyAjax.ajaxurl, data, function(response) {
 		 /* Put song or album Into soundmanager2 playing */
-		$( ".sm2-playlist-bd" ).empty().append(response);
-		var i = 0;
+		$( ".sm2-playlist-wrapper" ).children( ".sm2-playlist-bd" ).empty().append(response);
+		var i = -1;
 		var num = 0;
 		 /* For some reason this gives me i = li * 2 */
 		$(".sm2-playlist-bd").children('li').each(function() {
@@ -94,17 +95,11 @@ $(document).ready(function() {
 				num = i;
 			}
 		});
-		var count = i / 2;
-		num = num - count;
 		var offset = num - 1;
+		console.log('i: ' + i + ', num: ' + num + ', offset: ' + offset);
 
-		var item = getItem(offset);
-		select(item);
-		setTitle(item);
-		var link = getURL();
-
-		soundObject = makeSound(link);
-		soundObject.togglePause();
+		var item = window.sm2BarPlayers[0].playlistController.getItem(offset);
+		window.sm2BarPlayers[0].playlistController.playItemByOffset(offset);
           });
     });
 
@@ -209,7 +204,39 @@ $(document).ready(function() {
 		});
         }
 
-});
+	function getSongId() {
+                 /* Put song or album Into soundmanager2 playing */
+                return $(".sm2-playlist-bd").children('li.selected').attr('id').replace('playlist_song_', '');
+	}
+
+        function evtHandlerSetTitle() {
+		var song_id = getSongId();
+		loadAlbumArt(song_id);
+		if( typeof window.sm2BarPlayers[0] !== 'undefined' ) {
+			loadAlbumArtRefresh(window.sm2BarPlayers[0].dom.playlistContainer.style.height.replace('px', ''));
+		} else {
+			loadAlbumArtRefresh(0);
+		}
+        }
+
+	function evtHandlerMenu() {
+		if( typeof window.sm2BarPlayers[0] !== 'undefined' ) {
+			loadAlbumArtRefresh(window.sm2BarPlayers[0].dom.playlistContainer.style.height.replace('px', ''));
+		} else {
+			loadAlbumArtRefresh(0);
+		}
+	}
+
+	var evtNameSetTitle = 'sm2-bar-ui-setTitle';
+	var evtNameMenu = 'sm2-bar-ui-menu';
+
+        if (window.addEventListener) {
+          window.addEventListener(evtNameSetTitle, evtHandlerSetTitle, false);
+	  window.addEventListener(evtNameMenu, evtHandlerMenu, false);
+        } else {
+          window.attachEvent('on' + evtNameSetTitle, evtHandlerSetTitle);
+	  window.attachEvent('on' + evtNameMenu, evtHandlerMenu);
+        }
 
       function loadAlbumArt(song_id) {
           var data = {
@@ -228,3 +255,5 @@ $(document).ready(function() {
               $( "#sm2-album-art" ).attr('height', height);
               $("#sm2-album-art" ).attr('width', height);
       }
+
+});

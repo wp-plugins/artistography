@@ -100,12 +100,12 @@ div#artists-contain table td, div#artists-contain table th { padding: .6em 10px;
 }
 
 .artistography_song { 
-    width: 330px;
+    width: 310px;
 }
 span.artistography_song_title {
 	display: inline-block; /* so height and width actually take affect */
 	vertical-align: midde;
-	max-width: 55%;
+	max-width: 50%;
 	height: 1.5em; /* so overflow hidden works and keeps text on one row */
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -120,8 +120,8 @@ span.artistography_play {
 span.artistography_buy {
 	display: inline-block;
 	overflow: hidden;
-	width: 20%;
-	max-width: 20%;
+	width: 22%;
+	max-width: 22%;
 	float: right;
 }
 span.artistography_length {
